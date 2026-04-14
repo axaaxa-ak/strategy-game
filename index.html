@@ -3,160 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Modern World Strategy - V3</title>
+    <title>WWII Strategic Front</title>
     <style>
-        body { margin: 0; background: #0077be; overflow: hidden; font-family: sans-serif; color: white; }
-        #game-container { position: relative; width: 100vw; height: 100vh; overflow: auto; }
-        svg { width: 4000px; height: auto; }
+        :root { --jp-red: #bc002d; --su-red: #cc0000; --ger-gray: #444; --us-blue: #3c3b6e; }
+        body { margin: 0; background: #004466; overflow: hidden; font-family: 'Avenir', sans-serif; color: white; }
         
-        /* UIパネル */
-        #left-panel { position: absolute; left: 10px; top: 10px; width: 220px; background: rgba(139, 69, 19, 0.95); border: 3px solid #5d2906; border-radius: 8px; padding: 15px; z-index: 100; pointer-events: auto; }
-        .ui-btn { background: #d2691e; color: white; border: 2px solid #5d2906; border-radius: 5px; padding: 10px; width: 100%; margin: 5px 0; font-weight: bold; cursor: pointer; }
-        #turn-btn { position: absolute; right: 20px; top: 20px; background: #ff8c00; color: white; border: 2px solid #fff; padding: 12px 25px; border-radius: 8px; font-weight: bold; z-index: 100; cursor: pointer; }
-        
-        /* 勢力スタイル */
-        .player-land { fill: #cc3333 !important; } /* 赤：自軍 */
-        .enemy-land { fill: #3333cc !important; }  /* 青：敵軍 */
-        .neutral-land { fill: #d1dbdd !important; }
-        .selected-path { stroke: yellow !important; stroke-width: 5px !important; vector-effect: non-scaling-stroke; }
-        
-        /* 兵力ラベル */
-        .army-label { position: absolute; background: rgba(0,0,0,0.6); color: white; padding: 2px 5px; border-radius: 3px; font-size: 12px; pointer-events: none; z-index: 50; }
+        /* UIレイヤー */
+        #ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
+        #left-panel { position: absolute; left: 10px; top: 10px; width: 240px; background: rgba(80, 40, 20, 0.95); border: 3px solid #3d1a00; border-radius: 8px; padding: 12px; pointer-events: auto; }
+        .ui-btn { background: #d2691e; color: white; border: 1px solid #5d2906; padding: 8px; width: 100%; margin: 3px 0; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .unit-select { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin: 10px 0; }
+        .unit-btn { background: #555; font-size: 11px; padding: 5px; border: 1px solid #fff; color: #fff; cursor: pointer; }
+        .unit-btn.active { background: #ff8c00; border-color: yellow; }
+        #turn-btn { position: absolute; right: 20px; top: 20px; background: #b22222; color: white; border: 2px solid #fff; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; pointer-events: auto; }
+
+        /* マップ描画 */
+        #game-viewport { width: 100vw; height: 100vh; overflow-x: scroll; display: flex; white-space: nowrap; cursor: grab; }
+        .map-wrapper { display: inline-block; position: relative; }
+        svg { height: 95vh; width: auto; display: block; }
+
+        /* 勢力色（史実ベース） */
+        .power-japan { fill: var(--jp-red) !important; }
+        .power-ussr { fill: var(--su-red) !important; }
+        .power-germany { fill: var(--ger-gray) !important; }
+        .power-allies { fill: var(--us-blue) !important; }
+        .power-neutral { fill: #d1dbdd !important; }
+        .selected-path { stroke: #ffff00 !important; stroke-width: 6px !important; vector-effect: non-scaling-stroke; }
     </style>
 </head>
 <body>
 
-<div id="left-panel">
-    <div id="c-name" style="background: #5d2906; padding: 8px; text-align: center; font-weight: bold;">Stateを選択</div>
-    <div style="margin: 10px 0;">💰 資金: $<span id="money">100</span></div>
-    <div style="margin: 10px 0;">⚔️ 選択地の兵力: <span id="local-army">-</span></div>
-    <button class="ui-btn" onclick="reinforce()">兵力を強化 ($10)</button>
-    <button class="ui-btn" id="atk-btn" onclick="startAttack()" disabled>隣接地へ攻撃</button>
+<div id="ui-layer">
+    <div id="left-panel">
+        <div id="c-name" style="background: #3d1a00; padding: 8px; text-align: center; font-weight: bold;">Stateを選択</div>
+        <div id="c-owner" style="font-size: 11px; text-align: center; margin-bottom: 5px;">勢力: ---</div>
+        
+        <div style="font-size: 14px;">💰 資金: $<span id="money">500</span></div>
+        <div style="font-size: 14px;">⚔️ 駐留兵力: <span id="local-army">-</span></div>
+        
+        <div class="unit-select">
+            <button class="unit-btn active" onclick="setUnit('inf')">歩兵<br>$10</button>
+            <button class="unit-btn" onclick="setUnit('tnk')">戦車<br>$30</button>
+            <button class="unit-btn" onclick="setUnit('art')">砲兵<br>$25</button>
+        </div>
+
+        <button class="ui-btn" onclick="buildUnit()">ユニット配備</button>
+        <button class="ui-btn" id="atk-btn" onclick="startMove()" disabled>進軍・攻撃</button>
+        
+        <div style="margin-top: 10px; border-top: 1px solid #fff; padding-top: 5px;">
+            <div style="font-size: 12px; font-weight: bold;">外交交渉</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                <button class="unit-btn" onclick="diplo('aid')">援助</button>
+                <button class="unit-btn" onclick="diplo('all')">同盟</button>
+                <button class="unit-btn" onclick="diplo('pup')">傀儡</button>
+                <button class="unit-btn" onclick="diplo('pea')">講和</button>
+            </div>
+        </div>
+    </div>
+    <button id="turn-btn" onclick="nextTurn()">End of Turn</button>
 </div>
 
-<button id="turn-btn" onclick="nextTurn()">End of Turn</button>
-<div id="game-container"><div id="svg-map"></div></div>
+<div id="game-viewport">
+    <div class="map-wrapper" id="svg-container-1"></div>
+    <div class="map-wrapper" id="svg-container-2"></div>
+</div>
 
 <script>
-    let money = 100;
+    let money = 500;
     let selectedId = null;
-    let stateData = {}; // 全土地のデータを保持 { id: { owner: 'player', army: 10 } }
+    let currentUnit = 'inf';
+    let stateData = {};
+
+    // 史実勢力データ（MapChartのIDやTitleに対応させる）
+    const historicalOwners = {
+        "Niigata": "japan", "Nagano": "japan", "Yamagata": "japan", "Miyagi": "japan", "Ishikawa": "japan", "Toyama": "japan", "Gifu": "japan",
+        "Seoul": "japan", "Busan": "japan", "Pyongyang": "japan", // 統治下
+        "Liaoning": "japan", "Jilin": "japan", // 満州
+        "Primor_ye": "ussr", "Vladivostok": "ussr", 
+        "Berlin": "germany", "Warsaw": "germany",
+        "Washington": "allies", "London": "allies"
+    };
 
     fetch('MapChart_Map.svg')
         .then(response => response.text())
         .then(svgData => {
-            const mapDiv = document.getElementById('svg-map');
-            mapDiv.innerHTML = svgData;
-            const svg = mapDiv.querySelector('svg');
-            
-            svg.querySelectorAll('path').forEach((path, i) => {
-                const id = path.id || `state-${i}`;
-                path.id = id;
-                
-                // 初期データ作成
-                let owner = 'neutral';
-                let army = Math.floor(Math.random() * 5) + 1;
-                if(i === 0) { owner = 'player'; army = 20; }
-                else if(i > 200 && i < 210) { owner = 'enemy'; army = 15; } // 遠くに敵を配置
-                
-                stateData[id] = { owner, army };
-                updatePathVisual(path, owner);
-
-                path.onclick = function() {
-                    if(selectedId) document.getElementById(selectedId).classList.remove('selected-path');
-                    selectedId = this.id;
-                    this.classList.add('selected-path');
-                    document.getElementById('c-name').innerText = this.getAttribute('title') || this.id;
-                    document.getElementById('local-army').innerText = stateData[selectedId].army;
-                    checkAttackable();
-                };
+            [document.getElementById('svg-container-1'), document.getElementById('svg-container-2')].forEach((container, cIdx) => {
+                container.innerHTML = svgData;
+                const svg = container.querySelector('svg');
+                svg.querySelectorAll('path').forEach((path, i) => {
+                    const title = path.getAttribute('title') || "";
+                    const id = path.id || `st-${i}`;
+                    
+                    if(cIdx === 0) {
+                        let owner = "neutral";
+                        for (let key in historicalOwners) {
+                            if (title.includes(key) || id.includes(key)) owner = historicalOwners[key];
+                        }
+                        stateData[id] = { owner, army: owner === "neutral" ? 5 : 50, title: title || id };
+                    }
+                    
+                    path.setAttribute('data-id', id);
+                    path.classList.add(`power-${stateData[id].owner}`);
+                    path.onclick = () => selectState(id);
+                });
             });
-            refreshLabels();
         });
 
-    function updatePathVisual(el, owner) {
-        el.classList.remove('player-land', 'enemy-land', 'neutral-land');
-        el.classList.add(`${owner}-land`);
+    function selectState(id) {
+        document.querySelectorAll('.selected-path').forEach(el => el.classList.remove('selected-path'));
+        selectedId = id;
+        document.querySelectorAll(`path[data-id="${id}"]`).forEach(el => el.classList.add('selected-path'));
+        
+        const data = stateData[id];
+        document.getElementById('c-name').innerText = data.title;
+        document.getElementById('c-owner').innerText = `勢力: ${data.owner.toUpperCase()}`;
+        document.getElementById('local-army').innerText = data.army;
+        document.getElementById('atk-btn').disabled = (data.owner !== 'japan');
     }
 
-    function checkAttackable() {
-        const btn = document.getElementById('atk-btn');
-        if(!selectedId || stateData[selectedId].owner !== 'player') {
-            btn.disabled = true; return;
-        }
-        btn.disabled = false;
+    function setUnit(type) {
+        currentUnit = type;
+        document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
     }
 
-    function startAttack() {
-        alert("攻撃したい隣接する土地を直接タップしてください");
-        // 次のタップを攻撃として扱うフラグ
-        window.isAttacking = true;
-    }
-
-    // 地図全体のクリック判定を拡張（攻撃処理）
-    document.addEventListener('click', (e) => {
-        if(window.isAttacking && e.target.tagName === 'path' && e.target.id !== selectedId) {
-            const targetId = e.target.id;
-            const attacker = stateData[selectedId];
-            const defender = stateData[targetId];
-
-            if(attacker.army > defender.army) {
-                alert("勝利！土地を占領しました。");
-                attacker.army -= defender.army;
-                defender.army = Math.floor(attacker.army / 2);
-                attacker.army -= defender.army;
-                defender.owner = 'player';
-                updatePathVisual(e.target, 'player');
-            } else {
-                alert("敗北！兵力が足りません。");
-                attacker.army = 1;
-            }
-            window.isAttacking = false;
-            refreshLabels();
+    function buildUnit() {
+        if(!selectedId || stateData[selectedId].owner !== 'japan') return;
+        let cost = currentUnit === 'inf' ? 10 : (currentUnit === 'tnk' ? 30 : 25);
+        if(money >= cost) {
+            money -= cost;
+            stateData[selectedId].army += (currentUnit === 'inf' ? 10 : 20);
             updateStats();
+        }
+    }
+
+    function startMove() { alert("隣接するステートをタップして進軍してください。"); window.isAction = true; }
+
+    document.addEventListener('click', (e) => {
+        const path = e.target.closest('path');
+        if(window.isAction && path) {
+            const targetId = path.getAttribute('data-id');
+            const atk = stateData[selectedId];
+            const def = stateData[targetId];
+            if(atk.owner === 'japan' && targetId !== selectedId) {
+                if(atk.army > def.army) {
+                    def.owner = 'japan';
+                    def.army = Math.floor(atk.army / 2);
+                    atk.army -= def.army;
+                    document.querySelectorAll(`path[data-id="${targetId}"]`).forEach(el => {
+                        el.className = 'power-japan';
+                    });
+                    alert(`${def.title}を占領！`);
+                }
+                window.isAction = false;
+                updateStats();
+            }
         }
     });
 
-    function reinforce() {
-        if(selectedId && stateData[selectedId].owner === 'player' && money >= 10) {
-            money -= 10;
-            stateData[selectedId].army += 10;
-            refreshLabels();
-            updateStats();
-        }
-    }
+    function diplo(type) { alert(`外交コマンド [${type}] を送信しました。回答を待機中...`); }
 
     function nextTurn() {
-        // AIの行動（簡易版：敵が隣のプレイヤーを殴る）
-        for(let id in stateData) {
-            if(stateData[id].owner === 'enemy') {
-                stateData[id].army += 2; // 自然増
-            }
-            if(stateData[id].owner === 'player') {
-                money += 5; // 税収
-            }
-        }
-        alert("ターン終了。敵軍が動いています...");
+        money += (Object.values(stateData).filter(s => s.owner === 'japan').length * 20);
+        alert("ターン終了。各ステートの補給と税収を確認しました。");
         updateStats();
-        refreshLabels();
-    }
-
-    function refreshLabels() {
-        // 兵力表示の更新（重い場合は間引く）
-        document.querySelectorAll('.army-label').forEach(l => l.remove());
-        const svg = document.querySelector('svg');
-        for(let id in stateData) {
-            if(stateData[id].army > 0) {
-                const path = document.getElementById(id);
-                const rect = path.getBoundingClientRect();
-                const label = document.createElement('div');
-                label.className = 'army-label';
-                label.style.left = (window.scrollX + rect.left + rect.width/2) + 'px';
-                label.style.top = (window.scrollY + rect.top + rect.height/2) + 'px';
-                label.innerText = stateData[id].army;
-                document.body.appendChild(label);
-            }
-        }
     }
 
     function updateStats() {
@@ -165,4 +175,4 @@
     }
 </script>
 </body>
-</html>
+</html>ー
