@@ -3,133 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Modern World Strategy - V2</title>
+    <title>Modern World Strategy - V3</title>
     <style>
-        body { margin: 0; background: #0077be; overflow: hidden; font-family: sans-serif; }
-        #game-container { position: relative; width: 100vw; height: 100vh; overflow: auto; cursor: grab; }
-        svg { width: 4000px; height: auto; } /* 巨大な世界地図に対応 */
+        body { margin: 0; background: #0077be; overflow: hidden; font-family: sans-serif; color: white; }
+        #game-container { position: relative; width: 100vw; height: 100vh; overflow: auto; }
+        svg { width: 4000px; height: auto; }
         
-        #left-panel { position: absolute; left: 10px; top: 10px; width: 220px; background: rgba(139, 69, 19, 0.95); border: 3px solid #5d2906; border-radius: 8px; padding: 15px; z-index: 100; color: #fff; pointer-events: auto; }
-        .ui-btn { background: #d2691e; color: white; border: 2px solid #5d2906; border-radius: 5px; padding: 10px; width: 100%; margin: 8px 0; font-weight: bold; cursor: pointer; font-size: 14px; }
-        .ui-btn:disabled { background: #777; cursor: not-allowed; }
+        /* UIパネル */
+        #left-panel { position: absolute; left: 10px; top: 10px; width: 220px; background: rgba(139, 69, 19, 0.95); border: 3px solid #5d2906; border-radius: 8px; padding: 15px; z-index: 100; pointer-events: auto; }
+        .ui-btn { background: #d2691e; color: white; border: 2px solid #5d2906; border-radius: 5px; padding: 10px; width: 100%; margin: 5px 0; font-weight: bold; cursor: pointer; }
         #turn-btn { position: absolute; right: 20px; top: 20px; background: #ff8c00; color: white; border: 2px solid #fff; padding: 12px 25px; border-radius: 8px; font-weight: bold; z-index: 100; cursor: pointer; }
         
-        /* 勢力の色 */
-        .player-land { fill: #cc3333 !important; }
+        /* 勢力スタイル */
+        .player-land { fill: #cc3333 !important; } /* 赤：自軍 */
+        .enemy-land { fill: #3333cc !important; }  /* 青：敵軍 */
         .neutral-land { fill: #d1dbdd !important; }
-        .selected-path { stroke: yellow !important; stroke-width: 4px !important; vector-effect: non-scaling-stroke; }
-        .attackable { filter: brightness(1.2); cursor: crosshair; }
+        .selected-path { stroke: yellow !important; stroke-width: 5px !important; vector-effect: non-scaling-stroke; }
+        
+        /* 兵力ラベル */
+        .army-label { position: absolute; background: rgba(0,0,0,0.6); color: white; padding: 2px 5px; border-radius: 3px; font-size: 12px; pointer-events: none; z-index: 50; }
     </style>
 </head>
 <body>
 
 <div id="left-panel">
-    <div id="country-name" style="background: #5d2906; padding: 8px; text-align: center; font-weight: bold; font-size: 16px;">Stateを選択</div>
-    <div style="margin: 15px 0; font-size: 18px;">💰 資金: $<span id="money">100</span></div>
-    <div style="margin: 5px 0;">🚩 領土数: <span id="land-count">0</span></div>
-    <hr style="border: 0; border-top: 1px solid #8b4513;">
-    <button id="invade-btn" class="ui-btn" onclick="invade()" disabled>進軍・占領 ($20)</button>
-    <div id="status-msg" style="font-size: 11px; color: #ffcccc; margin-top: 5px;"></div>
+    <div id="c-name" style="background: #5d2906; padding: 8px; text-align: center; font-weight: bold;">Stateを選択</div>
+    <div style="margin: 10px 0;">💰 資金: $<span id="money">100</span></div>
+    <div style="margin: 10px 0;">⚔️ 選択地の兵力: <span id="local-army">-</span></div>
+    <button class="ui-btn" onclick="reinforce()">兵力を強化 ($10)</button>
+    <button class="ui-btn" id="atk-btn" onclick="startAttack()" disabled>隣接地へ攻撃</button>
 </div>
 
 <button id="turn-btn" onclick="nextTurn()">End of Turn</button>
-
-<div id="game-container">
-    <div id="svg-map"></div>
-</div>
+<div id="game-container"><div id="svg-map"></div></div>
 
 <script>
     let money = 100;
-    let selectedPath = null;
-    let svgElement = null;
+    let selectedId = null;
+    let stateData = {}; // 全土地のデータを保持 { id: { owner: 'player', army: 10 } }
 
-    // SVG読み込み
     fetch('MapChart_Map.svg')
         .then(response => response.text())
         .then(svgData => {
             const mapDiv = document.getElementById('svg-map');
             mapDiv.innerHTML = svgData;
-            svgElement = mapDiv.querySelector('svg');
+            const svg = mapDiv.querySelector('svg');
             
-            const paths = svgElement.querySelectorAll('path');
-            paths.forEach((path, index) => {
-                // 初期設定：最初の1つを拠点にする
-                if(index === 0) {
-                    path.classList.add('player-land');
-                } else {
-                    path.classList.add('neutral-land');
-                }
+            svg.querySelectorAll('path').forEach((path, i) => {
+                const id = path.id || `state-${i}`;
+                path.id = id;
+                
+                // 初期データ作成
+                let owner = 'neutral';
+                let army = Math.floor(Math.random() * 5) + 1;
+                if(i === 0) { owner = 'player'; army = 20; }
+                else if(i > 200 && i < 210) { owner = 'enemy'; army = 15; } // 遠くに敵を配置
+                
+                stateData[id] = { owner, army };
+                updatePathVisual(path, owner);
 
-                path.onclick = function(e) {
-                    if(selectedPath) selectedPath.classList.remove('selected-path');
-                    selectedPath = this;
+                path.onclick = function() {
+                    if(selectedId) document.getElementById(selectedId).classList.remove('selected-path');
+                    selectedId = this.id;
                     this.classList.add('selected-path');
-                    
-                    document.getElementById('country-name').innerText = this.getAttribute('title') || this.id || "不明な地域";
+                    document.getElementById('c-name').innerText = this.getAttribute('title') || this.id;
+                    document.getElementById('local-army').innerText = stateData[selectedId].army;
                     checkAttackable();
                 };
             });
-            updateStats();
+            refreshLabels();
         });
 
-    // 隣接判定ロジック
-    function checkAttackable() {
-        const btn = document.getElementById('invade-btn');
-        const msg = document.getElementById('status-msg');
-        
-        if(!selectedPath || selectedPath.classList.contains('player-land')) {
-            btn.disabled = true;
-            msg.innerText = "";
-            return;
-        }
-
-        // ブラウザの「要素同士の接触判定(getBoundingClientRect)」を利用して、物理的に隣り合っているかチェック
-        const rect1 = selectedPath.getBoundingClientRect();
-        const players = svgElement.querySelectorAll('.player-land');
-        let isAdjacent = false;
-
-        players.forEach(p => {
-            const rect2 = p.getBoundingClientRect();
-            // 判定距離を少し広げて、海に面している/隣接しているかをチェック
-            const margin = 5; 
-            if (!(rect1.right + margin < rect2.left || 
-                  rect1.left - margin > rect2.right || 
-                  rect1.bottom + margin < rect2.top || 
-                  rect1.top - margin > rect2.bottom)) {
-                isAdjacent = true;
-            }
-        });
-
-        if(isAdjacent) {
-            btn.disabled = false;
-            msg.innerText = "進軍可能です！";
-            msg.style.color = "#ccffcc";
-        } else {
-            btn.disabled = true;
-            msg.innerText = "隣接する自軍領土がありません";
-            msg.style.color = "#ffcccc";
-        }
+    function updatePathVisual(el, owner) {
+        el.classList.remove('player-land', 'enemy-land', 'neutral-land');
+        el.classList.add(`${owner}-land`);
     }
 
-    function invade() {
-        if(money >= 20) {
-            money -= 20;
-            selectedPath.classList.remove('neutral-land');
-            selectedPath.classList.add('player-land');
+    function checkAttackable() {
+        const btn = document.getElementById('atk-btn');
+        if(!selectedId || stateData[selectedId].owner !== 'player') {
+            btn.disabled = true; return;
+        }
+        btn.disabled = false;
+    }
+
+    function startAttack() {
+        alert("攻撃したい隣接する土地を直接タップしてください");
+        // 次のタップを攻撃として扱うフラグ
+        window.isAttacking = true;
+    }
+
+    // 地図全体のクリック判定を拡張（攻撃処理）
+    document.addEventListener('click', (e) => {
+        if(window.isAttacking && e.target.tagName === 'path' && e.target.id !== selectedId) {
+            const targetId = e.target.id;
+            const attacker = stateData[selectedId];
+            const defender = stateData[targetId];
+
+            if(attacker.army > defender.army) {
+                alert("勝利！土地を占領しました。");
+                attacker.army -= defender.army;
+                defender.army = Math.floor(attacker.army / 2);
+                attacker.army -= defender.army;
+                defender.owner = 'player';
+                updatePathVisual(e.target, 'player');
+            } else {
+                alert("敗北！兵力が足りません。");
+                attacker.army = 1;
+            }
+            window.isAttacking = false;
+            refreshLabels();
             updateStats();
-            checkAttackable(); // ボタンの状態を更新
+        }
+    });
+
+    function reinforce() {
+        if(selectedId && stateData[selectedId].owner === 'player' && money >= 10) {
+            money -= 10;
+            stateData[selectedId].army += 10;
+            refreshLabels();
+            updateStats();
         }
     }
 
     function nextTurn() {
-        const lands = document.querySelectorAll('.player-land').length;
-        money += (lands * 10);
+        // AIの行動（簡易版：敵が隣のプレイヤーを殴る）
+        for(let id in stateData) {
+            if(stateData[id].owner === 'enemy') {
+                stateData[id].army += 2; // 自然増
+            }
+            if(stateData[id].owner === 'player') {
+                money += 5; // 税収
+            }
+        }
+        alert("ターン終了。敵軍が動いています...");
         updateStats();
+        refreshLabels();
+    }
+
+    function refreshLabels() {
+        // 兵力表示の更新（重い場合は間引く）
+        document.querySelectorAll('.army-label').forEach(l => l.remove());
+        const svg = document.querySelector('svg');
+        for(let id in stateData) {
+            if(stateData[id].army > 0) {
+                const path = document.getElementById(id);
+                const rect = path.getBoundingClientRect();
+                const label = document.createElement('div');
+                label.className = 'army-label';
+                label.style.left = (window.scrollX + rect.left + rect.width/2) + 'px';
+                label.style.top = (window.scrollY + rect.top + rect.height/2) + 'px';
+                label.innerText = stateData[id].army;
+                document.body.appendChild(label);
+            }
+        }
     }
 
     function updateStats() {
         document.getElementById('money').innerText = money;
-        document.getElementById('land-count').innerText = document.querySelectorAll('.player-land').length;
+        if(selectedId) document.getElementById('local-army').innerText = stateData[selectedId].army;
     }
 </script>
 </body>
