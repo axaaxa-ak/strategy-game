@@ -3,137 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Modern State Strategy</title>
+    <title>Modern World Strategy</title>
     <style>
-        :root { --bg: #121212; --panel: #1e1e1e; --player: #cc3333; --ally: #3366cc; --neutral: #444; }
-        body { margin: 0; background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        body { margin: 0; background: #0077be; overflow: hidden; font-family: sans-serif; }
+        #game-container { position: relative; width: 100vw; height: 100vh; cursor: grab; }
+        svg { width: 2000px; height: auto; cursor: pointer; } /* 地図のサイズ */
         
-        /* UIレイアウト */
-        #gui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; }
-        #top-info { background: rgba(0,0,0,0.85); padding: 15px; pointer-events: auto; border-bottom: 2px solid var(--player); display: flex; justify-content: space-between; }
-        #bottom-menu { background: var(--panel); padding: 15px; pointer-events: auto; border-top: 1px solid #333; }
-
-        /* マップエンジン */
-        #map-container { width: 100vw; height: 100vh; overflow: auto; background: #222; cursor: crosshair; }
-        #world-map { position: relative; width: 1200px; height: 800px; transform-origin: 0 0; }
+        /* UIレイアウト（スクショを意識） */
+        #left-panel { position: absolute; left: 10px; top: 10px; width: 180px; background: rgba(139, 69, 19, 0.9); border: 3px solid #5d2906; border-radius: 8px; padding: 15px; z-index: 100; color: #fff; }
+        .ui-btn { background: #d2691e; color: white; border: 2px solid #5d2906; border-radius: 5px; padding: 8px; width: 100%; margin: 5px 0; font-weight: bold; cursor: pointer; font-size: 12px; }
+        #turn-btn { position: absolute; right: 20px; top: 20px; background: #ff8c00; color: white; border: 2px solid #fff; padding: 10px 20px; border-radius: 8px; font-weight: bold; z-index: 100; }
         
-        /* ステート（土地）の描画 */
-        .state { position: absolute; border: 1.5px solid #000; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; cursor: pointer; }
-        .state:hover { filter: brightness(1.2); }
-        .state.selected { outline: 3px solid gold; z-index: 50; }
-        
-        /* ユニット表示 */
-        .unit-marker { width: 24px; height: 24px; background: white; color: black; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .surrounded { filter: saturate(0.2) brightness(0.7); }
-
-        /* 外交パネル */
-        .btn-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .btn { background: #333; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 4px; font-size: 13px; cursor: pointer; }
-        .btn:active { background: #555; }
-        .btn-red { background: #822; grid-column: span 3; margin-top: 5px; font-weight: bold; }
-        
-        .diplo-text { font-size: 12px; color: #aaa; margin-top: 8px; height: 35px; overflow: hidden; }
+        /* 選択時のエフェクト */
+        path:hover { fill-opacity: 0.7; }
+        .selected-path { stroke: yellow !important; stroke-width: 2px !important; }
     </style>
 </head>
 <body>
 
-<div id="gui">
-    <div id="top-info">
-        <div>
-            <div id="state-name" style="font-size: 20px; font-weight: bold;">Stateを選択</div>
-            <div id="state-status" style="font-size: 12px; color: #aaa;">所有者: ---</div>
-        </div>
-        <div style="text-align: right;">
-            <div id="turn-num" style="font-size: 22px; color: var(--player); font-weight: bold;">TURN 1</div>
-            <div style="font-size: 11px;">近代戦略オペレーション</div>
-        </div>
-    </div>
-
-    <div id="bottom-menu">
-        <div class="btn-group">
-            <button class="btn" onclick="armyMove()">軍移動/攻撃</button>
-            <button class="btn" onclick="diplomacy('aid')">援助/保障</button>
-            <button class="btn" onclick="diplomacy('puppet')">傀儡/講和</button>
-            <button class="btn btn-red" onclick="endTurn()">ターン終了（補給判定）</button>
-        </div>
-        <div id="log" class="diplo-text">司令部：戦域の状況を確認してください。</div>
-    </div>
+<div id="left-panel">
+    <div style="font-size: 20px; text-align: center; margin-bottom: 10px;">🛡️ 20% ➕</div>
+    <div id="country-name" style="background: #555; padding: 5px; text-align: center;">国を選択</div>
+    <div style="margin: 10px 0;">💰 <span id="money">0</span></div>
+    <div style="margin: 10px 0;">⚔️ <span id="power">0</span></div>
+    <button class="ui-btn">Statistics</button>
+    <button class="ui-btn" onclick="buildArmy()">Build an army</button>
+    <button class="ui-btn">Recall the armies</button>
 </div>
 
-<div id="map-container">
-    <div id="world-map"></div>
+<button id="turn-btn" onclick="nextTurn()">End of turn</button>
+
+<div id="game-container">
+    <div id="svg-map"></div>
 </div>
 
 <script>
-// ステート形状データ（MapChartの複雑さを再現した座標データ）
-const states = {
-    "Liaoning": { name: "遼寧", x: 200, y: 180, w: 120, h: 90, owner: "neutral", units: 10, type: "砲兵", adj: ["Seoul", "Pyongyang"], shape: "polygon(0% 20%, 80% 0%, 100% 70%, 30% 100%)" },
-    "Seoul": { name: "ソウル", x: 330, y: 280, w: 80, h: 60, owner: "player", units: 15, type: "戦車", adj: ["Liaoning", "Busan"], shape: "polygon(10% 0%, 90% 20%, 100% 90%, 0% 100%)" },
-    "Niigata": { name: "新潟", x: 550, y: 240, w: 100, h: 70, owner: "player", units: 8, type: "歩兵", adj: ["Nagano"], shape: "polygon(0% 30%, 100% 0%, 80% 100%, 20% 80%)" },
-    "Nagano": { name: "長野", x: 520, y: 320, w: 80, h: 90, owner: "player", units: 12, type: "歩兵", adj: ["Niigata"], shape: "polygon(20% 0%, 100% 20%, 70% 100%, 0% 70%)" },
-    "Vladivostok": { name: "極東", x: 400, y: 100, w: 150, h: 100, owner: "neutral", units: 20, type: "歩兵", adj: ["Liaoning"], shape: "polygon(10% 10%, 90% 0%, 100% 80%, 40% 100%, 0% 60%)" }
-};
+    // SVGを読み込む処理
+    fetch('MapChart_Map.svg')
+        .then(response => response.text())
+        .then(svgData => {
+            const mapDiv = document.getElementById('svg-map');
+            mapDiv.innerHTML = svgData;
+            const svg = mapDiv.querySelector('svg');
+            svg.setAttribute('width', '2500'); // 地図をデカくする
+            
+            // すべてのpath（ステート）にクリックイベントを付与
+            const paths = svg.querySelectorAll('path');
+            paths.forEach(path => {
+                path.style.transition = "0.2s";
+                path.onclick = function(e) {
+                    // 以前の選択を解除
+                    const prev = svg.querySelector('.selected-path');
+                    if(prev) prev.classList.remove('selected-path');
+                    
+                    // 今回の選択を強調
+                    this.classList.add('selected-path');
+                    document.getElementById('country-name').innerText = this.getAttribute('title') || this.id || "Unknown";
+                    
+                    // テスト：クリックしたところを自軍の色（青）に変える
+                    this.style.fill = "#0000ff"; 
+                };
+            });
+        });
 
-let selectedId = null;
-let turn = 1;
-
-function initMap() {
-    const map = document.getElementById('world-map');
-    for (let id in states) {
-        const s = states[id];
-        const el = document.createElement('div');
-        el.id = id;
-        el.className = `state ${s.owner === 'player' ? 'player' : ''}`;
-        el.style.left = s.x + 'px';
-        el.style.top = s.y + 'px';
-        el.style.width = s.w + 'px';
-        el.style.height = s.h + 'px';
-        el.style.clipPath = s.shape;
-        el.style.backgroundColor = s.owner === 'player' ? 'var(--player)' : 'var(--neutral)';
-        el.innerHTML = `<div class="unit-marker">${s.type[0]}</div>`;
-        el.onclick = () => selectState(id);
-        map.appendChild(el);
+    function buildArmy() {
+        const moneyEl = document.getElementById('money');
+        let m = parseInt(moneyEl.innerText);
+        moneyEl.innerText = m + 1000;
+        alert("徴兵を開始します。");
     }
-}
 
-function selectState(id) {
-    if(selectedId) document.getElementById(selectedId).classList.remove('selected');
-    selectedId = id;
-    const s = states[id];
-    document.getElementById(id).classList.add('selected');
-    document.getElementById('state-name').innerText = s.name;
-    document.getElementById('state-status').innerText = `所有: ${s.owner} | 兵科: ${s.type} (${s.units})`;
-}
-
-function armyMove() {
-    if(!selectedId) return;
-    const s = states[selectedId];
-    if(s.owner === 'player') {
-        log(`${s.name}部隊、進軍準備完了。移動距離: ${s.type === '戦車' ? '4' : '2'}`);
-    } else {
-        log(`敵対地域です。占領には講和または攻撃が必要です。`);
+    function nextTurn() {
+        alert("ターン終了。各ステートから税収が発生します。");
     }
-}
-
-function diplomacy(type) {
-    if(!selectedId) return;
-    const s = states[selectedId];
-    if(type === 'aid') log(`${s.name}へ援助物資を輸送。信頼度が向上しました。`);
-    if(type === 'puppet') log(`${s.name}へ傀儡化を要求。相手は回答を保留しています。`);
-}
-
-function endTurn() {
-    turn++;
-    document.getElementById('turn-num').innerText = `TURN ${turn}`;
-    log("補給線をチェック：全ステート正常。");
-    // ここで包囲ロジックを回し、繋がっていないステートの色を暗くする処理
-}
-
-function log(msg) {
-    document.getElementById('log').innerText = `>> ${msg}`;
-}
-
-initMap();
 </script>
+
 </body>
 </html>
