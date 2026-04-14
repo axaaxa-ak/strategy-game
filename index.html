@@ -3,80 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Modern World Strategy</title>
+    <title>Modern World Strategy - V2</title>
     <style>
         body { margin: 0; background: #0077be; overflow: hidden; font-family: sans-serif; }
-        #game-container { position: relative; width: 100vw; height: 100vh; cursor: grab; }
-        svg { width: 2000px; height: auto; cursor: pointer; } /* 地図のサイズ */
+        #game-container { position: relative; width: 100vw; height: 100vh; overflow: auto; cursor: grab; }
+        svg { width: 4000px; height: auto; } /* 巨大な世界地図に対応 */
         
-        /* UIレイアウト（スクショを意識） */
-        #left-panel { position: absolute; left: 10px; top: 10px; width: 180px; background: rgba(139, 69, 19, 0.9); border: 3px solid #5d2906; border-radius: 8px; padding: 15px; z-index: 100; color: #fff; }
-        .ui-btn { background: #d2691e; color: white; border: 2px solid #5d2906; border-radius: 5px; padding: 8px; width: 100%; margin: 5px 0; font-weight: bold; cursor: pointer; font-size: 12px; }
-        #turn-btn { position: absolute; right: 20px; top: 20px; background: #ff8c00; color: white; border: 2px solid #fff; padding: 10px 20px; border-radius: 8px; font-weight: bold; z-index: 100; }
+        #left-panel { position: absolute; left: 10px; top: 10px; width: 220px; background: rgba(139, 69, 19, 0.95); border: 3px solid #5d2906; border-radius: 8px; padding: 15px; z-index: 100; color: #fff; pointer-events: auto; }
+        .ui-btn { background: #d2691e; color: white; border: 2px solid #5d2906; border-radius: 5px; padding: 10px; width: 100%; margin: 8px 0; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .ui-btn:disabled { background: #777; cursor: not-allowed; }
+        #turn-btn { position: absolute; right: 20px; top: 20px; background: #ff8c00; color: white; border: 2px solid #fff; padding: 12px 25px; border-radius: 8px; font-weight: bold; z-index: 100; cursor: pointer; }
         
-        /* 選択時のエフェクト */
-        path:hover { fill-opacity: 0.7; }
-        .selected-path { stroke: yellow !important; stroke-width: 2px !important; }
+        /* 勢力の色 */
+        .player-land { fill: #cc3333 !important; }
+        .neutral-land { fill: #d1dbdd !important; }
+        .selected-path { stroke: yellow !important; stroke-width: 4px !important; vector-effect: non-scaling-stroke; }
+        .attackable { filter: brightness(1.2); cursor: crosshair; }
     </style>
 </head>
 <body>
 
 <div id="left-panel">
-    <div style="font-size: 20px; text-align: center; margin-bottom: 10px;">🛡️ 20% ➕</div>
-    <div id="country-name" style="background: #555; padding: 5px; text-align: center;">国を選択</div>
-    <div style="margin: 10px 0;">💰 <span id="money">0</span></div>
-    <div style="margin: 10px 0;">⚔️ <span id="power">0</span></div>
-    <button class="ui-btn">Statistics</button>
-    <button class="ui-btn" onclick="buildArmy()">Build an army</button>
-    <button class="ui-btn">Recall the armies</button>
+    <div id="country-name" style="background: #5d2906; padding: 8px; text-align: center; font-weight: bold; font-size: 16px;">Stateを選択</div>
+    <div style="margin: 15px 0; font-size: 18px;">💰 資金: $<span id="money">100</span></div>
+    <div style="margin: 5px 0;">🚩 領土数: <span id="land-count">0</span></div>
+    <hr style="border: 0; border-top: 1px solid #8b4513;">
+    <button id="invade-btn" class="ui-btn" onclick="invade()" disabled>進軍・占領 ($20)</button>
+    <div id="status-msg" style="font-size: 11px; color: #ffcccc; margin-top: 5px;"></div>
 </div>
 
-<button id="turn-btn" onclick="nextTurn()">End of turn</button>
+<button id="turn-btn" onclick="nextTurn()">End of Turn</button>
 
 <div id="game-container">
     <div id="svg-map"></div>
 </div>
 
 <script>
-    // SVGを読み込む処理
+    let money = 100;
+    let selectedPath = null;
+    let svgElement = null;
+
+    // SVG読み込み
     fetch('MapChart_Map.svg')
         .then(response => response.text())
         .then(svgData => {
             const mapDiv = document.getElementById('svg-map');
             mapDiv.innerHTML = svgData;
-            const svg = mapDiv.querySelector('svg');
-            svg.setAttribute('width', '2500'); // 地図をデカくする
+            svgElement = mapDiv.querySelector('svg');
             
-            // すべてのpath（ステート）にクリックイベントを付与
-            const paths = svg.querySelectorAll('path');
-            paths.forEach(path => {
-                path.style.transition = "0.2s";
+            const paths = svgElement.querySelectorAll('path');
+            paths.forEach((path, index) => {
+                // 初期設定：最初の1つを拠点にする
+                if(index === 0) {
+                    path.classList.add('player-land');
+                } else {
+                    path.classList.add('neutral-land');
+                }
+
                 path.onclick = function(e) {
-                    // 以前の選択を解除
-                    const prev = svg.querySelector('.selected-path');
-                    if(prev) prev.classList.remove('selected-path');
-                    
-                    // 今回の選択を強調
+                    if(selectedPath) selectedPath.classList.remove('selected-path');
+                    selectedPath = this;
                     this.classList.add('selected-path');
-                    document.getElementById('country-name').innerText = this.getAttribute('title') || this.id || "Unknown";
                     
-                    // テスト：クリックしたところを自軍の色（青）に変える
-                    this.style.fill = "#0000ff"; 
+                    document.getElementById('country-name').innerText = this.getAttribute('title') || this.id || "不明な地域";
+                    checkAttackable();
                 };
             });
+            updateStats();
         });
 
-    function buildArmy() {
-        const moneyEl = document.getElementById('money');
-        let m = parseInt(moneyEl.innerText);
-        moneyEl.innerText = m + 1000;
-        alert("徴兵を開始します。");
+    // 隣接判定ロジック
+    function checkAttackable() {
+        const btn = document.getElementById('invade-btn');
+        const msg = document.getElementById('status-msg');
+        
+        if(!selectedPath || selectedPath.classList.contains('player-land')) {
+            btn.disabled = true;
+            msg.innerText = "";
+            return;
+        }
+
+        // ブラウザの「要素同士の接触判定(getBoundingClientRect)」を利用して、物理的に隣り合っているかチェック
+        const rect1 = selectedPath.getBoundingClientRect();
+        const players = svgElement.querySelectorAll('.player-land');
+        let isAdjacent = false;
+
+        players.forEach(p => {
+            const rect2 = p.getBoundingClientRect();
+            // 判定距離を少し広げて、海に面している/隣接しているかをチェック
+            const margin = 5; 
+            if (!(rect1.right + margin < rect2.left || 
+                  rect1.left - margin > rect2.right || 
+                  rect1.bottom + margin < rect2.top || 
+                  rect1.top - margin > rect2.bottom)) {
+                isAdjacent = true;
+            }
+        });
+
+        if(isAdjacent) {
+            btn.disabled = false;
+            msg.innerText = "進軍可能です！";
+            msg.style.color = "#ccffcc";
+        } else {
+            btn.disabled = true;
+            msg.innerText = "隣接する自軍領土がありません";
+            msg.style.color = "#ffcccc";
+        }
+    }
+
+    function invade() {
+        if(money >= 20) {
+            money -= 20;
+            selectedPath.classList.remove('neutral-land');
+            selectedPath.classList.add('player-land');
+            updateStats();
+            checkAttackable(); // ボタンの状態を更新
+        }
     }
 
     function nextTurn() {
-        alert("ターン終了。各ステートから税収が発生します。");
+        const lands = document.querySelectorAll('.player-land').length;
+        money += (lands * 10);
+        updateStats();
+    }
+
+    function updateStats() {
+        document.getElementById('money').innerText = money;
+        document.getElementById('land-count').innerText = document.querySelectorAll('.player-land').length;
     }
 </script>
-
 </body>
 </html>
