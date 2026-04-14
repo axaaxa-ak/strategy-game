@@ -3,206 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Global Conquest: Naval & Strategic UI</title>
+    <title>Fixed Strategy - Empire of Japan</title>
     <style>
-        :root { 
-            --bg: #050a0f; --panel: rgba(15, 20, 30, 0.95); --accent: #c5a059;
-            --jp: #bc002d; --su: #cc0000; --ge: #444; --al: #3c3b6e; --sea: #1a3a4a;
-        }
-        body { margin: 0; background: var(--bg); overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #fff; touch-action: none; }
+        :root { --jp: #bc002d; --nt: #2c3e50; --sea: #102a3a; --accent: #c5a059; }
+        body { margin: 0; background: #050a0f; overflow: hidden; font-family: sans-serif; color: #fff; touch-action: none; }
         
-        /* トップステータスバー */
-        #top-bar {
-            position: fixed; top: 0; width: 100%; height: 35px; background: #000;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-bottom: 1px solid var(--accent); z-index: 1001; box-sizing: border-box;
-        }
-        .res { color: var(--accent); font-weight: bold; font-size: 13px; }
-
-        /* メインUIパネル */
-        #side-panel {
-            position: fixed; left: 10px; top: 45px; width: 280px; background: var(--panel);
-            border: 1px solid #333; border-radius: 2px; padding: 15px; z-index: 1000; pointer-events: auto;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
-        }
-        .state-name { font-size: 22px; font-variant: small-caps; border-bottom: 1px solid var(--accent); margin-bottom: 12px; }
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .data-item { background: rgba(255,255,255,0.03); padding: 8px; border-radius: 2px; border: 1px solid #222; }
-        .label { font-size: 10px; color: #888; text-transform: uppercase; }
-        .value { font-size: 16px; color: #ddd; font-weight: bold; }
-
-        /* コマンドセクション */
-        .cmd-box { margin-top: 15px; border-top: 1px solid #333; padding-top: 10px; }
-        .btn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 8px; }
-        .cmd-btn { 
-            background: #1a1a1a; color: #aaa; border: 1px solid #444; padding: 8px 0; 
-            cursor: pointer; font-size: 11px; transition: 0.2s;
-        }
-        .cmd-btn:hover { border-color: var(--accent); color: #fff; }
-        .cmd-btn.active { background: var(--accent); color: #000; font-weight: bold; }
-        .main-action { 
-            width: 100%; padding: 12px; background: #2a3a2a; border: 1px solid #4a6a4a; 
-            color: #fff; font-weight: bold; cursor: pointer; margin-top: 5px;
-        }
-        .main-action:disabled { opacity: 0.2; }
-
+        /* UIパネル：AoH2風 */
+        #ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+        #top-info { position: absolute; top: 0; width: 100%; height: 35px; background: #000; border-bottom: 1px solid var(--accent); display: flex; align-items: center; justify-content: space-around; pointer-events: auto; }
+        #side-card { position: absolute; left: 10px; top: 45px; width: 260px; background: rgba(10,15,25,0.95); border: 1px solid #444; padding: 15px; pointer-events: auto; box-shadow: 5px 5px 15px #000; }
+        
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; border-bottom: 1px solid #222; }
+        .btn { background: #1a1a1a; color: #fff; border: 1px solid var(--accent); width: 100%; padding: 10px; margin-top: 10px; cursor: pointer; font-weight: bold; }
+        .btn:active { background: var(--accent); color: #000; }
+        
         /* マップ */
         #viewport { width: 100vw; height: 100vh; background: #08121a; }
-        #map-inner { transform-origin: 0 0; }
-        svg { width: 3500px; height: auto; }
+        #map-container { transform-origin: 0 0; }
+        svg { width: 4000px; height: auto; display: block; }
         
-        /* 地形/勢力クラス */
-        .p-jp { fill: var(--jp) !important; } .p-su { fill: var(--su) !important; }
-        .p-ge { fill: var(--ge) !important; } .p-al { fill: var(--al) !important; }
-        .p-nt { fill: #2c3e50 !important; }
-        .p-sea { fill: var(--sea) !important; stroke: #2a4a5a !important; stroke-width: 1px !important; }
-        .sel { stroke: #fff !important; stroke-width: 4px !important; filter: drop-shadow(0 0 10px #fff); vector-effect: non-scaling-stroke; }
+        /* クラス別色塗り */
+        .p-jp { fill: var(--jp) !important; }
+        .p-nt { fill: var(--nt) !important; }
+        .p-sea { fill: var(--sea) !important; stroke: #1a3a4a !important; }
+        .selected { stroke: #fff !important; stroke-width: 5px !important; filter: drop-shadow(0 0 8px #fff); vector-effect: non-scaling-stroke; }
         
-        #next-turn {
-            position: fixed; bottom: 20px; right: 20px; padding: 15px 45px; 
-            background: #600; border: 1px solid var(--accent); color: #fff; 
-            font-weight: bold; border-radius: 0; cursor: pointer; z-index: 1000;
-        }
+        #next-turn { position: absolute; bottom: 20px; right: 20px; padding: 15px 40px; background: #700; border: 1px solid #fff; color: #fff; font-weight: bold; pointer-events: auto; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="top-bar">
-    <div class="res">🎌 大日本帝国</div>
-    <div class="res">💰 金貨: <span id="g-money">1000</span></div>
-    <div class="res">📅 1941.12</div>
-</div>
-
-<div id="side-panel">
-    <div id="st-name" class="state-name">地域を選択</div>
-    <div id="st-owner" style="font-size: 11px; color: var(--accent); margin-top:-10px; margin-bottom:15px;">---</div>
-    
-    <div class="data-grid">
-        <div class="data-item"><div class="label">Military</div><div class="value" id="v-army">-</div></div>
-        <div class="data-item"><div class="label">Economy</div><div class="value" id="v-eco">-</div></div>
-        <div class="data-item"><div class="label">Unit Type</div><div class="value" id="v-type">-</div></div>
-        <div class="data-item"><div class="label">Terrain</div><div class="value" id="v-terrain">-</div></div>
+<div id="ui-layer">
+    <div id="top-info">
+        <span style="color:var(--accent)">大日本帝国</span>
+        <span>💰 $<span id="m-val">1000</span></span>
+        <span>Turn: <span id="t-val">1</span></span>
     </div>
-
-    <div class="cmd-box">
-        <div class="btn-row">
-            <button class="cmd-btn active" id="u-inf" onclick="setU('inf')">歩兵</button>
-            <button class="cmd-btn" id="u-tnk" onclick="setU('tnk')">戦車</button>
-            <button class="cmd-btn" id="u-art" onclick="setU('art')">砲兵</button>
-        </div>
-        <button class="main-action" onclick="recruit()">部隊を招集</button>
-        <button id="atk-btn" class="main-action" onclick="orderAtk()" disabled style="background:#3a2a2a; border-color:#6a4a4a;">進軍・遠征命令</button>
+    <div id="side-card">
+        <div id="st-name" style="font-size: 20px; color: var(--accent); border-bottom: 1px solid #555; margin-bottom: 10px;">領土を選択</div>
+        <div class="stat-row"><span>勢力</span><span id="st-owner">---</span></div>
+        <div class="stat-row"><span>兵力</span><span id="st-army">---</span></div>
+        <div class="stat-row"><span>経済</span><span id="st-eco">---</span></div>
+        <button class="btn" onclick="addArmy()">徴兵・配備 ($50)</button>
+        <button id="atk-btn" class="btn" onclick="startAtk()" style="background:#422;" disabled>進軍命令</button>
     </div>
+    <button id="next-turn" onclick="nextTurn()">NEXT TURN</button>
 </div>
-
-<button id="next-turn" onclick="nextTurn()">NEXT TURN</button>
 
 <div id="viewport">
-    <div id="map-inner"><div id="svg-host"></div></div>
+    <div id="map-container"><div id="svg-host"></div></div>
 </div>
 
 <script>
-    let money = 1000, selId = null, curU = 'inf', isAtk = false, states = {};
-    let zoom = 0.5, offX = 0, offY = 0;
-
-    const hist = {
-        jp: ["Niigata", "Nagano", "Yamagata", "Miyagi", "Ishikawa", "Toyama", "Seoul", "Busan", "Pyongyang", "Liaoning", "Jilin", "Taiwan", "Hokkaido", "Kanto", "Kansai"],
-        su: ["Primor", "Vladivostok", "Siberia"],
-        ge: ["Berlin", "Germany", "Poland"],
-        al: ["Washington", "London", "China", "India"]
-    };
+    let money = 1000, turn = 1, selId = null, isAtk = false, states = {};
+    let zoom = 0.6, offX = -500, offY = -300; // 初期位置調整
 
     fetch('MapChart_Map.svg').then(r => r.text()).then(svg => {
         const host = document.getElementById('svg-host');
         host.innerHTML = svg;
-        host.querySelector('svg').querySelectorAll('path').forEach((p, i) => {
-            const id = p.id || `st-${i}`, title = p.getAttribute('title') || "";
-            let type = "land", owner = "nt";
+        const paths = host.querySelector('svg').querySelectorAll('path');
+        
+        paths.forEach((p, i) => {
+            const id = p.id || `st-${i}`;
+            const title = p.getAttribute('title') || "";
             
-            // 海の判定（タイトルやIDにSea, Ocean, Gulf, Bayなどが含まれる場合）
-            if (/Sea|Ocean|Gulf|Bay|Basin|Passage/i.test(title) || /Sea|Ocean/i.test(id)) {
+            // --- 領土割当の強制修正 ---
+            let type = "land", owner = "nt";
+            if (/Sea|Ocean|Gulf|Bay/i.test(title)) {
                 type = "sea"; owner = "sea";
-            } else {
-                for(let k in hist) if(title.includes(k) || id.includes(k)) owner = k;
+            } else if (i < 20 || title.includes("Japan") || title.includes("Niigata") || title.includes("Tokyo")) {
+                // インデックス 0〜19 を強制的に日本領にする（これで「領土なし」を防ぐ）
+                owner = "jp";
             }
 
             states[id] = { 
                 owner, type, 
-                unit: (owner !== "nt" && owner !== "sea" ? 'inf' : null), 
-                army: (owner === "nt" ? 10 : (owner === "sea" ? 0 : 100)), 
-                eco: (type === "sea" ? 0 : Math.floor(Math.random() * 40) + 10),
-                name: title || id 
+                army: (owner === "jp" ? 100 : 10), 
+                eco: (type === "sea" ? 0 : 20),
+                name: title || `Region ${i}` 
             };
 
             p.setAttribute('data-id', id);
             p.classList.add(type === "sea" ? "p-sea" : `p-${owner}`);
-            p.onclick = (e) => { e.stopPropagation(); select(id); };
+            p.onclick = (e) => { e.stopPropagation(); tap(id); };
         });
-        updatePos();
+        updateView();
     });
 
-    function select(id) {
-        if (isAtk && id !== selId) { doAtk(id); return; }
-        document.querySelectorAll('.sel').forEach(el => el.classList.remove('sel'));
+    function tap(id) {
+        if (isAtk && id !== selId) { executeAtk(id); return; }
+        document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
         selId = id;
-        document.querySelectorAll(`path[data-id="${id}"]`).forEach(el => el.classList.add('sel'));
+        document.querySelectorAll(`path[data-id="${id}"]`).forEach(el => el.classList.add('selected'));
         
         const s = states[id];
         document.getElementById('st-name').innerText = s.name;
-        document.getElementById('st-owner').innerText = s.type === "sea" ? "公海 / INTERNATIONAL WATERS" : "支配勢力: " + s.owner.toUpperCase();
-        document.getElementById('v-army').innerText = s.type === "sea" ? "---" : s.army;
-        document.getElementById('v-eco').innerText = s.type === "sea" ? "---" : s.eco;
-        document.getElementById('v-type').innerText = s.unit ? {inf:'歩兵', tnk:'戦車', art:'砲兵'}[s.unit] : "なし";
-        document.getElementById('v-terrain').innerText = s.type === "sea" ? "OCEAN" : "LAND";
-        document.getElementById('atk-btn').disabled = (s.owner !== 'jp' || !s.unit);
+        document.getElementById('st-owner').innerText = s.owner.toUpperCase();
+        document.getElementById('st-army').innerText = s.type === "sea" ? "---" : s.army;
+        document.getElementById('st-eco').innerText = s.type === "sea" ? "---" : s.eco;
+        document.getElementById('atk-btn').disabled = (s.owner !== 'jp');
         isAtk = false;
     }
 
-    function setU(t) { curU = t; document.querySelectorAll('.cmd-btn').forEach(b => b.classList.remove('active')); document.getElementById('u-'+t).classList.add('active'); }
-
-    function recruit() {
-        if (!selId || states[selId].owner !== 'jp' || money < 60) return;
-        money -= 60; states[selId].army += 40; states[selId].unit = curU;
-        updateUI();
+    function addArmy() {
+        if (selId && states[selId].owner === 'jp' && money >= 50) {
+            money -= 50; states[selId].army += 50; updateUI();
+        }
     }
 
-    function orderAtk() { isAtk = true; alert("遠征先を選択（海路を経由した移動も可能です）"); }
+    function startAtk() { isAtk = true; alert("攻撃先または移動先の土地を選択してください"); }
 
-    function doAtk(tid) {
+    function executeAtk(tid) {
         const atk = states[selId], def = states[tid];
-        // 海への移動または敵地占領
-        if (atk.army > def.army || def.type === "sea") {
-            if (def.type !== "sea") {
-                def.owner = 'jp'; def.army = Math.floor(atk.army * 0.4);
-                document.querySelectorAll(`path[data-id="${tid}"]`).forEach(el => el.className = 'p-jp sel');
-                alert(def.name + " を占領しました。");
-            } else {
-                alert("海路を確保。部隊を通過させます。");
-            }
-            atk.army = Math.floor(atk.army * 0.3);
+        if (atk.army > def.army) {
+            def.owner = 'jp'; def.army = Math.floor(atk.army * 0.6); atk.army = 10;
+            document.querySelectorAll(`path[data-id="${tid}"]`).forEach(el => {
+                el.className = 'p-jp selected';
+            });
+            alert("制圧成功！");
         } else {
-            atk.army = 10; alert("敵の抵抗により撤退しました。");
+            atk.army = 1; alert("敗北...");
         }
         isAtk = false; updateUI();
     }
 
     function nextTurn() {
-        let inc = 0; for(let id in states) if(states[id].owner === 'jp') inc += states[id].eco;
-        money += inc; alert(`ターン終了: $${inc} の歳入を獲得しました。`);
+        turn++;
+        let income = 0;
+        for(let id in states) if(states[id].owner === 'jp') income += states[id].eco;
+        money += income;
         updateUI();
+        alert(`Turn ${turn}\n歳入 $${income} を獲得しました。`);
     }
 
-    function updateUI() { document.getElementById('g-money').innerText = money; if (selId) select(selId); }
+    function updateUI() {
+        document.getElementById('m-val').innerText = money;
+        document.getElementById('t-val').innerText = turn;
+        if (selId) tap(selId);
+    }
 
-    // iPad Zoom/Drag
-    const mi = document.getElementById('map-inner'), vp = document.getElementById('viewport');
+    // 操作系
+    const cont = document.getElementById('map-container'), vp = document.getElementById('viewport');
     vp.onpointerdown = (e) => {
         let sx = e.clientX - offX, sy = e.clientY - offY;
-        vp.onpointermove = (ev) => { offX = ev.clientX - sx; offY = ev.clientY - sy; updatePos(); };
+        vp.onpointermove = (ev) => { offX = ev.clientX - sx; offY = ev.clientY - sy; updateView(); };
     };
     vp.onpointerup = () => vp.onpointermove = null;
-    vp.onwheel = (e) => { zoom += e.deltaY * -0.001; zoom = Math.min(Math.max(0.1, zoom), 3); updatePos(); };
-    function updatePos() { mi.style.transform = `translate(${offX}px, ${offY}px) scale(${zoom})`; }
+    vp.onwheel = (e) => { zoom += e.deltaY * -0.0005; zoom = Math.min(Math.max(0.1, zoom), 3); updateView(); };
+    function updateView() { cont.style.transform = `translate(${offX}px, ${offY}px) scale(${zoom})`; }
 </script>
 </body>
 </html>
