@@ -1,228 +1,1301 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WWII: Global Strategy - Diplomacy & Fog of War</title>
-    <style>
-        :root { --jp: #bc002d; --su: #cc0000; --al: #3c3b6e; --sea: #102a3a; --nt: #2c3e50; --accent: #c5a059; --panel: rgba(10,15,25,0.95); }
-        body { margin: 0; background: #050a0f; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #fff; touch-action: none; }
-        
-        #top-bar { position: fixed; top: 0; width: 100%; height: 40px; background: #000; border-bottom: 1px solid var(--accent); display: flex; align-items: center; justify-content: space-around; z-index: 1001; }
-        #side-card { position: fixed; left: 10px; top: 50px; width: 270px; background: var(--panel); border: 1px solid #444; border-radius: 4px; padding: 15px; z-index: 1000; pointer-events: auto; box-shadow: 5px 5px 20px #000; }
-        
-        .title { font-size: 20px; color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: 12px; font-weight: bold; }
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .data-box { background: rgba(255,255,255,0.05); padding: 8px; border: 1px solid #333; }
-        .label { font-size: 10px; color: #888; text-transform: uppercase; }
-        .val { font-size: 15px; font-weight: bold; color: #ddd; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>太平洋大戦略 1936 — PACIFIC COMMAND</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050a0e;--panel:#091420;--pb:#0c1c2e;--border:#162434;--border2:#1e3448;
+  --acc:#c8a248;--acc2:rgba(200,162,72,.13);--acc3:#8a6e2e;
+  --txt:#b8ccd8;--dim:#486070;--red:#c81630;
+  --jp:#c81630;--su:#8b1c1c;--cn:#1848b0;--al:#186038;--nt:#3c5c28;--sea:#040e1a;
+  --font:'Share Tech Mono',monospace;--head:'Orbitron',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);overflow:hidden;user-select:none}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:9999}
 
-        /* 徴兵パネル */
-        #recruit-box { display: block; }
-        .unit-select { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 10px 0; }
-        .u-btn { background: #1a1a1a; color: #fff; border: 1px solid #444; padding: 6px; font-size: 11px; cursor: pointer; }
-        .u-btn.active { background: var(--accent); color: #000; font-weight: bold; border-color: #fff; }
-        
-        /* 外交パネル */
-        #diplo-box { display: none; }
-        .diplo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
-        .d-btn { background: #223; color: #aaa; border: 1px solid #446; padding: 8px 4px; font-size: 11px; cursor: pointer; text-align: center; }
-        .d-btn:hover { background: #335; color: #fff; border-color: var(--accent); }
-        .d-btn.peace { background: #422; color: #f88; }
-        .d-btn.nego { grid-column: span 2; background: #2a2a2a; color: var(--accent); font-weight: bold; }
+/* TOP BAR */
+#tb{position:fixed;top:0;left:0;right:0;height:44px;background:var(--panel);border-bottom:1px solid var(--border2);display:flex;align-items:stretch;z-index:1000}
+.tbs{display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-right:1px solid var(--border);min-width:80px}
+.tbs.last{border-right:none;flex:1;flex-direction:row;align-items:center;justify-content:flex-end;gap:8px;padding-right:190px}
+.tl{font-size:7px;color:var(--dim);letter-spacing:2px;margin-bottom:1px}
+.tv{font-family:var(--head);font-size:12px;color:var(--acc);letter-spacing:1px}
+.tv.lg{font-size:14px;color:#e8c060}
+.wbadge{background:rgba(200,22,48,.14);border:1px solid rgba(200,22,48,.4);color:#ff6878;font-size:7px;padding:2px 8px;letter-spacing:1px;animation:wbp 2s ease-in-out infinite}
+@keyframes wbp{0%,100%{opacity:1}50%{opacity:.5}}
 
-        .main-btn { width: 100%; padding: 12px; margin-top: 8px; font-weight: bold; cursor: pointer; border: 1px solid #555; }
-        .recruit { background: #2a3a2a; color: #fff; }
-        .attack { background: #3a2a2a; color: #fff; }
-        .attack:disabled { opacity: 0.2; }
+/* SIDE PANEL */
+#sp{position:fixed;left:0;top:44px;width:285px;height:calc(100vh - 44px);background:var(--panel);border-right:1px solid var(--border2);display:flex;flex-direction:column;z-index:900}
+#ph{padding:13px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.28);flex-shrink:0;min-height:88px}
+.po{font-size:7px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.pn{font-family:var(--head);font-size:14px;color:#ddeeff;letter-spacing:1px;line-height:1.25;margin-bottom:5px}
+.ptags{display:flex;flex-wrap:wrap;gap:3px}
+.tag{font-size:7px;letter-spacing:1.5px;padding:2px 6px;border:1px solid}
+.tag-own{color:#4ce870;border-color:#186030;background:rgba(76,232,112,.07)}
+.tag-war{color:#ff4858;border-color:#681020;background:rgba(255,72,88,.07)}
+.tag-ally{color:#48a8ff;border-color:#184888;background:rgba(72,168,255,.07)}
+.tag-neut{color:var(--acc);border-color:var(--acc3);background:var(--acc2)}
+.tag-enc{color:#ff2838;border-color:#781020;background:rgba(255,40,56,.1);animation:ep 1s ease-in-out infinite alternate}
+.tag-sea{color:#28a8d8;border-color:#185878;background:rgba(40,168,216,.07)}
+.tag-hos{color:#e8a040;border-color:#785020;background:rgba(232,160,64,.07)}
+.tag-fog{color:var(--dim);border-color:#1e3040}
+@keyframes ep{from{opacity:1}to{opacity:.4}}
 
-        #viewport { width: 100vw; height: 100vh; background: #08121a; }
-        #map-inner { transform-origin: 0 0; }
-        svg { width: 4000px; height: auto; display: block; }
-        
-        .p-jp { fill: var(--jp) !important; } .p-su { fill: var(--su) !important; } .p-al { fill: var(--al) !important; }
-        .p-nt { fill: var(--nt) !important; } .p-sea { fill: var(--sea) !important; stroke: #1a3a4a !important; }
-        .selected { stroke: #fff !important; stroke-width: 6px !important; filter: drop-shadow(0 0 10px #fff); vector-effect: non-scaling-stroke; }
-        
-        #next-turn { position: fixed; bottom: 20px; right: 20px; padding: 15px 45px; background: #600; border: 1px solid var(--accent); color: #fff; font-weight: bold; cursor: pointer; z-index: 1000; }
-    </style>
+#pb{flex:1;overflow-y:auto;padding:12px 13px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+#pb::-webkit-scrollbar{width:3px}
+#pb::-webkit-scrollbar-thumb{background:var(--border2)}
+
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px}
+.sc{background:rgba(255,255,255,.03);border:1px solid var(--border);padding:7px 9px}
+.sl{font-size:7px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.sv{font-family:var(--head);font-size:17px;color:var(--txt)}
+.sv.fog{color:var(--dim);font-size:10px;letter-spacing:4px}
+.sdiv{font-size:7px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin:11px 0 7px;display:flex;align-items:center;gap:8px}
+.sdiv::after{content:'';flex:1;height:1px;background:var(--border)}
+.pow-bar{text-align:center;margin:5px 0 12px}
+.pn2{font-family:var(--head);font-size:26px;color:var(--acc)}
+.ps{font-size:7px;color:var(--dim);letter-spacing:2px;margin-top:1px}
+
+/* Buttons */
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:6px}
+.bgrid2{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:6px}
+.btn{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--dim);padding:7px 3px;cursor:pointer;font-family:var(--font);font-size:8.5px;text-align:center;line-height:1.6;transition:.15s}
+.btn:hover{border-color:var(--acc);color:var(--txt);background:var(--acc2)}
+.btn.on{border-color:var(--acc);background:var(--acc2);color:var(--acc)}
+.btn:disabled{opacity:.2;cursor:not-allowed;pointer-events:none}
+.abtn{width:100%;background:rgba(20,40,60,.5);border:1px solid var(--border2);color:var(--txt);padding:9px;cursor:pointer;font-family:var(--font);font-size:9px;letter-spacing:.5px;margin-bottom:5px;transition:.15s;text-align:left}
+.abtn:hover{background:var(--acc2);border-color:var(--acc);color:var(--acc)}
+.abtn.red{color:#ff7080;border-color:#481020;background:rgba(200,22,48,.08)}
+.abtn.red:hover{background:rgba(200,22,48,.2);border-color:var(--red)}
+.abtn.pulse{animation:ap .7s ease-in-out infinite alternate}
+@keyframes ap{from{background:rgba(200,22,48,.08)}to{background:rgba(200,22,48,.28);border-color:var(--red)}}
+.abtn:disabled{opacity:.2;cursor:not-allowed;pointer-events:none}
+.dbtn{background:rgba(24,72,176,.1);border:1px solid rgba(24,72,176,.3);color:#6898e0;padding:8px 4px;cursor:pointer;font-family:var(--font);font-size:8.5px;text-align:center;line-height:1.6;transition:.15s}
+.dbtn:hover{background:rgba(24,72,176,.2);border-color:#4878d0;color:#a0c8ff}
+.dbtn:disabled{opacity:.2;cursor:not-allowed;pointer-events:none}
+.dbtn.war{color:#ff6070;border-color:rgba(180,20,40,.4);background:rgba(180,20,40,.08)}
+.dbtn.war:hover{background:rgba(180,20,40,.2);border-color:var(--red)}
+.dbtn.full{grid-column:span 2;background:var(--acc2);border-color:var(--acc3);color:var(--acc)}
+.dbtn.full:hover{background:rgba(200,162,72,.22);border-color:var(--acc)}
+
+/* MAP */
+#vp{position:fixed;left:285px;top:44px;right:0;bottom:76px;overflow:hidden;cursor:grab;background:#02080e}
+#vp.dragging{cursor:grabbing}
+#mi{transform-origin:0 0;will-change:transform}
+
+/* SVG territory styles applied via JS class */
+.t-land{cursor:pointer;transition:filter .15s;stroke-width:0.5!important}
+.t-land:hover{filter:brightness(1.42) drop-shadow(0 0 5px rgba(200,162,72,.45))!important}
+.t-sea{cursor:default!important;pointer-events:none!important;fill:var(--sea)!important}
+.t-sel{stroke:var(--acc)!important;stroke-width:3!important;filter:drop-shadow(0 0 11px rgba(200,162,72,.9)) brightness(1.2)!important;vector-effect:non-scaling-stroke!important}
+.t-hl-atk{stroke:#ff3050!important;stroke-width:2.5!important;vector-effect:non-scaling-stroke!important;animation:hlp .75s ease-in-out infinite alternate!important;cursor:crosshair!important}
+@keyframes hlp{from{filter:brightness(1.1)}to{filter:brightness(1.6) drop-shadow(0 0 9px #ff3050)}}
+.t-hl-mov{stroke:#28c8ff!important;stroke-width:1.8!important;vector-effect:non-scaling-stroke!important;cursor:crosshair!important}
+.t-enc{stroke:#ff0820!important;stroke-width:2!important;vector-effect:non-scaling-stroke!important;animation:enc 1.2s ease-in-out infinite alternate!important}
+@keyframes enc{from{filter:none}to{filter:drop-shadow(0 0 10px #ff0020)}}
+.fog-hard{filter:grayscale(90%) brightness(.25)!important}
+.fog-hard:hover{filter:grayscale(80%) brightness(.35)!important}
+.fog-soft{filter:grayscale(25%) brightness(.6)!important}
+.fog-soft:hover{filter:grayscale(10%) brightness(.78)!important}
+/* Faction fills */
+.f-jp{fill:var(--jp)!important}
+.f-su{fill:var(--su)!important}
+.f-cn{fill:var(--cn)!important}
+.f-al{fill:var(--al)!important}
+.f-nt{fill:var(--nt)!important}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:#02080e;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9990}
+#loading.done{display:none}
+.ld-title{font-family:var(--head);font-size:22px;color:var(--acc);letter-spacing:3px;margin-bottom:20px}
+.ld-bar{width:340px;height:3px;background:var(--border);margin-bottom:12px;position:relative}
+.ld-fill{height:100%;background:var(--acc);width:0%;transition:width .3s}
+.ld-txt{font-size:9px;color:var(--dim);letter-spacing:2px}
+
+/* LOG */
+#log{position:fixed;left:285px;right:0;bottom:0;height:76px;background:rgba(5,10,14,.97);border-top:1px solid var(--border);padding:6px 13px;z-index:800}
+#lhdr{font-size:7px;color:var(--dim);letter-spacing:2px;margin-bottom:3px}
+#llist{height:52px;overflow:hidden;display:flex;flex-direction:column-reverse;gap:1px}
+.le{font-size:8.5px;color:var(--dim);padding-left:9px;position:relative;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.le::before{content:'>';position:absolute;left:0;color:var(--acc3)}
+.lw{color:#e06070}.lk{color:#68e888}.ld{color:#68a8e8}.lt{color:var(--acc)}.lai{color:#b09038}
+
+/* CONTROLS */
+#nxt{position:fixed;right:14px;bottom:88px;background:#480a14;border:1px solid #681820;color:#fff;padding:10px 24px;font-family:var(--head);font-size:9px;letter-spacing:2px;cursor:pointer;z-index:1000;transition:.2s}
+#nxt:hover{background:#6a1020;border-color:var(--red);box-shadow:0 0 18px rgba(200,22,48,.5)}
+#mode-ind{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:rgba(200,22,48,.92);border:1px solid var(--red);color:#fff;padding:5px 18px;font-size:8px;letter-spacing:2px;z-index:1100;animation:mp .7s ease-in-out infinite alternate;pointer-events:none}
+@keyframes mp{from{box-shadow:0 0 8px rgba(200,22,48,.3)}to{box-shadow:0 0 22px rgba(200,22,48,.8)}}
+
+/* MODAL */
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;align-items:center;justify-content:center}
+#modal.open{display:flex}
+#mbox{background:#080f1a;border:1px solid var(--border2);width:500px;max-width:94vw;max-height:90vh;overflow-y:auto;padding:22px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+#mbox::-webkit-scrollbar{width:3px}
+.mt{font-family:var(--head);font-size:13px;color:var(--acc);letter-spacing:2px;margin-bottom:2px}
+.ms{font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--border)}
+.minfo{font-size:9px;color:#b0c8e0;padding:10px;border:1px solid var(--border);margin:10px 0;line-height:1.9}
+.slrow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sllbl{font-size:8.5px;color:var(--dim);min-width:76px}
+.slrow input[type=range]{flex:1;accent-color:var(--acc);height:3px}
+.slval{min-width:32px;text-align:right;color:var(--acc);font-family:var(--head);font-size:11px}
+.mres{display:none;margin:10px 0;padding:9px;font-size:9px;line-height:1.8;border:1px solid}
+.mres.ok{color:#70e890;border-color:#186028;background:rgba(70,200,80,.06)}
+.mres.no{color:#ff7080;border-color:#581018;background:rgba(255,80,96,.06)}
+.mres.info{color:#78b8e8;border-color:#183868;background:rgba(80,120,200,.06)}
+.mbtns{display:flex;gap:7px;margin-top:14px}
+.mb{flex:1;padding:9px;font-family:var(--font);font-size:8.5px;cursor:pointer;border:1px solid;transition:.15s;letter-spacing:1px}
+.mb.ok{background:var(--acc2);border-color:var(--acc3);color:var(--acc)}
+.mb.ok:hover{background:rgba(200,162,72,.22);border-color:var(--acc)}
+.mb.cl{background:rgba(255,255,255,.03);border-color:var(--border);color:var(--dim)}
+.mb.cl:hover{background:rgba(255,255,255,.07);border-color:var(--border2)}
+.mb.neg{background:rgba(200,22,48,.1);border-color:rgba(200,22,48,.3);color:#ff8090}
+.mb.neg:hover{background:rgba(200,22,48,.22);border-color:var(--red)}
+.pstat{display:flex;justify-content:space-between;margin-bottom:6px;font-size:9px}
+.pstat .pk{color:var(--dim)}.pstat .pv{color:var(--txt);font-family:var(--head);font-size:10px}
+.vpdisp{text-align:center;margin:10px 0}
+.vpn{font-family:var(--head);font-size:38px;color:var(--acc)}
+.vpl{font-size:7px;color:var(--dim);letter-spacing:2px}
+.lbar{margin:10px 0}
+.lb-lbl{font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px;display:flex;justify-content:space-between}
+.lb-track{height:3px;background:var(--border)}
+.lb-fill{height:100%;background:var(--acc);transition:width .3s}
+.mchk{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:9px;cursor:pointer}
+.mchk input{accent-color:var(--acc);width:12px;height:12px}
+.demrow{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.demrow input{accent-color:var(--red);width:12px;height:12px}
+.demrow label{font-size:9px;color:#c0d0e0;cursor:pointer}
+.tsel{background:var(--panel);border:1px solid var(--border2);color:var(--txt);font-family:var(--font);font-size:9px;padding:4px 7px;width:100%;margin-bottom:7px;cursor:pointer}
+.tsel option{background:#091420}
+.mcols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.mch{font-size:7px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.mdi{font-size:9px;color:#b0c8e0;padding:4px 0;border-bottom:1px solid var(--border);line-height:1.5}
+.mdi:last-child{border-bottom:none}
+</style>
 </head>
 <body>
 
-<div id="top-bar">
-    <div style="color:var(--accent)">🎌 大日本帝国</div>
-    <div>💰 $<span id="g-money">1000</span></div>
-    <div>📅 1941.12</div>
+<!-- LOADING SCREEN -->
+<div id="loading">
+  <div class="ld-title">PACIFIC COMMAND 1936</div>
+  <div class="ld-bar"><div class="ld-fill" id="ld-fill"></div></div>
+  <div class="ld-txt" id="ld-txt">LOADING MAP DATA...</div>
 </div>
 
-<div id="side-card">
-    <div id="st-name" class="title">領土を選択</div>
-    <div id="st-owner" style="font-size: 11px; color: var(--accent); margin-top:-10px; margin-bottom:15px;">---</div>
-    
-    <div class="data-grid">
-        <div class="data-box"><div class="label">Infantry</div><div class="val" id="v-inf">-</div></div>
-        <div class="data-box"><div class="label">Tank</div><div class="val" id="v-tnk">-</div></div>
-        <div class="data-box"><div class="label">Artillery</div><div class="val" id="v-art">-</div></div>
-        <div class="data-box"><div class="label">Economy</div><div class="val" id="v-eco">-</div></div>
-    </div>
-
-    <div id="recruit-box">
-        <div class="unit-select">
-            <button class="u-btn active" id="btn-inf" onclick="setU('inf')">歩兵 $10</button>
-            <button class="u-btn" id="btn-tnk" onclick="setU('tnk')">戦車 $50</button>
-            <button class="u-btn" id="btn-art" onclick="setU('art')">砲兵 $40</button>
-        </div>
-        <button class="main-btn recruit" onclick="recruit()">徴兵・生産</button>
-    </div>
-
-    <div id="diplo-box">
-        <div class="diplo-grid">
-            <button class="d-btn" onclick="alert('同盟を打診します')">同盟</button>
-            <button class="d-btn" onclick="alert('資金・兵器を援助します')">援助</button>
-            <button class="d-btn" onclick="alert('独立を保障します')">独立保障</button>
-            <button class="d-btn" onclick="alert('保護国・傀儡化を要求します')">保護・傀儡</button>
-            <button class="d-btn peace" onclick="alert('戦況を元に講和を提案します')">講和提案</button>
-            <button class="d-btn nego" onclick="alert('外交交渉画面を開きます (条件の提示)')">外交交渉</button>
-        </div>
-    </div>
-    
-    <button id="atk-btn" class="main-btn attack" onclick="prepAtk()" disabled>進軍・攻撃命令</button>
+<!-- TOP BAR -->
+<div id="tb">
+  <div class="tbs"><div class="tl">EMPIRE</div><div class="tv lg">JAPAN — 大日本帝国</div></div>
+  <div class="tbs"><div class="tl">TREASURY</div><div class="tv">Y<span id="tb-m">2000</span></div></div>
+  <div class="tbs"><div class="tl">INCOME/TURN</div><div class="tv" id="tb-i" style="color:#68d888">+0</div></div>
+  <div class="tbs"><div class="tl">TERRITORIES</div><div class="tv" id="tb-t">0</div></div>
+  <div class="tbs"><div class="tl">MANPOWER</div><div class="tv" id="tb-pow">0</div></div>
+  <div class="tbs"><div class="tl">DATE</div><div class="tv" id="tb-d">1936.01</div></div>
+  <div class="tbs last"><div id="tb-wars"></div></div>
 </div>
 
-<button id="next-turn" onclick="endTurn()">NEXT TURN</button>
+<!-- SIDE PANEL -->
+<div id="sp">
+  <div id="ph">
+    <div class="po" id="ph-o">— SELECT TERRITORY —</div>
+    <div class="pn" id="ph-n">地域を選択してください</div>
+    <div class="ptags" id="ph-t"></div>
+  </div>
+  <div id="pb"><div id="pcontent" style="color:var(--dim);font-size:9px;text-align:center;padding:44px 14px;line-height:2.4">MAP TERRITORY<br>CLICK TO SELECT<br><span style="font-size:7px;letter-spacing:1px">OWN = RECRUIT / ATTACK<br>ENEMY = DIPLOMACY</span></div></div>
+</div>
 
-<div id="viewport">
-    <div id="map-inner"><div id="svg-host"></div></div>
+<!-- MAP VIEWPORT -->
+<div id="vp">
+  <div id="mi">
+    <div id="svg-host"></div>
+  </div>
+</div>
+
+<!-- MODE INDICATOR -->
+<div id="mode-ind">TARGET SELECTION — CLICK HIGHLIGHTED TERRITORY</div>
+
+<!-- NEXT TURN -->
+<button id="nxt" onclick="nextTurn()">NEXT TURN &#9654;</button>
+
+<!-- LOG -->
+<div id="log">
+  <div id="lhdr">OPERATIONS LOG — IMPERIAL GENERAL HEADQUARTERS</div>
+  <div id="llist"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div id="mbox">
+    <div class="mt" id="m-title">DIPLOMACY</div>
+    <div class="ms" id="m-sub">---</div>
+    <div id="m-body"></div>
+    <div class="mres" id="m-res"></div>
+    <div class="mbtns" id="m-btns">
+      <button class="mb cl" onclick="closeModal()">CANCEL</button>
+      <button class="mb ok" id="m-ok" onclick="execModal()">EXECUTE</button>
+    </div>
+  </div>
 </div>
 
 <script>
-    let money = 1000, selId = null, curU = 'inf', isMode = false, states = {};
-    let zoom = 0.5, offX = -800, offY = -400;
+'use strict';
 
-    const hist = {
-        jp: ["Niigata", "Nagano", "Yamagata", "Miyagi", "Ishikawa", "Toyama", "Seoul", "Busan", "Pyongyang", "Liaoning", "Jilin", "Taiwan", "Hokkaido", "Kanto", "Kansai"],
-        su: ["Primor", "Vladivostok", "Siberia"],
-        al: ["USA", "London", "China"]
+// ══════════════════════════════════════════════════
+//  FACTION KEYWORD MATCHING  (1936 scenario)
+// ══════════════════════════════════════════════════
+const FACTION_KEYWORDS = {
+  jp: [
+    // Japanese prefectures & regions
+    'hokkaido','aomori','iwate','miyagi','akita','yamagata','fukushima',
+    'niigata','toyama','ishikawa','fukui','nagano','yamanashi',
+    'tokyo','kanagawa','saitama','chiba','ibaraki','tochigi','gunma',
+    'shizuoka','aichi','gifu','mie','shiga','kyoto','osaka','hyogo','nara','wakayama',
+    'tottori','shimane','okayama','hiroshima','yamaguchi',
+    'tokushima','kagawa','ehime','kochi',
+    'fukuoka','saga','nagasaki','kumamoto','oita','miyazaki','kagoshima',
+    'okinawa','ryukyu',
+    // Controlled territories 1936
+    'taiwan','formosa','korea','joseon','chosen','chosun',
+    'seoul','busan','pyongyang','incheon','kaesong','hamheung',
+    'manchukuo','manchuria','manchurian','liaoning','jilin','heilongjiang',
+    'mukden','shenyang','changchun','harbin','dalian','port arthur',
+    'kwantung','kantō','kanto','kansai','tohoku',
+    'bonin','volcano','mariana','palau','caroline','marshall','micronesia',
+    'saipan','truk','pohnpei','yap','angaur',
+    // General Japanese names
+    'japan','nippon','nihon','honshu','kyushu','shikoku',
+  ],
+  su: [
+    'russia','soviet','ussr','siberia','yakutia','sakha',
+    'vladivostok','primorsky','primorye','khabarovsk','amur',
+    'sakhalin','karafuto','kamchatka','chukotka',
+    'mongolia','mongolian','outer mongolia','tuva',
+    'central asia','kazakh','uzbek','turkmen','kyrgyz','tajik',
+    'irkutsk','buryatia','zabaykalsky','baikal',
+    'ukraine','belarus','leningrad','moscow','volga',
+    'caucasus','georgia','armenia','azerbaijan',
+  ],
+  cn: [
+    'china','chinese','shanxi','shaanxi','shandong','henan','hebei','hubei','hunan',
+    'jiangsu','jiangxi','zhejiang','anhui','fujian','guangdong','guangxi','yunnan',
+    'sichuan','guizhou','gansu','qinghai','xinjiang','tibet','inner mongolia',
+    'beijing','peking','nanjing','nanking','shanghai','wuhan','chongqing','chengdu',
+    'guangzhou','canton','suzhou','hangzhou','xi\'an','lanzhou','kunming',
+    'manchuria', // sometimes labeled under China
+    'north china','south china','central china','east china','west china',
+    'republic of china','nationalist china','kuomintang',
+  ],
+  al: [
+    // British
+    'india','british india','calcutta','bombay','delhi','madras','karachi','lahore',
+    'bengal','punjab','sind','rajput','ceylon','sri lanka',
+    'burma','myanmar','rangoon','mandalay',
+    'malaya','malaysia','singapore','straits','borneo','sarawak','brunei','north borneo',
+    'hong kong','kowloon',
+    'australia','new south wales','victoria','queensland','south australia',
+    'western australia','tasmania','northern territory','new zealand',
+    // French
+    'indochina','vietnam','laos','cambodia','cochinchina','annam','tonkin','saigon',
+    // Dutch
+    'dutch east','netherlands east','dutch indies','java','sumatra','celebes','dutch',
+    'sulawesi','kalimantan','timor','moluccas','maluku','indonesia',
+    // American
+    'united states','usa','american','hawaii','honolulu','pearl harbor',
+    'philippines','manila','luzon','visayas','mindanao','mindoro',
+    'guam','wake island','midway','johnston','palmyra',
+    'alaska','aleutian',
+    // Pacific
+    'new guinea','papua','solomon','fiji','samoa','tonga',
+    'gilbert','ellice','nauru','kiribati',
+  ],
+  nt: [
+    'thailand','siam','bangkok',
+    'persia','iran','tehran',
+    'afghanistan','kabul',
+    'nepal','bhutan',
+    'turkey','ottoman','ankara','istanbul',
+    'arab','saudi','iraq','syria','palestine','jordan',
+    'portugal','portuguese','timor','macau','goa',
+    // Anything not matched = neutral (handled by fallback)
+  ],
+};
+
+// Sea zone detection
+const SEA_PATTERNS = [
+  /sea/i,/ocean/i,/gulf/i,/bay/i,/strait/i,/channel/i,/passage/i,
+  /waters/i,/pacific/i,/atlantic/i,/indian\s/i,/arctic/i,/mediterranean/i,
+];
+
+// ══════════════════════════════════════════════════
+//  UNIT STATS
+// ══════════════════════════════════════════════════
+const US = {
+  i:{name:"歩兵 INF", short:"INF", cost:10, atk:1.0, def:1.5, batch:10, range:2},
+  t:{name:"戦車 TNK", short:"TNK", cost:50, atk:3.2, def:2.0, batch:2,  range:3},
+  a:{name:"砲兵 ART", short:"ART", cost:30, atk:0,   def:0.4, batch:3,  range:1},
+};
+
+// ══════════════════════════════════════════════════
+//  FACTION META
+// ══════════════════════════════════════════════════
+const FAC = {
+  jp:{name:"大日本帝国",sn:"JPN"},
+  su:{name:"ソビエト連邦",sn:"SOV"},
+  cn:{name:"中華民国",sn:"CHN"},
+  al:{name:"連合国",sn:"ALY"},
+  nt:{name:"中立国",sn:"NTR"},
+  sea:{name:"国際海域",sn:"SEA"},
+};
+
+// ══════════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════════
+let G = {
+  money:2000, turn:0, yr:1936, mo:1,
+  sel:null, lastOwnSel:null,
+  atkMode:null,  // 'assault'|'tankrush'|'bombard'|null
+  atkFrom:null,
+  highlighted:new Set(),
+  sendPct:50,
+  curUnit:'i',
+  rel:{
+    "cn-jp":"hostile","jp-su":"hostile",
+    "al-cn":"allied","al-su":"allied",
+    "al-jp":"peace","al-nt":"peace",
+    "cn-nt":"peace","cn-su":"peace",
+    "jp-nt":"peace","nt-su":"peace",
+  },
+  guarantees:new Set(),
+  warCaptures:{},
+  negot:null,
+};
+
+// ══════════════════════════════════════════════════
+//  TERRITORY DATA  (built from SVG)
+// ══════════════════════════════════════════════════
+const STATES = {};    // id -> {el, name, own, tp, eco, u:{i,t,a}}
+const ADJACENCY = {}; // id -> Set<id>
+
+// ══════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════
+function relKey(a,b){return[a,b].sort().join('-')}
+function getRel(a,b){return G.rel[relKey(a,b)]||'peace'}
+function setRel(a,b,v){G.rel[relKey(a,b)]=v;updateTopbar()}
+function isWar(a,b){return getRel(a,b)==='war'}
+function calcAtk(u){return u.i*US.i.atk+u.t*US.t.atk}
+function calcDef(u){return u.i*US.i.def+u.t*US.t.def+u.a*US.a.def}
+function calcPow(u){return Math.round(calcAtk(u)+calcDef(u))}
+function income(fac){let s=0;for(const t of Object.values(STATES))if(t.own===fac&&t.tp==='land')s+=t.eco;return s}
+function ownCount(fac){let c=0;for(const t of Object.values(STATES))if(t.own===fac&&t.tp==='land')c++;return c}
+function totPow(fac){let s=0;for(const t of Object.values(STATES))if(t.own===fac&&t.tp==='land')s+=calcPow(t.u);return s}
+
+// ══════════════════════════════════════════════════
+//  LOAD & PARSE SVG
+// ══════════════════════════════════════════════════
+function loadProgress(pct,txt){
+  document.getElementById('ld-fill').style.width=pct+'%';
+  document.getElementById('ld-txt').textContent=txt;
+}
+
+async function loadMap(){
+  loadProgress(10,'LOADING MAP SVG...');
+  let svgText;
+  try{
+    const res=await fetch('MapChart_Map.svg');
+    svgText=await res.text();
+  }catch(e){
+    document.getElementById('ld-txt').textContent='ERROR: MapChart_Map.svg not found. Place SVG in same directory.';
+    return;
+  }
+  loadProgress(35,'PARSING TERRITORIES...');
+  injectSVG(svgText);
+  loadProgress(60,'BUILDING ADJACENCY MAP...');
+  await new Promise(r=>setTimeout(r,60)); // allow layout
+  buildAdjacency();
+  loadProgress(82,'APPLYING FOG OF WAR...');
+  applyFoW();
+  loadProgress(95,'INITIALIZING SYSTEMS...');
+  updateTopbar();
+  updatePanel(null);
+  setupControls();
+  loadProgress(100,'READY');
+  setTimeout(()=>{
+    document.getElementById('loading').classList.add('done');
+    logMsg('1936年1月 — 太平洋大戦略開始。大日本帝国の命運を決せよ。','lt');
+    logMsg('自国領土クリック → 攻勢命令選択 → 赤ハイライト地域をクリックで攻撃','ld');
+    logMsg('包囲状態(ENCIRCLED)の敵は防御力-50%。砲兵遠撃で事前弱体化を推奨。','ld');
+  },400);
+}
+
+function detectFaction(title,id){
+  const s=(title+' '+id).toLowerCase();
+  // Sea check first
+  for(const rx of SEA_PATTERNS) if(rx.test(s)) return 'sea';
+  // Faction match
+  for(const [fac,kws] of Object.entries(FACTION_KEYWORDS)){
+    for(const kw of kws){
+      if(s.includes(kw.toLowerCase())) return fac;
+    }
+  }
+  return 'nt'; // fallback neutral
+}
+
+function injectSVG(svgText){
+  const host=document.getElementById('svg-host');
+  host.innerHTML=svgText;
+  const svgEl=host.querySelector('svg');
+  if(!svgEl) return;
+  svgEl.removeAttribute('width'); svgEl.removeAttribute('height');
+  svgEl.style.width='100%'; svgEl.style.height='auto'; svgEl.style.display='block';
+
+  svgEl.querySelectorAll('path,polygon,circle,ellipse,rect').forEach((el,i)=>{
+    const rawTitle=el.getAttribute('title')||el.getAttribute('inkscape:label')||
+                   el.querySelector?.('title')?.textContent||'';
+    const rawId=el.id||'';
+    const title=rawTitle.trim()||rawId.replace(/_/g,' ').trim();
+    const id=rawId||'st-'+i;
+
+    const own=detectFaction(title,rawId);
+    const isSea=(own==='sea');
+
+    // Skip background rects / very large elements that are just backgrounds
+    if(el.tagName==='rect'&&!rawId) return;
+
+    el.id='el-'+id;
+    el.setAttribute('data-sid',id);
+
+    if(isSea){
+      el.classList.add('t-sea');
+    } else {
+      el.classList.add('t-land');
+      // Faction fill
+      el.classList.add('f-'+own);
+      el.style.stroke=(own==='nt')?'#1e3010':'';
+      el.addEventListener('click',e=>{e.stopPropagation();onTerrClick(id)});
+    }
+
+    // Assign units based on faction
+    const unitBase={
+      jp:{i:20,t:5,a:4}, su:{i:18,t:5,a:3},
+      cn:{i:15,t:2,a:2}, al:{i:14,t:3,a:2}, nt:{i:8,t:0,a:1},
     };
+    const ub=unitBase[own]||{i:0,t:0,a:0};
+    // Add some randomization
+    const rx=()=>Math.floor(Math.random()*7-2);
+    STATES[id]={
+      el,name:title||id,own,tp:isSea?'sea':'land',
+      eco:isSea?0:Math.floor(Math.random()*25)+8,
+      u:{i:Math.max(0,ub.i+rx()),t:Math.max(0,ub.t+rx()),a:Math.max(0,ub.a+rx())},
+    };
+  });
+}
 
-    fetch('MapChart_Map.svg').then(r => r.text()).then(svg => {
-        const host = document.getElementById('svg-host');
-        host.innerHTML = svg;
-        host.querySelector('svg').querySelectorAll('path').forEach((p, i) => {
-            const id = p.id || `st-${i}`, title = p.getAttribute('title') || "";
-            let type = "land", owner = "nt";
-            
-            if (/Sea|Ocean|Gulf|Bay/i.test(title)) { type = "sea"; owner = "sea"; } 
-            else { for(let k in hist) if(title.includes(k) || id.includes(k) || (k === 'jp' && i < 20)) owner = k; }
+// ══════════════════════════════════════════════════
+//  ADJACENCY via getBoundingClientRect
+// ══════════════════════════════════════════════════
+function buildAdjacency(){
+  const ids=Object.keys(STATES);
+  // Get all rects at once for performance
+  const rects={};
+  for(const id of ids){
+    const el=STATES[id].el;
+    if(el) rects[id]=el.getBoundingClientRect();
+  }
+  const PAD=6; // pixels of tolerance for "adjacent"
+  for(let i=0;i<ids.length;i++){
+    const a=ids[i];
+    const ra=rects[a];
+    if(!ra||STATES[a].tp==='sea') continue;
+    if(!ADJACENCY[a]) ADJACENCY[a]=new Set();
+    for(let j=i+1;j<ids.length;j++){
+      const b=ids[j];
+      const rb=rects[b];
+      if(!rb) continue;
+      // Check bounding rect overlap/touch with tolerance
+      const overlap=!(ra.right<rb.left-PAD||ra.left>rb.right+PAD||
+                       ra.bottom<rb.top-PAD||ra.top>rb.bottom+PAD);
+      if(overlap){
+        if(!ADJACENCY[a]) ADJACENCY[a]=new Set();
+        if(!ADJACENCY[b]) ADJACENCY[b]=new Set();
+        ADJACENCY[a].add(b);
+        ADJACENCY[b].add(a);
+      }
+    }
+  }
+}
 
-            states[id] = { 
-                owner, type, 
-                units: { inf: (owner !== "nt" && owner !== "sea" ? 50 : 10), tnk: 0, art: 0 },
-                eco: (type === "sea" ? 0 : Math.floor(Math.random() * 20) + 10),
-                name: title || id 
-            };
-            p.setAttribute('data-id', id);
-            p.classList.add(type === "sea" ? "p-sea" : `p-${owner}`);
-            p.onclick = (e) => { e.stopPropagation(); tap(id); };
-        });
-        updateView();
-    });
+function getAdjList(id){return ADJACENCY[id]?[...ADJACENCY[id]]:[]}
 
-    function tap(id) {
-        if (isMode && id !== selId) { execute(id); return; }
-        document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-        selId = id;
-        
-        const targetEl = document.querySelector(`path[data-id="${id}"]`);
-        if(targetEl) targetEl.classList.add('selected');
-        
-        const s = states[id];
-        document.getElementById('st-name').innerText = s.name;
-        document.getElementById('st-owner').innerText = s.type === 'sea' ? 'SEA ZONE' : s.owner.toUpperCase();
-        
-        // --- 視界（Fog of War）判定 ---
-        let isVisible = (s.owner === 'jp' || s.owner === 'ally'); // 自国・同盟国は見える
-        
-        // 敵国・中立国の場合は国境接しているかチェック
-        if (!isVisible && s.type !== 'sea' && targetEl) {
-            const r1 = targetEl.getBoundingClientRect();
-            for(let k in states) {
-                if (states[k].owner === 'jp') { // 自国の領土と接しているか
-                    const adjEl = document.querySelector(`path[data-id="${k}"]`);
-                    if (adjEl) {
-                        const r2 = adjEl.getBoundingClientRect();
-                        if (!(r1.right < r2.left-15 || r1.left > r2.right+15 || r1.bottom < r2.top-15 || r1.top > r2.bottom+15)) {
-                            isVisible = true; break; // 国境接していれば見える
-                        }
-                    }
-                }
-            }
+// ══════════════════════════════════════════════════
+//  FOG OF WAR
+// ══════════════════════════════════════════════════
+function getVisSet(){
+  const vis=new Set();
+  for(const[id,t]of Object.entries(STATES)){
+    if(t.own==='jp') vis.add(id);
+    if(t.tp==='land'&&getRel('jp',t.own)==='allied') vis.add(id);
+  }
+  for(const id of [...vis]) for(const adj of getAdjList(id)) vis.add(adj);
+  return vis;
+}
+
+function applyFoW(){
+  const vis=getVisSet();
+  for(const[id,t]of Object.entries(STATES)){
+    if(t.tp==='sea') continue;
+    const el=t.el; if(!el) continue;
+    el.classList.remove('fog-hard','fog-soft','t-enc');
+    if(t.own==='jp'){}
+    else if(vis.has(id)) el.classList.add('fog-soft');
+    else el.classList.add('fog-hard');
+    if(t.own!=='jp'&&vis.has(id)&&isEncircled(id)) el.classList.add('t-enc');
+  }
+}
+
+function isEncircled(id){
+  const t=STATES[id];
+  if(!t||t.tp==='sea') return false;
+  for(const adjId of getAdjList(id)){
+    const at=STATES[adjId];
+    if(!at) continue;
+    if(at.tp==='sea') return false;
+    if(at.own===t.own) return false;
+    if(getRel(t.own,at.own)==='allied') return false;
+  }
+  return true;
+}
+
+// ══════════════════════════════════════════════════
+//  MOVEMENT / REACHABILITY  (BFS)
+// ══════════════════════════════════════════════════
+function getReachable(fromId,maxRange){
+  const visited=new Map([[fromId,0]]);
+  const queue=[[fromId,0]];
+  const attackable=new Set();
+  const passable=new Set([fromId]);
+  while(queue.length){
+    const[id,dist]=queue.shift();
+    if(dist>=maxRange) continue;
+    for(const nId of getAdjList(id)){
+      if(visited.has(nId)) continue;
+      const nt=STATES[nId];
+      if(!nt) continue;
+      visited.set(nId,dist+1);
+      if(nt.tp==='sea'||nt.own==='jp'||getRel('jp',nt.own)==='allied'){
+        passable.add(nId); queue.push([nId,dist+1]);
+      } else {
+        attackable.add(nId);
+      }
+    }
+  }
+  return{attackable,passable};
+}
+
+function getBombardTargets(fromId){
+  const targets=new Set();
+  for(const adjId of getAdjList(fromId)){
+    const t=STATES[adjId];
+    if(t&&t.tp==='land'&&t.own!=='jp'&&getRel('jp',t.own)!=='allied') targets.add(adjId);
+  }
+  return targets;
+}
+
+// ══════════════════════════════════════════════════
+//  HIGHLIGHT
+// ══════════════════════════════════════════════════
+function applyHighlight(atkSet,moveSet){
+  clearHighlight();
+  G.highlighted=atkSet||new Set();
+  for(const id of(atkSet||[])){
+    STATES[id]?.el?.classList.add('t-hl-atk');
+  }
+  for(const id of(moveSet||[])){
+    if(!atkSet?.has(id)) STATES[id]?.el?.classList.add('t-hl-mov');
+  }
+}
+function clearHighlight(){
+  for(const id of G.highlighted) STATES[id]?.el?.classList.remove('t-hl-atk','t-hl-mov');
+  document.querySelectorAll('.t-hl-atk,.t-hl-mov').forEach(e=>e.classList.remove('t-hl-atk','t-hl-mov'));
+  G.highlighted=new Set();
+}
+
+// ══════════════════════════════════════════════════
+//  SELECTION & PANEL
+// ══════════════════════════════════════════════════
+function onTerrClick(id){
+  if(G.atkMode){
+    if(STATES[id]?.own==='jp'){ cancelAtk(); selectTerr(id); return; }
+    if(G.highlighted.has(id)){
+      if(G.atkMode==='bombard') execBombard(G.atkFrom,id);
+      else showAtkModal(G.atkFrom,id,G.atkMode);
+      return;
+    }
+    logMsg('その地域は射程外です。','lw'); return;
+  }
+  selectTerr(id);
+}
+
+function selectTerr(id){
+  document.querySelectorAll('.t-sel').forEach(e=>e.classList.remove('t-sel'));
+  G.sel=id;
+  if(STATES[id]?.own==='jp') G.lastOwnSel=id;
+  STATES[id]?.el?.classList.add('t-sel');
+  updatePanel(id);
+}
+
+function updatePanel(id){
+  const phO=document.getElementById('ph-o');
+  const phN=document.getElementById('ph-n');
+  const phT=document.getElementById('ph-t');
+  const pc=document.getElementById('pcontent');
+  if(!id){
+    phO.textContent='— SELECT TERRITORY —';
+    phN.textContent='地域を選択してください';
+    phT.innerHTML=''; pc.innerHTML='...'; return;
+  }
+  const t=STATES[id];
+  if(!t) return;
+  const vis=getVisSet();
+  const isOwn=t.own==='jp';
+  const isSea=t.tp==='sea';
+  const isVis=isOwn||vis.has(id);
+  const rel=isSea?'sea':getRel('jp',t.own);
+
+  phO.textContent=FAC[t.own]?.name||t.own;
+  phN.textContent=t.name;
+
+  let tags='';
+  if(isSea) tags+='<span class="tag tag-sea">SEA ZONE</span>';
+  else if(isOwn) tags+='<span class="tag tag-own">OWNED</span>';
+  else if(rel==='war') tags+='<span class="tag tag-war">AT WAR</span>';
+  else if(rel==='allied') tags+='<span class="tag tag-ally">ALLIED</span>';
+  else if(rel==='hostile') tags+='<span class="tag tag-hos">HOSTILE</span>';
+  else tags+='<span class="tag tag-neut">NEUTRAL</span>';
+  if(!isSea&&!isOwn&&vis.has(id)&&isEncircled(id)) tags+='<span class="tag tag-enc">ENCIRCLED</span>';
+  if(!isVis&&!isSea) tags+='<span class="tag tag-fog">FOG OF WAR</span>';
+  phT.innerHTML=tags;
+
+  let html='';
+  if(isSea){
+    html=`<div style="color:var(--dim);font-size:9px;padding:12px 0;line-height:2.2">TYPE: SEA ZONE<br><span style="font-size:8px">海上移動経路。隣接陸地への上陸を可能にする。</span></div>`;
+  } else {
+    html+=`<div class="sgrid">
+      <div class="sc"><div class="sl">[I] INF</div><div class="sv${!isVis?' fog':''}">${isVis?t.u.i:'???'}</div></div>
+      <div class="sc"><div class="sl">[T] TNK</div><div class="sv${!isVis?' fog':''}">${isVis?t.u.t:'???'}</div></div>
+      <div class="sc"><div class="sl">[A] ART</div><div class="sv${!isVis?' fog':''}">${isVis?t.u.a:'???'}</div></div>
+      <div class="sc"><div class="sl">ECO</div><div class="sv">${t.eco}</div></div>
+    </div>`;
+    if(isVis){
+      html+=`<div class="pow-bar"><div class="pn2">${calcPow(t.u)}</div><div class="ps">COMBAT POWER</div></div>`;
+    }
+
+    if(isOwn){
+      html+=`<div class="sdiv">RECRUIT / 徴兵</div>
+      <div class="bgrid">
+        <button class="btn${G.curUnit==='i'?' on':''}" onclick="setUnit('i')">[I] 歩兵<br><span style="color:var(--acc)">Y${US.i.cost}x${US.i.batch}</span><br><span style="font-size:7px">Rng:${US.i.range}</span></button>
+        <button class="btn${G.curUnit==='t'?' on':''}" onclick="setUnit('t')">[T] 戦車<br><span style="color:var(--acc)">Y${US.t.cost}x${US.t.batch}</span><br><span style="font-size:7px">Rng:${US.t.range}</span></button>
+        <button class="btn${G.curUnit==='a'?' on':''}" onclick="setUnit('a')">[A] 砲兵<br><span style="color:var(--acc)">Y${US.a.cost}x${US.a.batch}</span><br><span style="font-size:7px">Rng:1</span></button>
+      </div>
+      <button class="abtn" onclick="recruitUnits()">+ 部隊を生産・招集</button>
+      <div class="sdiv">OFFENSIVE ORDERS / 攻勢命令</div>
+      <button class="abtn red${G.atkMode==='assault'&&G.atkFrom===id?' pulse':''}" onclick="setAtkMode('assault','${id}')">[ASSAULT]  歩兵突撃  Rng:${US.i.range}</button>
+      <button class="abtn red${G.atkMode==='tankrush'&&G.atkFrom===id?' pulse':''}" onclick="setAtkMode('tankrush','${id}')">[TANK RUSH]  機甲突破  Rng:${US.t.range}</button>
+      <button class="abtn red${G.atkMode==='bombard'&&G.atkFrom===id?' pulse':''}" onclick="setAtkMode('bombard','${id}')">[BOMBARD]  砲兵遠撃  Rng:1</button>
+      ${G.atkMode?`<button class="abtn" onclick="cancelAtk()">[CANCEL]  命令キャンセル</button>`:''}`;
+    } else {
+      html+=`<div class="sdiv">DIPLOMACY / 外交</div>
+      <div class="bgrid2">`;
+      if(rel!=='war'){
+        html+=`<button class="dbtn" onclick="openDiplo('alliance','${id}')">同盟<br>ALLIANCE</button>
+        <button class="dbtn" onclick="openDiplo('aid','${id}')">援助<br>AID</button>
+        <button class="dbtn" onclick="openDiplo('guarantee','${id}')">独立保障<br>GUARANTEE</button>
+        <button class="dbtn" onclick="openDiplo('puppet','${id}')">傀儡化<br>PUPPET</button>`;
+      } else {
+        html+=`<button class="dbtn" disabled>同盟<br>(交戦中)</button>
+        <button class="dbtn" disabled>援助<br>(交戦中)</button>
+        <button class="dbtn war" onclick="openPeace('${id}')">講和<br>PEACE</button>
+        <button class="dbtn" disabled>傀儡化<br>(交戦中)</button>`;
+      }
+      html+=`<button class="dbtn full" onclick="openNegot('${id}')">GIVE &amp; TAKE — 外交交渉</button></div>`;
+
+      // Quick attack from last own territory
+      const lo=G.lastOwnSel;
+      if(lo&&STATES[lo]?.own==='jp'){
+        const{attackable:a2}=getReachable(lo,US.i.range);
+        const{attackable:a3}=getReachable(lo,US.t.range);
+        if(a2.has(id)||a3.has(id)){
+          const mode=a2.has(id)?'assault':'tankrush';
+          html+=`<div class="sdiv">QUICK ATTACK</div>
+          <button class="abtn red" onclick="showAtkModalDirect('${lo}','${id}','${mode}')">
+            [${mode.toUpperCase()}] ${STATES[lo].name} → ${t.name}
+          </button>`;
         }
-
-        // 数値のマスク処理
-        document.getElementById('v-inf').innerText = s.type === 'sea' ? '-' : (isVisible ? s.units.inf : '???');
-        document.getElementById('v-tnk').innerText = s.type === 'sea' ? '-' : (isVisible ? s.units.tnk : '???');
-        document.getElementById('v-art').innerText = s.type === 'sea' ? '-' : (isVisible ? s.units.art : '???');
-        document.getElementById('v-eco').innerText = s.eco;
-        
-        // UI切り替え (自国なら徴兵、他国なら外交)
-        if (s.owner === 'jp') {
-            document.getElementById('recruit-box').style.display = 'block';
-            document.getElementById('diplo-box').style.display = 'none';
-            document.getElementById('atk-btn').disabled = false;
-        } else if (s.type !== 'sea') {
-            document.getElementById('recruit-box').style.display = 'none';
-            document.getElementById('diplo-box').style.display = 'block';
-            document.getElementById('atk-btn').disabled = true;
-        } else {
-            document.getElementById('recruit-box').style.display = 'none';
-            document.getElementById('diplo-box').style.display = 'none';
-            document.getElementById('atk-btn').disabled = true;
-        }
-
-        isMode = false;
+      }
     }
+  }
+  pc.innerHTML=html;
+}
 
-    function setU(t) { curU = t; document.querySelectorAll('.u-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-'+t).classList.add('active'); }
+// ══════════════════════════════════════════════════
+//  RECRUIT
+// ══════════════════════════════════════════════════
+function setUnit(u){G.curUnit=u;if(G.sel)updatePanel(G.sel)}
+function recruitUnits(){
+  const id=G.sel;
+  if(!id||STATES[id]?.own!=='jp') return;
+  const u=US[G.curUnit];
+  const cost=u.cost*u.batch;
+  if(G.money<cost){logMsg(`資金不足: Y${cost}必要 (残高Y${G.money})`,'lw');return}
+  G.money-=cost;
+  STATES[id].u[G.curUnit]+=u.batch;
+  logMsg(`${STATES[id].name}: ${u.short}x${u.batch}生産 (Y${cost}消費)`,'lk');
+  updateTopbar();updatePanel(id);
+}
 
-    function recruit() {
-        const cost = {inf:10, tnk:50, art:40}[curU];
-        if (selId && states[selId].owner === 'jp' && money >= cost) {
-            money -= cost; states[selId].units[curU] += 10; updateUI();
-        }
+// ══════════════════════════════════════════════════
+//  ATTACK MODE
+// ══════════════════════════════════════════════════
+function setAtkMode(mode,id){
+  const fromId=id||G.sel||G.lastOwnSel;
+  if(!fromId||STATES[fromId]?.own!=='jp') return;
+  G.atkMode=mode; G.atkFrom=fromId;
+  let atkSet=new Set(),moveSet=new Set();
+  if(mode==='bombard'){
+    atkSet=getBombardTargets(fromId);
+  } else {
+    const range=mode==='tankrush'?US.t.range:US.i.range;
+    const{attackable,passable}=getReachable(fromId,range);
+    atkSet=attackable; moveSet=passable;
+  }
+  applyHighlight(atkSet,moveSet);
+  const mi=document.getElementById('mode-ind');
+  mi.style.display='block';
+  mi.textContent=`${mode.toUpperCase()} — [${STATES[fromId].name}] から目標選択`;
+  logMsg(`${STATES[fromId].name}から${mode==='assault'?'歩兵突撃':mode==='tankrush'?'機甲突破':'砲兵遠撃'}。赤域をクリック。`,'lt');
+  if(G.sel) updatePanel(G.sel);
+}
+
+function cancelAtk(){
+  G.atkMode=null; G.atkFrom=null;
+  clearHighlight();
+  document.getElementById('mode-ind').style.display='none';
+  if(G.sel) updatePanel(G.sel);
+}
+
+// ══════════════════════════════════════════════════
+//  ATTACK MODAL
+// ══════════════════════════════════════════════════
+let _atkFrom,_atkTo,_atkMode;
+
+function showAtkModal(fid,tid,mode){
+  showAtkModalDirect(fid,tid,mode);
+}
+function showAtkModalDirect(fid,tid,mode){
+  _atkFrom=fid;_atkTo=tid;_atkMode=mode;
+  G.sendPct=50;
+  const at=STATES[fid],df=STATES[tid];
+  const vis=getVisSet();
+  const defKnown=df.own==='jp'||vis.has(tid);
+  const enc=isEncircled(tid);
+
+  document.getElementById('m-title').textContent='攻撃確認 — ATTACK ORDER';
+  document.getElementById('m-sub').textContent=`${at.name}  ⟶  ${df.name}  |  ${mode.toUpperCase()}`;
+  document.getElementById('m-res').style.display='none';
+  document.getElementById('m-res').className='mres';
+
+  const encLine=enc?`<div class="pstat"><span class="pk" style="color:#ff4050">包囲殲滅</span><span class="pv" style="color:#ff4050">敵防御力 -50%</span></div>`:'';
+
+  document.getElementById('m-body').innerHTML=`
+    <div class="minfo">
+      <div class="pstat"><span class="pk">攻撃元</span><span class="pv">${at.name}</span></div>
+      <div class="pstat"><span class="pk">目標</span><span class="pv">${df.name} (${FAC[df.own]?.name||df.own})</span></div>
+      <div class="pstat"><span class="pk">戦術</span><span class="pv">${mode==='assault'?'歩兵突撃':mode==='tankrush'?'機甲突破':'砲兵遠撃'}</span></div>
+      ${encLine}
+    </div>
+    <div class="sdiv">SEND FORCES / 派遣兵力</div>
+    <div class="slrow">
+      <span class="sllbl">派遣割合</span>
+      <input type="range" min="10" max="90" step="10" value="50" id="sl-send"
+        oninput="G.sendPct=+this.value;document.getElementById('sl-sv').textContent=this.value+'%';updateAtkPrev()">
+      <span class="slval" id="sl-sv">50%</span>
+    </div>
+    <div id="atk-prev" style="font-size:9px;color:var(--dim);margin:6px 0"></div>
+    <div class="minfo" style="font-size:8px">${defKnown?`敵戦力: DEF ${Math.round(calcDef(df.u)*(enc?0.5:1))}${enc?' (包囲補正済み)':''}`:'敵戦力: FOG OF WAR — 不明'}</div>`;
+
+  document.getElementById('m-btns').innerHTML=`
+    <button class="mb cl" onclick="closeModal()">CANCEL</button>
+    <button class="mb ok" onclick="execAtkFromModal()">CONFIRM ATTACK</button>`;
+
+  updateAtkPrev();
+  document.getElementById('modal').classList.add('open');
+}
+
+function updateAtkPrev(){
+  const at=STATES[_atkFrom];
+  if(!at) return;
+  const p=G.sendPct/100;
+  const si=Math.max(1,Math.floor(at.u.i*p));
+  const st=Math.max(0,Math.floor(at.u.t*p));
+  const sa=Math.max(0,Math.floor(at.u.a*p));
+  let ap=_atkMode==='tankrush'?st*US.t.atk+si*US.i.atk*0.3:si*US.i.atk+st*US.t.atk;
+  ap+=sa*0.5;
+  const el=document.getElementById('atk-prev');
+  if(el) el.innerHTML=`派遣: [I]${si} [T]${st} [A]${sa} | 攻撃力: <span style="color:var(--acc);font-family:var(--head)">${Math.round(ap)}</span>`;
+}
+
+function execAtkFromModal(){
+  closeModal();cancelAtk();
+  execAttack(_atkFrom,_atkTo,_atkMode);
+}
+
+// ══════════════════════════════════════════════════
+//  COMBAT
+// ══════════════════════════════════════════════════
+function execAttack(fid,tid,mode){
+  const at=STATES[fid],df=STATES[tid];
+  if(!at||!df||at.own!=='jp'||df.own==='jp'||df.tp==='sea') return;
+  // Reachability check
+  const range=mode==='tankrush'?US.t.range:US.i.range;
+  const{attackable}=getReachable(fid,range);
+  if(!attackable.has(tid)){logMsg(`${df.name}は射程外です。`,'lw');return}
+  // War declaration
+  if(!isWar('jp',df.own)){
+    setRel('jp',df.own,'war');
+    const wk=relKey('jp',df.own);
+    G.warCaptures[wk]=G.warCaptures[wk]||[];
+    logMsg(`[宣戦布告] 大日本帝国 → ${FAC[df.own]?.name}`,'lw');
+  }
+  const p=G.sendPct/100;
+  const si=Math.max(1,Math.floor(at.u.i*p));
+  const st=Math.max(0,Math.floor(at.u.t*p));
+  const sa=Math.max(0,Math.floor(at.u.a*p));
+  let ap=mode==='tankrush'?st*US.t.atk+si*US.i.atk*0.3:si*US.i.atk+st*US.t.atk;
+  ap+=sa*0.5; ap*=(0.78+Math.random()*0.44);
+  const enc=isEncircled(tid);
+  let dp=calcDef(df.u)*(enc?0.5:1)*(0.78+Math.random()*0.44);
+  if(enc) logMsg(`[包囲殲滅] ${df.name}: 防御力-50%`,'lt');
+  const win=ap>dp;
+  at.u.i=Math.max(0,at.u.i-Math.floor(dp*0.15));
+  at.u.t=Math.max(0,at.u.t-Math.floor(dp*0.06));
+  if(win){
+    const prev=df.own;
+    df.own='jp'; df.u={i:si,t:st,a:sa};
+    at.u.i=Math.max(0,at.u.i-si); at.u.t=Math.max(0,at.u.t-st);
+    updateFill(tid,'jp');
+    const wk=relKey('jp',prev);
+    (G.warCaptures[wk]=G.warCaptures[wk]||[]).push({id:tid,prev});
+    logMsg(`[占領] ${df.name}を占領！ ATK:${Math.round(ap)} vs DEF:${Math.round(dp)}`,'lk');
+    checkDefeated(prev);
+  } else {
+    df.u.i=Math.max(0,df.u.i-Math.floor(df.u.i*0.14));
+    logMsg(`[失敗] ${df.name}への攻撃失敗。ATK:${Math.round(ap)} vs DEF:${Math.round(dp)}`,'lw');
+  }
+  applyFoW();updateTopbar();if(G.sel)updatePanel(G.sel);
+}
+
+function execBombard(fid,tid){
+  const at=STATES[fid],df=STATES[tid];
+  if(!at||!df||at.own!=='jp') return;
+  if(!getAdjList(fid).includes(tid)){logMsg('砲兵射程外（隣接のみ）','lw');return}
+  if(at.u.a<=0){logMsg(`${at.name}に砲兵がいません`,'lw');return}
+  const dmg=Math.max(1,Math.floor(at.u.a*2*(0.7+Math.random()*0.6)));
+  df.u.i=Math.max(0,df.u.i-Math.floor(dmg*0.7));
+  df.u.t=Math.max(0,df.u.t-Math.floor(dmg*0.1));
+  logMsg(`[砲撃] ${at.name}→${df.name}: ${dmg}ダメージ (占領なし)`,'lt');
+  cancelAtk();if(G.sel)updatePanel(G.sel);
+}
+
+function updateFill(id,fac){
+  const el=STATES[id]?.el;
+  if(!el) return;
+  el.classList.remove('f-jp','f-su','f-cn','f-al','f-nt');
+  el.classList.add('f-'+fac);
+}
+
+function checkDefeated(fac){
+  if(fac==='sea'||fac==='jp') return;
+  const rem=Object.values(STATES).filter(t=>t.own===fac&&t.tp==='land');
+  if(rem.length===0) logMsg(`[降伏] ${FAC[fac]?.name}が降伏！全領土を占領。`,'lk');
+}
+
+// ══════════════════════════════════════════════════
+//  DIPLOMACY
+// ══════════════════════════════════════════════════
+let _mType,_mTarget;
+
+function aiAccept(type,id,offer){
+  const t=STATES[id],fac=t.own;
+  const jpP=totPow('jp'),facP=totPow(fac),ratio=jpP/Math.max(1,facP);
+  const aid=offer?.money||0;
+  let p=0.35;
+  switch(type){
+    case 'alliance': p=fac==='nt'?0.45:0.18;p+=aid/600;break;
+    case 'guarantee':p=ratio>1.3?0.58:0.35;p+=aid/450;break;
+    case 'puppet':   p=ratio>2.8?0.52:0.05;p+=aid/350;break;
+    case 'peace':    const tr=facP/Math.max(1,jpP);p=tr<0.5?0.82:tr<0.8?0.55:0.22;p+=aid/700;break;
+  }
+  return Math.random()<Math.min(0.92,Math.max(0.03,p));
+}
+
+function openDiplo(type,id){
+  _mType=type;_mTarget=id;
+  const t=STATES[id];
+  const titles={alliance:'同盟交渉',aid:'資金援助',guarantee:'独立保障',puppet:'保護国化'};
+  const infos={
+    alliance:'相互防衛同盟。成立後は互いへの攻撃に自動参戦義務が発生します。',
+    aid:'資金を提供し外交関係を改善します。援助額に応じて関係改善。',
+    guarantee:'第三国から攻撃された際に日本が自動参戦することを宣言します。',
+    puppet:'対象国を属国化します。国力差・関係値が判定に大きく影響します。',
+  };
+  const maxAid=Math.min(G.money,800);
+  document.getElementById('m-title').textContent=titles[type];
+  document.getElementById('m-sub').textContent=`交渉相手: ${t.name} / ${FAC[t.own]?.name||t.own}`;
+  document.getElementById('m-res').style.display='none';
+  document.getElementById('m-res').className='mres';
+  document.getElementById('m-body').innerHTML=`
+    <div class="minfo">${infos[type]}</div>
+    <div class="sdiv">OFFER / 提供条件</div>
+    <div class="slrow">
+      <span class="sllbl">金銭援助 Y</span>
+      <input type="range" min="0" max="${maxAid}" step="50" value="0" id="sl-aid"
+        oninput="document.getElementById('av').textContent=this.value">
+      <span class="slval" id="av">0</span>
+    </div>`;
+  document.getElementById('m-btns').innerHTML=`
+    <button class="mb cl" onclick="closeModal()">CANCEL</button>
+    <button class="mb ok" onclick="execDiplo()">EXECUTE</button>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function execDiplo(){
+  const type=_mType,id=_mTarget;
+  const t=STATES[id];
+  const aid=parseInt(document.getElementById('sl-aid')?.value||0);
+  if(aid>G.money){showMRes('資金不足。',false);return}
+  if(type==='guarantee'){
+    G.guarantees.add(id);
+    logMsg(`[独立保障] ${t.name}の独立を保障。`,'ld');
+    showMRes(`${t.name}の独立保障を宣言しました。`,true);return;
+  }
+  if(type==='aid'){
+    G.money-=aid;logMsg(`[援助] ${t.name}にY${aid}援助。`,'ld');
+    showMRes(`Y${aid}援助完了。関係が改善されました。`,true);updateTopbar();return;
+  }
+  if(aiAccept(type,id,{money:aid})){
+    G.money-=aid;
+    if(type==='alliance'){setRel('jp',t.own,'allied');logMsg(`[同盟] ${FAC[t.own]?.name}と同盟締結。`,'ld');showMRes('同盟条約締結。相互防衛義務が発生します。',true);}
+    else if(type==='puppet'){t.own='jp';updateFill(id,'jp');applyFoW();logMsg(`[傀儡化] ${t.name}を保護国化。`,'lk');showMRes(`${t.name}は日本の保護国となりました。`,true);}
+    updateTopbar();if(G.sel)updatePanel(G.sel);
+  } else {
+    logMsg(`[外交失敗] ${t.name}との交渉失敗。`,'lw');
+    showMRes('提案は拒否されました。援助増額か軍事的優位性の強化が必要です。',false);
+  }
+}
+
+// ── GIVE & TAKE ──
+function openNegot(id){
+  _mType='negot';_mTarget=id;
+  const t=STATES[id];
+  const demands=genDemands(id);
+  G.negot={id,fac:t.own,round:1,max:3,deadline:G.turn+4,demands};
+  renderNegot(demands);
+  document.getElementById('modal').classList.add('open');
+}
+function genDemands(id){
+  const t=STATES[id],fac=t.own;
+  const inc=income(fac);
+  const ratio=totPow('jp')/Math.max(1,totPow(fac));
+  return{
+    money:Math.ceil(inc*(ratio>1.5?0.6:ratio>1?0.9:1.3)*(0.8+Math.random()*0.4)/50)*50,
+    nonagg:ratio<0.9,
+    peace:isWar('jp',fac),
+  };
+}
+function renderNegot(d){
+  const id=_mTarget,t=STATES[id],n=G.negot;
+  const maxOffer=Math.min(G.money,1200);
+  document.getElementById('m-title').textContent='外交交渉 — GIVE & TAKE';
+  document.getElementById('m-sub').textContent=`${t.name} / ${FAC[t.own]?.name}  |  Round ${n.round}/${n.max}  期限: Turn ${n.deadline}`;
+  document.getElementById('m-res').style.display='none';
+  document.getElementById('m-res').className='mres';
+  const ownTerrs=Object.entries(STATES).filter(([,s])=>s.own==='jp'&&s.tp==='land')
+    .map(([sid,s])=>`<option value="${sid}">${s.name}</option>`).join('');
+  document.getElementById('m-body').innerHTML=`
+    <div class="mcols">
+      <div>
+        <div class="mch">YOUR OFFER / 日本の提示</div>
+        <div class="slrow">
+          <span class="sllbl">金銭 Y</span>
+          <input type="range" min="0" max="${maxOffer}" step="50" value="0" id="n-m"
+            oninput="document.getElementById('n-mv').textContent=this.value;updNBar()">
+          <span class="slval" id="n-mv">0</span>
+        </div>
+        <select class="tsel" id="n-t" onchange="updNBar()"><option value="">領土割譲なし</option>${ownTerrs}</select>
+        <label class="mchk"><input type="checkbox" id="n-na" onchange="updNBar()"> 不可侵条約を提案</label>
+        <label class="mchk"><input type="checkbox" id="n-pe" onchange="updNBar()"> 停戦を提案</label>
+      </div>
+      <div>
+        <div class="mch">THEIR DEMANDS / 相手の要求</div>
+        ${d.money>0?`<div class="mdi">金銭: Y${d.money}</div>`:''}
+        ${d.nonagg?`<div class="mdi">不可侵条約</div>`:''}
+        ${d.peace?`<div class="mdi">停戦合意</div>`:''}
+        ${!d.money&&!d.nonagg&&!d.peace?`<div class="mdi" style="color:var(--dim)">特定要求なし</div>`:''}
+      </div>
+    </div>
+    <div class="lbar">
+      <div class="lb-lbl"><span>合意可能性</span><span id="n-pct" style="font-family:var(--head);color:var(--acc)">0%</span></div>
+      <div class="lb-track"><div class="lb-fill" id="n-bar" style="width:0%"></div></div>
+    </div>`;
+  document.getElementById('m-btns').innerHTML=`
+    <button class="mb cl" onclick="closeModal()">CANCEL</button>
+    <button class="mb neg" onclick="execCounter()">COUNTER</button>
+    <button class="mb ok" onclick="execNegot()">SUBMIT</button>`;
+  updNBar();
+}
+function updNBar(){
+  const d=G.negot?.demands||{};
+  const m=parseInt(document.getElementById('n-m')?.value||0);
+  const terr=document.getElementById('n-t')?.value;
+  const na=document.getElementById('n-na')?.checked;
+  const pe=document.getElementById('n-pe')?.checked;
+  let score=0,total=0;
+  if(d.money>0){score+=Math.min(1,m/d.money)*40;total+=40}
+  if(d.nonagg){score+=(na?30:0);total+=30}
+  if(d.peace){score+=(pe?30:0);total+=30}
+  if(terr) score+=20;
+  const pct=total>0?Math.round(score/total*100):40;
+  document.getElementById('n-bar').style.width=pct+'%';
+  document.getElementById('n-pct').textContent=pct+'%';
+}
+function execNegot(){
+  const n=G.negot,d=n.demands,id=_mTarget,t=STATES[id];
+  const m=parseInt(document.getElementById('n-m')?.value||0);
+  const terr=document.getElementById('n-t')?.value;
+  const na=document.getElementById('n-na')?.checked;
+  const pe=document.getElementById('n-pe')?.checked;
+  let score=0,total=0;
+  if(d.money>0){score+=Math.min(1,m/d.money)*40;total+=40}
+  if(d.nonagg){score+=(na?30:0);total+=30}
+  if(d.peace){score+=(pe?30:0);total+=30}
+  if(terr) score+=20;
+  const thresh=total>0?65:50;
+  const pct=total>0?score/total*100:40;
+  if(pct>=thresh){
+    G.money-=m;
+    if(terr&&STATES[terr]){STATES[terr].own=t.own;updateFill(terr,t.own);logMsg(`[交渉] ${STATES[terr].name}を割譲`,'ld')}
+    if(na||pe) setRel('jp',t.own,'peace');
+    logMsg(`[交渉成立] ${t.name}との外交交渉成立！`,'ld');
+    showMRes(`交渉成立。(達成率 ${Math.round(pct)}% / 閾値 ${thresh}%)`,true);
+    G.negot=null;updateTopbar();applyFoW();if(G.sel)updatePanel(G.sel);
+  } else {
+    n.round++;
+    if(n.round>n.max){
+      logMsg(`[交渉決裂] ${t.name}との交渉決裂。`,'lw');
+      showMRes(`交渉決裂。(達成率 ${Math.round(pct)}% < 閾値 ${thresh}%)`,false);
+      G.negot=null;
+    } else {
+      d.money=Math.ceil(d.money*0.84/50)*50;
+      showMRes(`条件不足。AIが要求を緩和して再交渉。Round ${n.round}/${n.max}`,false,'info');
+      setTimeout(()=>{document.getElementById('m-res').style.display='none';renderNegot(d)},2000);
     }
+  }
+}
+function execCounter(){
+  const n=G.negot;
+  n.round++;
+  if(n.round>n.max){showMRes('交渉期限超過。',false);G.negot=null;return}
+  n.demands.money=Math.ceil(n.demands.money*0.80/50)*50;
+  if(n.round>=2) n.demands.nonagg=false;
+  renderNegot(n.demands);
+  logMsg(`[カウンター] Round ${n.round}/${n.max}`,'ld');
+}
 
-    function prepAtk() { isMode = true; alert("攻撃目標を選択してください（国境が見えない深部には注意）"); }
+// ── PEACE ──
+function openPeace(id){
+  _mType='peace';_mTarget=id;
+  const t=STATES[id],fac=t.own;
+  const jpP=totPow('jp'),facP=totPow(fac);
+  const isJpWin=jpP>facP*0.7;
+  const wk=relKey('jp',fac);
+  const caps=(G.warCaptures[wk]||[]).filter(c=>STATES[c.id]?.own==='jp');
+  const vp=Math.max(1,Math.floor((jpP/Math.max(1,facP))*1.5)+caps.length);
+  document.getElementById('m-title').textContent='講和交渉 — PEACE TREATY';
+  document.getElementById('m-sub').textContent=`交戦国: ${FAC[fac]?.name} | ${isJpWin?'日本有利':'敵方有利'}`;
+  document.getElementById('m-res').style.display='none';
+  document.getElementById('m-res').className='mres';
+  const maxAid=Math.min(G.money,800);
+  document.getElementById('m-body').innerHTML=`
+    <div class="vpdisp"><div class="vpn">${vp}</div><div class="vpl">VICTORY POINTS</div></div>
+    <div class="minfo" style="font-size:8px">勝利点は戦力比・占領数から算出。高いほど有利な要求が可能です。</div>
+    ${isJpWin?`
+    <div class="sdiv">DEMANDS / 要求条件</div>
+    ${vp>=1?`<label class="mchk"><input type="checkbox" id="d-m" checked> 賠償金 Y${vp*120}を要求</label>`:''}
+    ${vp>=5?`<label class="mchk"><input type="checkbox" id="d-p"> ${FAC[fac]?.name}の傀儡化を要求</label>`:''}
+    `:`<div class="minfo" style="color:#ff8090;font-size:8px">現在不利。無条件講和のみ提案可能。</div>`}
+    <div class="sdiv">ADDITIONAL / 追加補償</div>
+    <div class="slrow">
+      <span class="sllbl">補償金 Y</span>
+      <input type="range" min="0" max="${maxAid}" step="50" value="0" id="sl-pa"
+        oninput="document.getElementById('pav').textContent=this.value">
+      <span class="slval" id="pav">0</span>
+    </div>`;
+  document.getElementById('m-btns').innerHTML=`
+    <button class="mb cl" onclick="closeModal()">CANCEL</button>
+    <button class="mb ok" onclick="execPeace('${id}',${isJpWin},${vp})">PROPOSE PEACE</button>`;
+  document.getElementById('modal').classList.add('open');
+}
+function execPeace(id,isJpWin,vp){
+  const t=STATES[id],fac=t.own;
+  const aid=parseInt(document.getElementById('sl-pa')?.value||0);
+  const demMon=document.getElementById('d-m')?.checked;
+  const demPup=document.getElementById('d-p')?.checked;
+  const wk=relKey('jp',fac);
+  const facP=totPow(fac),jpP=totPow('jp');
+  const tr=facP/Math.max(1,jpP);
+  let p=isJpWin?(tr<0.4?0.88:tr<0.7?0.62:0.32):0.55;
+  p+=aid/1200;if(demPup)p-=0.35;if(demMon)p-=0.08;
+  if(Math.random()<Math.min(0.94,Math.max(0.02,p))){
+    G.money-=aid;
+    if(demMon){const rep=vp*120;G.money+=rep;logMsg(`[賠償] ${FAC[fac]?.name}よりY${rep}獲得`,'lk')}
+    if(demPup){for(const c of(G.warCaptures[wk]||[])){if(STATES[c.id]?.own===fac){STATES[c.id].own='jp';updateFill(c.id,'jp');}}}
+    setRel('jp',fac,'peace');delete G.warCaptures[wk];
+    logMsg(`[講和成立] ${FAC[fac]?.name}との講和条約締結。`,'ld');
+    showMRes('講和条約締結。戦争終結。',true);
+    updateTopbar();applyFoW();if(G.sel)updatePanel(G.sel);
+  } else {
+    logMsg(`[講和拒否] ${FAC[fac]?.name}が拒否。`,'lw');
+    showMRes('講和条件を拒否されました。条件緩和か戦況改善が必要です。',false);
+  }
+}
 
-    function execute(tid) {
-        const atk = states[selId], def = states[tid];
-        // 砲撃、包囲判定、占領ロジックは前回の完全版を維持（省略せず実行）
-        let aPwr = atk.units.inf + (atk.units.tnk * 3);
-        let dPwr = def.units.inf + (def.units.tnk * 3);
-        
-        if (aPwr > dPwr || def.type === 'sea') {
-            if (def.type !== 'sea') {
-                def.owner = 'jp'; def.units.inf = Math.floor(atk.units.inf * 0.5);
-                atk.units.inf = 5; atk.units.tnk = 0;
-                document.querySelectorAll(`path[data-id="${tid}"]`).forEach(el => el.className = 'p-jp selected');
-            }
-        } else { atk.units.inf = 1; atk.units.tnk = 0; }
-        
-        isMode = false; updateUI();
+function showMRes(txt,ok,cls){
+  const d=document.getElementById('m-res');
+  d.className='mres '+(cls||(ok?'ok':'no'));
+  d.style.display='block';d.textContent=txt;
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');_mType=null;}
+function execModal(){} // fallback
+
+// ══════════════════════════════════════════════════
+//  AI TURN
+// ══════════════════════════════════════════════════
+function aiTurn(){
+  for(const fac of['cn','su','al']){
+    if(isWar('jp',fac)) aiFacAtk(fac,'jp');
+    aiFacReinforce(fac);
+  }
+}
+function aiFacAtk(atFac,defFac){
+  let best=null,bestR=-1;
+  for(const[fid,at]of Object.entries(STATES)){
+    if(at.own!==atFac||at.tp==='sea') continue;
+    for(const adjId of getAdjList(fid)){
+      const df=STATES[adjId];
+      if(!df||df.tp==='sea'||df.own!==defFac) continue;
+      const enc=isEncircled(adjId)?0.5:1;
+      const r=calcAtk(at.u)/(Math.max(0.1,calcDef(df.u)*enc));
+      if(r>bestR){bestR=r;best={fid,adjId}}
     }
+  }
+  if(!best||bestR<0.45) return;
+  const at=STATES[best.fid],df=STATES[best.adjId];
+  const enc=isEncircled(best.adjId)?0.5:1;
+  const ap=calcAtk(at.u)*(0.78+Math.random()*0.44);
+  const dp=calcDef(df.u)*enc*(0.78+Math.random()*0.44);
+  if(ap>dp){
+    const xfer=Math.max(1,Math.floor(at.u.i*0.22));
+    at.u.i=Math.max(0,at.u.i-xfer);df.own=atFac;df.u={i:xfer,t:0,a:0};
+    updateFill(best.adjId,atFac);
+    logMsg(`[AI] ${FAC[atFac]?.sn}: ${df.name}を占領 (${at.name}より)`,'lai');applyFoW();
+  } else {at.u.i=Math.max(0,at.u.i-Math.floor(at.u.i*0.1))}
+}
+function aiFacReinforce(fac){
+  for(const t of Object.values(STATES)){
+    if(t.own!==fac||t.tp==='sea') continue;
+    if(Math.random()<0.35) t.u.i+=Math.floor(Math.random()*7)+1;
+  }
+}
 
-    function endTurn() {
-        let income = 0; for(let id in states) if(states[id].owner === 'jp') income += states[id].eco;
-        money += income; updateUI();
+// ══════════════════════════════════════════════════
+//  NEXT TURN
+// ══════════════════════════════════════════════════
+function nextTurn(){
+  G.turn++;G.mo++;if(G.mo>12){G.mo=1;G.yr++}
+  const ds=`${G.yr}.${String(G.mo).padStart(2,'0')}`;
+  document.getElementById('tb-d').textContent=ds;
+  const inc=income('jp');G.money+=inc;
+  logMsg(`━━ TURN ${G.turn} / ${ds} | 歳入 +Y${inc} | 残高 Y${G.money} ━━`,'lt');
+  aiTurn();applyFoW();updateTopbar();if(G.sel)updatePanel(G.sel);
+}
+
+// ══════════════════════════════════════════════════
+//  TOPBAR
+// ══════════════════════════════════════════════════
+function updateTopbar(){
+  document.getElementById('tb-m').textContent=G.money.toLocaleString();
+  document.getElementById('tb-i').textContent=`+Y${income('jp')}`;
+  document.getElementById('tb-t').textContent=ownCount('jp');
+  document.getElementById('tb-pow').textContent=totPow('jp');
+  const wd=document.getElementById('tb-wars');
+  wd.innerHTML=['cn','su','al'].filter(f=>isWar('jp',f))
+    .map(f=>`<span class="wbadge">WAR: ${FAC[f].sn}</span>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  LOG
+// ══════════════════════════════════════════════════
+function logMsg(msg,cls='ld'){
+  const c=document.getElementById('llist');
+  const d=document.createElement('div');
+  d.className=`le ${cls}`;d.textContent=msg;
+  c.insertBefore(d,c.firstChild);
+  while(c.children.length>28) c.removeChild(c.lastChild);
+}
+
+// ══════════════════════════════════════════════════
+//  MAP CONTROLS
+// ══════════════════════════════════════════════════
+function setupControls(){
+  const mi=document.getElementById('mi');
+  const vp=document.getElementById('vp');
+  let zoom=1,ox=0,oy=0,drag=false,lx=0,ly=0;
+  function applyT(){mi.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`}
+  applyT();
+  vp.addEventListener('mousedown',e=>{
+    if(e.target.classList.contains('t-land')) return;
+    drag=true;lx=e.clientX;ly=e.clientY;vp.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!drag) return;ox+=e.clientX-lx;oy+=e.clientY-ly;lx=e.clientX;ly=e.clientY;applyT();
+  });
+  window.addEventListener('mouseup',()=>{drag=false;vp.classList.remove('dragging')});
+  vp.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const dz=e.deltaY*-0.001,nz=Math.min(Math.max(0.2,zoom+dz),5);
+    const r=vp.getBoundingClientRect();
+    const mx=e.clientX-r.left,my=e.clientY-r.top;
+    ox=mx-(mx-ox)*(nz/zoom);oy=my-(my-oy)*(nz/zoom);zoom=nz;applyT();
+  },{passive:false});
+  let lts=[];
+  vp.addEventListener('touchstart',e=>{lts=[...e.touches]},{passive:true});
+  vp.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===1&&lts.length===1){ox+=e.touches[0].clientX-lts[0].clientX;oy+=e.touches[0].clientY-lts[0].clientY}
+    else if(e.touches.length===2&&lts.length>=2){
+      const pd=Math.hypot(lts[1].clientX-lts[0].clientX,lts[1].clientY-lts[0].clientY);
+      const nd=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
+      zoom=Math.min(Math.max(0.2,zoom*(nd/pd)),5);
     }
+    lts=[...e.touches];applyT();
+  },{passive:false});
+}
 
-    function updateUI() { document.getElementById('g-money').innerText = money; if (selId) tap(selId); }
-    function updateView() { document.getElementById('map-inner').style.transform = `translate(${offX}px, ${offY}px) scale(${zoom})`; }
-
-    const vp = document.getElementById('viewport');
-    vp.onpointerdown = (e) => { let sx = e.clientX - offX, sy = e.clientY - offY; vp.onpointermove = (ev) => { offX = ev.clientX - sx; offY = ev.clientY - sy; updateView(); }; };
-    vp.onpointerup = () => vp.onpointermove = null;
-    vp.onwheel = (e) => { zoom += e.deltaY * -0.0005; zoom = Math.min(Math.max(0.1, zoom), 3); updateView(); };
+// ══════════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════════
+loadMap();
 </script>
 </body>
 </html>
