@@ -735,9 +735,17 @@ async function startGame(fid){
 const SKIP=/^(pattern|diagonal|vertical|horizontal|crosshatch|checkers|texture|circles|raindrops|subtlepatch|wrapper|svg-|map-|legend|credit)/i;
 async function loadSVG(){
   ldp(10,'SVGマップ読み込み中...');
-  let txt;
-  try{const r=await fetch('MapChart_Map.svg');if(!r.ok)throw 0;txt=await r.text();}
-  catch(e){document.getElementById('lds').textContent='ERROR: MapChart_Map.svg が同ディレクトリにありません。';return}
+// 💡 以下のように書き換えてください
+let svgText = "";
+try {
+  const r = await fetch('MapChart_Map.svg.svg'); // 拡張子を.svg.svgに
+  if (!r.ok) throw new Error("Status: " + r.status);
+  svgText = await r.text(); // 宣言済みの変数に代入
+} catch(e) {
+  document.getElementById('lds').textContent = 'ERROR: マップファイルの読み込みに失敗しました。';
+  console.error(e);
+  return;
+}
   ldp(35,'領土データ解析中...');
   injectSVG(txt);
   ldp(62,'隣接関係計算中...');
