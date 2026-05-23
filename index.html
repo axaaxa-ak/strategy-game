@@ -6,56 +6,67 @@
 <title>世界大戦略 1936</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#050a0e;--pn:#091420;--b1:#162434;--b2:#1e3448;--ac:#c8a248;--a2:rgba(200,162,72,.13);--a3:#8a6e2e;--tx:#b8ccd8;--dm:#486070;--font:'Share Tech Mono',monospace;--hd:'Orbitron',monospace}
+:root{--bg:#050a0e;--pn:#091420;--b1:#162434;--b2:#1e3448;--ac:#c8a248;--a2:rgba(200,162,72,.13);--a3:#8a6e2e;--tx:#b8ccd8;--dm:#486070;--fn:'Share Tech Mono',monospace;--hd:'Orbitron',monospace}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--tx);font-family:var(--font);overflow:hidden;user-select:none}
+body{background:var(--bg);color:var(--tx);font-family:var(--fn);overflow:hidden;user-select:none}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);pointer-events:none;z-index:9999}
-#ld{position:fixed;inset:0;background:#02080e;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9990}
-#ld.hide{display:none}
-.ld-t{font-family:var(--hd);font-size:22px;color:var(--ac);letter-spacing:3px;margin-bottom:18px}
-.ld-b{width:320px;height:2px;background:var(--b1);margin-bottom:10px}
-.ld-f{height:100%;background:var(--ac);width:0%;transition:width .3s}
-.ld-s{font-size:8px;color:var(--dm);letter-spacing:2px}
-#fsel{position:fixed;inset:0;background:rgba(2,8,14,.98);z-index:5000;display:flex;flex-direction:column;align-items:center;overflow:hidden}
-#fsel.hide{display:none}
-.fh{padding:18px 20px 8px;text-align:center;flex-shrink:0}
-.fh-t{font-family:var(--hd);font-size:20px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
-.fh-s{font-size:8px;color:var(--dm);letter-spacing:3px;margin-bottom:12px}
-.ftabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
-.ftab{background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--dm);padding:5px 14px;cursor:pointer;font-family:var(--font);font-size:8px;letter-spacing:1px;transition:.15s}
+
+/* ── OVERLAYS: both use fixed+z-index, NEVER hide #vp ─────────── */
+/* #ld: z-index 8000, starts HIDDEN */
+#ld{position:fixed;inset:0;background:#02080e;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:8000;padding:20px}
+#ld.on{display:flex}
+/* #fsel: z-index 7000, starts VISIBLE */
+#fsel{position:fixed;inset:0;background:rgba(2,8,14,.98);display:flex;flex-direction:column;align-items:center;z-index:7000;overflow:hidden}
+#fsel.off{display:none}
+
+.ld-t{font-family:var(--hd);font-size:20px;color:var(--ac);letter-spacing:3px;margin-bottom:18px;text-align:center}
+.ld-b{width:340px;height:4px;background:var(--b1);margin-bottom:8px;border-radius:2px}
+.ld-f{height:100%;background:var(--ac);width:0%;transition:width .2s;border-radius:2px}
+.ld-s{font-size:8px;color:var(--dm);letter-spacing:2px;margin-bottom:14px;text-align:center}
+#ld-err{display:none;max-width:480px;margin-top:14px;padding:14px 18px;background:rgba(200,22,48,.12);border:1px solid rgba(200,22,48,.5);color:#ff8080;font-size:9px;line-height:1.9;text-align:left;white-space:pre-line}
+#ld-err.on{display:block}
+
+/* ── FACTION SELECT ─────────────────────────────────────────────── */
+.fh{padding:16px 16px 8px;text-align:center;flex-shrink:0}
+.fh-t{font-family:var(--hd);font-size:19px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
+.fh-s{font-size:8px;color:var(--dm);letter-spacing:3px;margin-bottom:10px}
+.ftabs{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-bottom:8px}
+.ftab{background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--dm);padding:5px 12px;cursor:pointer;font-family:var(--fn);font-size:8px;letter-spacing:1px;transition:.15s}
 .ftab.on{background:var(--a2);border-color:var(--ac);color:var(--ac)}
-.fbody{flex:1;overflow-y:auto;padding:0 16px 16px;width:100%;max-width:1000px}
-.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
-.fc{background:rgba(255,255,255,.03);border:1px solid var(--b2);padding:12px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.fbody{flex:1;overflow-y:auto;padding:8px 12px 12px;width:100%;max-width:1020px;scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:8px}
+.fc{background:rgba(255,255,255,.03);border:1px solid var(--b2);padding:11px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
 .fc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--cc,#555)}
-.fc:hover{border-color:var(--cc);background:rgba(255,255,255,.06);transform:translateY(-1px)}
+.fc:hover{border-color:var(--cc,#888);background:rgba(255,255,255,.06);transform:translateY(-1px)}
 .fc-sn{font-family:var(--hd);font-size:9px;letter-spacing:2px;margin-bottom:2px;color:var(--cc,#888)}
-.fc-n{font-family:var(--hd);font-size:12px;color:#ddeeff;margin-bottom:2px;line-height:1.2}
-.fc-e{font-size:7px;color:var(--dm);letter-spacing:1px;margin-bottom:7px}
-.fc-d{font-size:7.5px;color:var(--dm);line-height:1.7;margin-bottom:9px;min-height:46px}
-.fc-b{width:100%;background:var(--a2);border:1px solid var(--a3);color:var(--ac);padding:6px;font-family:var(--font);font-size:8px;letter-spacing:2px;cursor:pointer;transition:.15s}
+.fc-n{font-family:var(--hd);font-size:12px;color:#ddeeff;line-height:1.2;margin-bottom:2px}
+.fc-e{font-size:7px;color:var(--dm);letter-spacing:1px;margin-bottom:6px}
+.fc-d{font-size:7.5px;color:var(--dm);line-height:1.7;margin-bottom:8px;min-height:44px}
+.fc-b{width:100%;background:var(--a2);border:1px solid var(--a3);color:var(--ac);padding:6px;font-family:var(--fn);font-size:8px;letter-spacing:2px;cursor:pointer;transition:.15s}
 .fc-b:hover{background:rgba(200,162,72,.22);border-color:var(--ac)}
+
+/* ── GAME UI (always in DOM — needed for getBoundingClientRect) ── */
 #tb{position:fixed;top:0;left:0;right:0;height:44px;background:var(--pn);border-bottom:1px solid var(--b2);display:flex;align-items:stretch;z-index:1000}
-.tbs{display:flex;flex-direction:column;justify-content:center;padding:0 11px;border-right:1px solid var(--b1);min-width:68px}
-.tbs.end{border-right:none;flex:1;flex-direction:row;align-items:center;justify-content:flex-end;gap:6px;padding-right:180px}
+.tbs{display:flex;flex-direction:column;justify-content:center;padding:0 10px;border-right:1px solid var(--b1);min-width:66px}
+.tbs.end{border-right:none;flex:1;flex-direction:row;align-items:center;justify-content:flex-end;gap:6px;padding-right:176px}
 .tl{font-size:7px;color:var(--dm);letter-spacing:2px;margin-bottom:1px}
 .tv{font-family:var(--hd);font-size:11px;color:var(--ac)}
 .tv.lg{font-size:13px}
 .wb{background:rgba(200,22,48,.14);border:1px solid rgba(200,22,48,.4);color:#ff6878;font-size:7px;padding:2px 7px;animation:wbp 2s ease-in-out infinite}
 @keyframes wbp{0%,100%{opacity:1}50%{opacity:.5}}
-#sp{position:fixed;left:0;top:44px;width:275px;height:calc(100vh - 44px);background:var(--pn);border-right:1px solid var(--b2);display:flex;flex-direction:column;z-index:900}
-#ph{padding:11px 12px;border-bottom:1px solid var(--b1);background:rgba(0,0,0,.28);flex-shrink:0;min-height:80px}
+#sp{position:fixed;left:0;top:44px;width:274px;height:calc(100vh - 44px);background:var(--pn);border-right:1px solid var(--b2);display:flex;flex-direction:column;z-index:900}
+#ph{padding:11px 12px;border-bottom:1px solid var(--b1);background:rgba(0,0,0,.28);flex-shrink:0;min-height:78px}
 .po{font-size:7px;color:var(--dm);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
 .pn{font-family:var(--hd);font-size:12px;color:#ddeeff;letter-spacing:1px;line-height:1.25;margin-bottom:4px}
-.pt{display:flex;flex-wrap:wrap;gap:3px}
+.ptg{display:flex;flex-wrap:wrap;gap:3px}
 .tag{font-size:7px;letter-spacing:1.5px;padding:2px 6px;border:1px solid}
-.t-o{color:#4ce870;border-color:#186030;background:rgba(76,232,112,.07)}
-.t-w{color:#ff4858;border-color:#681020;background:rgba(255,72,88,.07)}
-.t-a{color:#48a8ff;border-color:#184888;background:rgba(72,168,255,.07)}
-.t-n{color:var(--ac);border-color:var(--a3);background:var(--a2)}
-.t-e{color:#ff2838;border-color:#781020;background:rgba(255,40,56,.1);animation:ep 1s ease-in-out infinite alternate}
-.t-f{color:var(--dm);border-color:#1e3040}
-.t-h{color:#e8a040;border-color:#785020;background:rgba(232,160,64,.07)}
+.to{color:#4ce870;border-color:#186030;background:rgba(76,232,112,.07)}
+.tw{color:#ff4858;border-color:#681020;background:rgba(255,72,88,.07)}
+.ta{color:#48a8ff;border-color:#184888;background:rgba(72,168,255,.07)}
+.tn{color:var(--ac);border-color:var(--a3);background:var(--a2)}
+.te{color:#ff2838;border-color:#781020;background:rgba(255,40,56,.1);animation:ep 1s ease-in-out infinite alternate}
+.tf{color:var(--dm);border-color:#1e3040}
+.th{color:#e8a040;border-color:#785020;background:rgba(232,160,64,.07)}
 @keyframes ep{from{opacity:1}to{opacity:.4}}
 #pb{flex:1;overflow-y:auto;padding:10px 11px;scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
 #pb::-webkit-scrollbar{width:3px}
@@ -72,28 +83,28 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .cws{font-size:7px;color:var(--dm);letter-spacing:2px;margin-top:1px}
 .bg3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:5px}
 .bg2{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:5px}
-.btn{background:rgba(255,255,255,.04);border:1px solid var(--b1);color:var(--dm);padding:6px 2px;cursor:pointer;font-family:var(--font);font-size:7.5px;text-align:center;line-height:1.6;transition:.15s}
+.btn{background:rgba(255,255,255,.04);border:1px solid var(--b1);color:var(--dm);padding:6px 2px;cursor:pointer;font-family:var(--fn);font-size:7.5px;text-align:center;line-height:1.6;transition:.15s}
 .btn:hover,.btn.on{border-color:var(--ac);color:var(--tx);background:var(--a2)}
 .btn.on{color:var(--ac)}
-.ab{width:100%;background:rgba(20,40,60,.5);border:1px solid var(--b2);color:var(--tx);padding:8px;cursor:pointer;font-family:var(--font);font-size:8px;margin-bottom:4px;transition:.15s;text-align:left}
+.ab{width:100%;background:rgba(20,40,60,.5);border:1px solid var(--b2);color:var(--tx);padding:8px;cursor:pointer;font-family:var(--fn);font-size:8px;margin-bottom:4px;transition:.15s;text-align:left}
 .ab:hover{background:var(--a2);border-color:var(--ac);color:var(--ac)}
 .ab.r{color:#ff7080;border-color:#481020;background:rgba(200,22,48,.08)}
 .ab.r:hover{background:rgba(200,22,48,.2);border-color:#c81630}
 .ab.p{animation:ap .7s ease-in-out infinite alternate}
 @keyframes ap{from{background:rgba(200,22,48,.08)}to{background:rgba(200,22,48,.28);border-color:#c81630}}
-.db{background:rgba(24,72,176,.1);border:1px solid rgba(24,72,176,.3);color:#6898e0;padding:7px 3px;cursor:pointer;font-family:var(--font);font-size:7.5px;text-align:center;line-height:1.6;transition:.15s}
+.db{background:rgba(24,72,176,.1);border:1px solid rgba(24,72,176,.3);color:#6898e0;padding:7px 3px;cursor:pointer;font-family:var(--fn);font-size:7.5px;text-align:center;line-height:1.6;transition:.15s}
 .db:hover{background:rgba(24,72,176,.2);border-color:#4878d0;color:#a0c8ff}
 .db:disabled{opacity:.2;cursor:not-allowed}
 .db.war{color:#ff6070;border-color:rgba(180,20,40,.4);background:rgba(180,20,40,.08)}
 .db.war:hover{background:rgba(180,20,40,.2);border-color:#c81630}
 .db.full{grid-column:span 2;background:var(--a2);border-color:var(--a3);color:var(--ac)}
-.db.full:hover{background:rgba(200,162,72,.22);border-color:var(--ac)}
-#vp{position:fixed;left:275px;top:44px;right:0;bottom:74px;overflow:hidden;cursor:grab;background:#02080e}
+/* Map viewport — ALWAYS VISIBLE, never hidden */
+#vp{position:fixed;left:274px;top:44px;right:0;bottom:74px;overflow:hidden;cursor:grab;background:#02080e}
 #vp.drag{cursor:grabbing}
 #mi{transform-origin:0 0;will-change:transform;line-height:0}
 #svgh{display:block;line-height:0}
 #svgh svg{display:block}
-.tl2{cursor:pointer;transition:filter .12s}
+.tl2{cursor:pointer;transition:filter .1s}
 .tl2:hover{filter:brightness(1.45) drop-shadow(0 0 4px rgba(200,162,72,.4))!important}
 .sel{stroke:#c8a248!important;stroke-width:2.5!important;filter:drop-shadow(0 0 9px rgba(200,162,72,.85)) brightness(1.2)!important;vector-effect:non-scaling-stroke!important}
 .ha{stroke:#ff3050!important;stroke-width:2.2!important;vector-effect:non-scaling-stroke!important;animation:hlp .75s ease-in-out infinite alternate!important;cursor:crosshair!important}
@@ -103,12 +114,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes enct{from{filter:none}to{filter:drop-shadow(0 0 8px #ff0020)}}
 .fh2{filter:grayscale(90%) brightness(.22)!important}
 .fs2{filter:grayscale(20%) brightness(.58)!important}
-#log{position:fixed;left:275px;right:0;bottom:0;height:74px;background:rgba(5,10,14,.97);border-top:1px solid var(--b1);padding:5px 12px;z-index:800}
+#log{position:fixed;left:274px;right:0;bottom:0;height:74px;background:rgba(5,10,14,.97);border-top:1px solid var(--b1);padding:5px 12px;z-index:800}
 #lhdr{font-size:7px;color:var(--dm);letter-spacing:2px;margin-bottom:3px}
 #llist{height:50px;overflow:hidden;display:flex;flex-direction:column-reverse;gap:1px}
 .le{font-size:8px;color:var(--dm);padding-left:9px;position:relative;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .le::before{content:'>';position:absolute;left:0;color:var(--a3)}
-.lw{color:#e06070}.lk{color:#68e888}.ld2{color:#68a8e8}.lt{color:var(--ac)}.lai{color:#b09038}
+.lw{color:#e06070}.lk{color:#68e888}.li{color:#68a8e8}.lt{color:var(--ac)}.lai{color:#b09038}
 #nxt{position:fixed;right:14px;bottom:86px;background:#480a14;border:1px solid #681820;color:#fff;padding:9px 20px;font-family:var(--hd);font-size:9px;letter-spacing:2px;cursor:pointer;z-index:1000;transition:.2s}
 #nxt:hover{background:#6a1020;border-color:#c81630;box-shadow:0 0 16px rgba(200,22,48,.5)}
 #mind{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:88px;background:rgba(200,22,48,.92);border:1px solid #c81630;color:#fff;padding:5px 16px;font-size:8px;letter-spacing:2px;z-index:1100;pointer-events:none;animation:mp .7s ease-in-out infinite alternate}
@@ -122,16 +133,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .mr{display:none;margin:8px 0;padding:8px;font-size:8.5px;line-height:1.8;border:1px solid}
 .mr.ok{color:#70e890;border-color:#186028;background:rgba(70,200,80,.06)}
 .mr.no{color:#ff7080;border-color:#581018;background:rgba(255,80,96,.06)}
-.mr.info{color:#78b8e8;border-color:#183868;background:rgba(80,120,200,.06)}
+.mr.inf{color:#78b8e8;border-color:#183868;background:rgba(80,120,200,.06)}
 .mbtns{display:flex;gap:6px;margin-top:12px}
-.mb{flex:1;padding:8px;font-family:var(--font);font-size:8px;cursor:pointer;border:1px solid;transition:.15s}
+.mb{flex:1;padding:8px;font-family:var(--fn);font-size:8px;cursor:pointer;border:1px solid;transition:.15s;letter-spacing:1px}
 .mb.ok{background:var(--a2);border-color:var(--a3);color:var(--ac)}
 .mb.ok:hover{background:rgba(200,162,72,.22);border-color:var(--ac)}
 .mb.cl{background:rgba(255,255,255,.03);border-color:var(--b1);color:var(--dm)}
 .mb.cl:hover{background:rgba(255,255,255,.07)}
 .mb.ng{background:rgba(200,22,48,.1);border-color:rgba(200,22,48,.3);color:#ff8090}
 .sr{display:flex;align-items:center;gap:7px;margin-bottom:6px}
-.sl2{font-size:8px;color:var(--dm);min-width:68px}
+.sl2{font-size:8px;color:var(--dm);min-width:66px}
 .sr input[type=range]{flex:1;accent-color:var(--ac);height:3px}
 .sv2{min-width:28px;text-align:right;color:var(--ac);font-family:var(--hd);font-size:11px}
 .mchk{display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:9px;cursor:pointer}
@@ -140,7 +151,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .mch{font-size:7px;color:var(--dm);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid var(--b1)}
 .mdi{font-size:8.5px;color:#b0c8e0;padding:4px 0;border-bottom:1px solid var(--b1)}
 .mdi:last-child{border-bottom:none}
-.tsel{background:var(--pn);border:1px solid var(--b2);color:var(--tx);font-family:var(--font);font-size:8.5px;padding:4px 7px;width:100%;margin-bottom:6px;cursor:pointer}
+.tsel{background:var(--pn);border:1px solid var(--b2);color:var(--tx);font-family:var(--fn);font-size:8.5px;padding:4px 7px;width:100%;margin-bottom:6px;cursor:pointer}
 .vpd{text-align:center;margin:8px 0}
 .vpn{font-family:var(--hd);font-size:36px;color:var(--ac)}
 .vpl{font-size:7px;color:var(--dm);letter-spacing:2px}
@@ -151,15 +162,26 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </style>
 </head>
 <body>
-<div id="ld" class="hide"><div class="ld-t">WORLD COMMAND 1936</div><div class="ld-b"><div class="ld-f" id="ldf"></div></div><div class="ld-s" id="lds">INITIALIZING...</div></div>
+
+<!-- LOADING: starts hidden, shown by JS -->
+<div id="ld">
+  <div class="ld-t">WORLD COMMAND 1936</div>
+  <div class="ld-b"><div class="ld-f" id="ldf"></div></div>
+  <div class="ld-s" id="lds">読み込み中...</div>
+  <div id="ld-err"></div>
+</div>
+
+<!-- FACTION SELECT: starts visible, hidden after selection -->
 <div id="fsel">
   <div class="fh">
     <div class="fh-t">WORLD COMMAND 1936</div>
-    <div class="fh-s">— 国家を選択してください — SELECT YOUR NATION —</div>
+    <div class="fh-s">— 国家を選択してください —</div>
     <div class="ftabs" id="ftabs"></div>
   </div>
   <div class="fbody"><div class="fgrid" id="fgrid"></div></div>
 </div>
+
+<!-- GAME UI: always present so getBoundingClientRect works -->
 <div id="tb">
   <div class="tbs"><div class="tl">NATION</div><div class="tv lg" id="tb-n">---</div></div>
   <div class="tbs"><div class="tl">TREASURY</div><div class="tv">Y<span id="tb-m">0</span></div></div>
@@ -169,12 +191,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="tbs end" id="tb-w"></div>
 </div>
 <div id="sp">
-  <div id="ph"><div class="po" id="ph-o">SELECT TERRITORY</div><div class="pn" id="ph-n">地域を選択してください</div><div class="pt" id="ph-t"></div></div>
-  <div id="pb"><div id="pc" style="color:var(--dm);font-size:8px;text-align:center;padding:32px 10px;line-height:2.4">CLICK TERRITORY<br><span style="font-size:7px">OWN = RECRUIT / ATTACK<br>ENEMY = DIPLOMACY</span></div></div>
+  <div id="ph">
+    <div class="po" id="ph-o">SELECT TERRITORY</div>
+    <div class="pn" id="ph-n">地域を選択してください</div>
+    <div class="ptg" id="ph-t"></div>
+  </div>
+  <div id="pb"><div id="pc" style="color:var(--dm);font-size:8px;text-align:center;padding:30px 10px;line-height:2.4">CLICK TERRITORY<br><span style="font-size:7px">OWN=RECRUIT/ATTACK<br>ENEMY=DIPLOMACY</span></div></div>
 </div>
 <div id="vp"><div id="mi"><div id="svgh"></div></div></div>
 <div id="mind">TARGET SELECTION MODE</div>
-<button id="nxt" onclick="nextTurn()">NEXT TURN &#9654;</button>
+<button id="nxt" onclick="G.nextTurn()">NEXT TURN &#9654;</button>
 <div id="log"><div id="lhdr">OPERATIONS LOG</div><div id="llist"></div></div>
 <div id="modal"><div id="mbox">
   <div class="mt" id="m-t">DIPLOMACY</div>
@@ -182,435 +208,355 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div id="m-b"></div>
   <div class="mr" id="m-r"></div>
   <div class="mbtns" id="m-btns">
-    <button class="mb cl" onclick="closeModal()">CANCEL</button>
+    <button class="mb cl" onclick="G.closeModal()">CANCEL</button>
     <button class="mb ok" id="m-ok">EXECUTE</button>
   </div>
 </div></div>
+
 <script>
 'use strict';
 
-const TF = {
-  // JAPAN HOME (special chars use bracket notation via Object.assign below)
-  Hokkaido:'jp','Kita-Tohoku':'jp','Minami-Tohoku':'jp',Kanto:'jp',
-  Koshinetsu:'jp',Hokuriku:'jp',Tokai:'jp',Kansai:'jp',Shikoku:'jp',Okinawa:'jp',
-  Hamgyong:'jp',Gangwon:'jp',Gyeonggi:'jp',Gyeongsang:'jp',
-  Taiwan:'jp','South_Sakhalin':'jp',Saipan:'jp',Palau:'jp',
-  'Marcus_Island':'jp','Iwo_Jima':'jp','Kuril_Islands':'jp',Dalian:'jp',
-  'Caroline_Islands':'jp','Marshall_Islands':'jp',
-  'Pyongan-Hwanghae':'jp','Chungcheong-Jeolla':'jp',
-  // MANCHUKUO
-  Heilungkiang:'mk',Kirin:'mk',Liaoning:'mk',Liaobei:'mk',
-  Jehol:'mk','East_Hebei':'mk',Sungkiang:'mk','Hebei-Chahar':'mk',
-  // MENGJIANG
-  Chahar:'mg',Suiyuan:'mg',Xilingol:'mg',Ordos:'mg',
-  Alxa:'mg',Pailingmiao:'mg',Hulunbuir:'mg',
-  // CCP
-  Shaanbei:'cc',
-  // XINJIANG
-  Dzungaria:'xj',Taklamakan:'xj',Yarkand:'xj',Khotan:'xj',Urumqi:'xj',Dabancheng:'xj',
-  // TIBET
-  Chamdo:'ti',Ngari:'ti',Shigatse:'ti',Nagqu:'ti',Golog:'ti',
-  // CHINA KMT
-  Shanxi:'cn',Shandong:'cn',Henan:'cn',Hubei:'cn',Hunan:'cn',
-  Jiangsu:'cn',Jiangxi:'cn',Zhejiang:'cn',Anhui:'cn',Fujian:'cn',
-  Guangdong:'cn',Guangxi:'cn',Yunnan:'cn',Guizhou:'cn',
-  Gansu:'cn',Qinghai:'cn',Ningxia:'cn',Hainan:'cn',
-  Beiping:'cn',Nanjing:'cn',Shanghai:'cn',Wuhan:'cn',Chongqing:'cn',
-  Chengdu:'cn',Guangzhou:'cn',Nanning:'cn',Nanlu:'cn',Changde:'cn',
-  Jinan:'cn',Qingdao:'cn',Guangzhouwan:'cn',Suzhou:'cn',Xian:'cn',
-  Zunyi:'cn',Wuwei:'cn',Jiuquan:'cn',Yulin:'cn',Guyuan:'cn',
-  Dali:'cn',Liangshan:'cn',Ganzi:'cn',Gannan:'cn',
-  Gobi:'cn',Kunlun_Shan:'cn',Huangshan:'cn',
-  // MONGOLIA
-  Ulaanbaatar:'mo',Khovd:'mo',Dornod:'mo',Tannu_Tuva:'tn',
-  // SOVIET UNION
-  Leningrad:'su',Moscow:'su',Novgorod:'su',Yaroslavl:'su',Ivanovo:'su',
-  Gorky:'su',Rzhev:'su',Smolensk:'su',Bryansk:'su',Orel:'su',
-  Kursk:'su',Voronezh:'su',Stalingrad:'su',Astrakhan:'su',Kuybyshev:'su',
-  Saratov:'su',Penza:'su',Ryazan:'su',Tula:'su',Lipetsk:'su',
-  Tambov:'su',Millerovo:'su',Kazan:'su',Kirov:'su',Ufa:'su',
-  Orenburg:'su',Chelyabinsk:'su',Sverdlovsk:'su',Perm:'su',Zlatoust:'su',
-  Magnitogorsk:'su',Murmansk:'su',Arkhangelsk:'su',Vologda:'su',
-  Onega:'su',Kargopol:'su',Kotlas:'su',Syktyvkar:'su',Pechora:'su',
-  Nenets:'su',Balakovo:'su',Volgodonsk:'su',Crimea:'su',
-  Kyiv:'su',Zhytomyr:'su',Vinnytsia:'su',Poltava:'su',Kharkov:'su',
-  Stalino:'su',Dnipropetrovsk:'su',Zaporozhe:'su',Kherson:'su',
-  Mykolaiv:'su',Odessa:'su',Sumy:'su',Cherkasy:'su',Chernigov:'su',
-  Balta_Tiraspol:'su',Voroshilovgrad:'su',Minsk:'su',Bobruysk:'su',
-  Gomel:'su',Vitebsk:'su',Mozyr:'su',Georgia:'su',Azerbaijan:'su',
-  Armenia:'su',Abkhazia:'su',Krasnodar:'su',Sochi:'su',Stavropol:'su',
-  Rostov:'su',Kabardino_Balkaria:'su',North_Ossetia:'su',
-  Chechnya_Ingushetia:'su',Dagestan:'su',Kalmykia:'su',
-  Tashkent:'su',Ashkhabad:'su',Bukhara:'su',Khiva:'su',Tashauz:'su',
-  Navoi:'su',Stalinabad:'su',Alma_Ata:'su',Kyzyl_Orda:'su',Ayaguz:'su',
-  Pavlodar:'su',Semipalatinsk:'su',Karagandy:'su',Guryev:'su',
-  Karakalpakstan:'su',Akmolinsk:'su',Kostanay:'su',
-  Omsk:'su',Novosibirsk:'su',Tomsk:'su',Altai_Krai:'su',Oyrot_Region:'su',
-  Krasnoyarsk:'su',Yeniseisk:'su',Irkutsk:'su',Buryatia:'su',Chita:'su',
-  Birobidzhan:'su',Amur:'su',Khabarovsk:'su',Vladivostok:'su',
-  North_Sakhalin:'su',Kamchatka:'su',Chukotka:'su',Chukchi_Peninsula:'su',
-  Okhotsk:'su',Magadan:'su',Kolyma:'su',Yakutsk:'su',Verkhoyansk:'su',
-  Udachny:'su',Dudinka:'su',Salekhard:'su',Yamalia:'su',Khatangsky:'su',
-  Bodaybo:'su',Kirensk:'su',Bratsk:'su',Tobolsk:'su',Tyumen:'su',Surgut:'su',
-  Udmurtia:'su',Chuvashia:'su',Mari_El:'su',Khakassia:'su',Kalinin:'su',
-  Kaluga:'su',Engels_Marxstadt:'su',Belgorod:'su',Northern_Urals:'su',Luga:'su',
-  // THAILAND
-  Siam:'th',Lanna:'th',Isan:'th',
-  // IRAN
-  Tehran:'ir',East_Azerbaijan:'ir',West_Azerbaijan:'ir',Gilan:'ir',
-  Khorasan:'ir',North_Khorasan:'ir',South_Khorasan:'ir',Isfahan:'ir',
-  Fars:'ir',Kerman:'ir',Khuzestan:'ir',Kurdistan:'ir',Lorestan:'ir',
-  Hamadan:'ir',Zanjan:'ir',Semnan:'ir',Yazd:'ir',Bushehr:'ir',Sistan:'ir',Ilam:'ir',
-  // AFGHANISTAN
-  Kabul:'af',Qandahar:'af',Herat:'af',Maymanah:'af',Farah:'af',Qataghan:'af',
-  // IRAQ / GULF
-  Baghdad:'iq',Mosul:'iq',Al_Basrah:'iq',Al_Anbar:'iq',
-  Al_Qassim:'sa',Dammam:'sa',Asir_Makkah:'sa',Tabuk:'sa',Rub_al_Khali:'sa',Madinah:'sa',Nejd:'sa',
-  North_Yemen:'ye',
-  // TURKEY
-  Istanbul:'tr',Ankara:'tr',Bursa:'tr',Izmir:'tr',Kastamonu:'tr',
-  Amasya:'tr',Samsun:'tr',Trabzon:'tr',Erzurum:'tr',Van:'tr',
-  Hakkari:'tr',Mersin:'tr',Antalya:'tr',Afyon:'tr',Kayseri:'tr',
-  Konya:'tr',Sivas:'tr',Malatya:'tr',Edirne:'tr',Izmit:'tr',Thrace:'tr',
-  // GERMANY
-  Brandenburg:'de',Sachsen:'de',Hannover:'de',Westfalen:'de',
-  Rhineland:'de',Moselland:'de',Hessen:'de',Weser_Ems:'de',Holstein:'de',
-  Schleswig:'de',Mecklenburg:'de',Vorpommern:'de',Hinterpommern:'de',
-  Oberbayern:'de',Niederbayern:'de',Franken:'de',Baden:'de',
-  Oberschlesien:'de',Niederschlesien:'de',Ermland_Masuren:'de',Danzig:'de',
-  // AUSTRIA
-  Ostmark:'at',Tyrol:'at',Vorarlberg:'at',Burgenland:'at',
-  // ITALY + colonies
-  Piemonte:'it',Lombardia:'it',Veneto:'it',Emilia_Romagna:'it',Toscana:'it',
-  Lazio:'it',Campania:'it',Calabria:'it',Puglia:'it',Abruzzo:'it',
-  Sardegna:'it',Sicilia:'it',Trentino:'it',Alto_Adige:'it',Litorale:'it',
-  Istria:'it',Zara:'it',Dodecanese:'it',
-  Tripolitania:'it',Cyrenaica:'it',Sirte:'it',Libyan_Desert:'it',
-  Benghasi:'it',Derna:'it',El_Agheila:'it',
-  Eritrea:'it',Somaliland:'it',Tigray:'it',Albania:'it',
-  // ETHIOPIA
-  Shewa:'et',Hararghe:'et',Sidamo:'et',Illubabor_Kaffa:'et',
-  Welega:'et',Begemder:'et',Gojjam:'et',Wello:'et',Afar:'et',Bale:'et',
-  // FRANCE + colonies
-  Ile_de_France:'fr',Normandy:'fr',Brittany:'fr',Poitou:'fr',Auvergne:'fr',
-  Languedoc:'fr',Midi_Pyrenees:'fr',Limousin:'fr',Aquitaine:'fr',Loire:'fr',
-  Bourgogne:'fr',Champagne:'fr',Franche_Comte:'fr',Alsace_Lorraine:'fr',
-  Picardy:'fr',Nord_Pas_de_Calais:'fr',Rhone:'fr',Var:'fr',
-  Bouches_du_Rhone:'fr',Savoy:'fr',Centre:'fr',Corsica:'fr',Alpes:'fr',
-  French_Guiana:'fr',French_Caribbean:'fr',French_India:'fr',French_Somaliland:'fr',
-  Equatorial_Africa:'fr',Middle_Congo:'fr',Upper_Volta:'fr',Ivory_Coast:'fr',
-  Dahomey:'fr',Guinea:'fr',Senegal:'fr',Mauritania:'fr',Mauritanian_Desert:'fr',
-  Bamako:'fr',Kayes_Koulikoro:'fr',Gao:'fr',Tombouctou:'fr',Chad:'fr',
-  Borkou_Ennedi_Tibesti:'fr',Southern_Sahara:'fr',Centre_Sud:'fr',
-  Constantine:'fr',Algiers:'fr',Tlemcen:'fr',Casablanca:'fr',Marrakech:'fr',
-  Tunisia:'fr',Togo:'fr',Gabon:'fr',Niger:'fr',
-  New_Caledonia:'fr',Tahiti:'fr',Reunion:'fr',Comoro_Islands:'fr',Madagascar:'fr',
-  Southern_Indochina:'fr',Tonkin:'fr',Trong_Bo:'fr',Laos:'fr',Cambodia:'fr',
-  Cameroon:'fr',Syria:'fr',Lebanon:'fr',Hatay:'fr',
-  // UK HOME + EMPIRE
-  Greater_London_Area:'uk',Yorkshire:'uk',East_Anglia:'uk',East_Midlands:'uk',
-  West_Midlands:'uk',South_West_England:'uk',Wales:'uk',Northern_Ireland:'uk',
-  Scottish_Highlands:'uk',Aberdeenshire:'uk',Lanark:'uk',Lothian:'uk',
-  Cumbria:'uk',Lancashire:'uk',Sussex:'uk',Gloucestershire:'uk',Northumberland:'uk',
-  East_Bengal:'uk',West_Bengal:'uk',Bihar:'uk',United_Provinces:'uk',
-  Central_Provinces:'uk',Bombay:'uk',Madras_States:'uk',Northern_Madras:'uk',
-  Southern_Madras:'uk',Orissa:'uk',East_Punjab:'uk',West_Punjab:'uk',
-  Sind:'uk',Rajahsthan:'uk',Gujarat:'uk',Hyderabad:'uk',Mysore:'uk',
-  Gwalior:'uk',Central_India:'uk',Kolhapur_and_Deccan:'uk',Assam:'uk',
-  Manipur:'uk',Andaman:'uk',Bahawalpur:'uk',North_Baluchistan:'uk',
-  South_Baluchistan:'uk',Sibi:'uk',Kalat:'uk',Waziristan:'uk',Peshawar:'uk',
-  Khyber_Pass:'uk',Kashmir:'uk',Northern_Kashmir:'uk',Sikkim:'uk',
-  Bhutan:'uk',Ceylon:'uk',Nepal:'uk',Delhi:'uk',
-  Sagaing:'uk',Irrawaddy:'uk',Mandalay:'uk',Pegu:'uk',Arakan:'uk',
-  Magwe:'uk',Tenasserim:'uk',Federated_Shan_States:'uk',
-  Malaya:'uk',Northern_Malay:'uk',Singapore:'uk',Sabah:'uk',
-  Sarawak:'uk',Brunei:'uk',Hong_Kong:'uk',
-  Rhodesia:'uk',Northeast_Rhodesia:'uk',Zambesi:'uk',Nyanza_Rift_Valley:'uk',
-  Uganda:'uk',Tanganyika:'uk',Nairobi:'uk',Mombasa:'uk',Garissa:'uk',
-  British_Somaliland:'uk',Bechuanaland:'uk',Barotziland:'uk',Malawi:'uk',
-  Borno:'uk',Benue:'uk',Lagos:'uk',Sokoto:'uk',Sierra_Leone:'uk',Gambia:'uk',
-  Ghana:'uk',Khartoum:'uk',Kassala:'uk',Upper_Nile:'uk',Blue_Nile:'uk',
-  Bahr_al_Ghazal:'uk',Kurdufan:'uk',North_Darfur:'uk',South_Darfur:'uk',
-  Palestine:'uk',Jordan:'uk',Kuwait:'uk',Bahrain:'uk',Muscat:'uk',
-  Oman:'uk',Socotra:'uk',Province_of_Aden:'uk',Qatar:'uk',
-  Jamaica:'uk',Trinidad:'uk',Bermuda:'uk',British_Guyana:'uk',British_Honduras:'uk',
-  Gibraltar:'uk',Malta:'uk',Cyprus:'uk',Falkland_Islands:'uk',
-  Saint_Helena:'uk',Ascension:'uk',Diego_Garcia:'uk',Maldives:'uk',
-  Seychelles:'uk',Mauritius:'uk',Ellice_Islands:'uk',Gilbert_Islands:'uk',
-  // AUSTRALIA
-  New_South_Wales:'au',Victoria:'au',Queensland:'au',South_Australia:'au',
-  Western_Australia:'au',Northern_Territory:'au',Tasmania:'au',
-  North_Queensland:'au',Central_Australia:'au',Southwest_Queensland:'au',
-  North_West_Australia:'au',South_West_Australia:'au',
-  Papua:'au',Kaiser_Wilhelmsland:'au',Bismarck:'au',Nauru:'au',Solomon_Islands:'au',
-  // CANADA
-  British_Columbia:'ca',Upper_British_Columbia:'ca',Alberta:'ca',Saskatchewan:'ca',
-  Manitoba:'ca',Southern_Ontario:'ca',Districts_of_Ontario:'ca',Northern_Ontario:'ca',
-  Ouest_du_Quebec:'ca',Saguenay:'ca',Nord_du_Quebec:'ca',Saint_Lawrence:'ca',
-  Cote_Nord:'ca',Nova_Scotia:'ca',New_Brunswick:'ca',Newfoundland:'ca',
-  Yukon_Territory:'ca',Northwest_Territories:'ca',Nunavut:'ca',Labrador:'ca',
-  Vancouver_Island:'ca',Haida_Gwaii:'ca',
-  // NZ / SA
-  North_Island:'nz',South_Island:'nz',Fiji:'nz',
-  Cape:'za',Natal:'za',Transvaal:'za',Karas:'za',Khomas:'za',Kunene:'za',
-  // EUROPE
-  Warszawa:'pl',Lodz:'pl',Lublin:'pl',Kielce:'pl',Gdynia:'pl',Katowice:'pl',
-  Bohemia:'cz',Moravia:'cz',North_Sudetenland:'cz',South_Sudetenland:'cz',
-  Eastern_Slovakia:'cz',Western_Slovakia:'cz',Southern_Slovakia:'cz',
-  North_Transdanubia:'hu',South_Transdanubia:'hu',Northern_Hungary:'hu',
-  Transylvania:'ro',North_Transylvania:'ro',Muntenia:'ro',Oltenia:'ro',
-  Moldova:'ro',Bessarabia:'ro',Dobrudja:'ro',Northern_Dobruja:'ro',
-  Bucovina:'ro',Crisana:'ro',Banat:'ro',West_Banat:'ro',
-  Serbia:'yu',Croatia:'yu',North_Slovenia:'yu',Bosnia:'yu',Herzegovina:'yu',
-  Montenegro:'yu',Macedonia:'yu',Southern_Serbia:'yu',Dalmatia:'yu',
-  Kosovo:'yu',Backa:'yu',Morava:'yu',Ljubljana:'yu',
-  Sofia:'bg',Plovdiv:'bg',Burgas:'bg',Moesia:'bg',Varna:'bg',
-  Attica:'gr',Central_Macedonia:'gr',Epirus:'gr',Thessaly:'gr',Crete:'gr',
-  Peloponnese:'gr',Aegean_Islands:'gr',Western_Macedonia:'gr',
-  Dalarna:'se',Norrbotten:'se',Gotland:'se',Ostergotland:'se',Jamtland:'se',Smaland:'se',
-  Finnmark:'no',Nordland:'no',Troms:'no',Vestlandet:'no',
-  Opplandene:'no',Oslofjord:'no',Telemark:'no',Agder:'no',Helgeland:'no',
-  Jylland:'dk',Fyn:'dk',Sjaelland:'dk',Bornholm:'dk',Faroe_Islands:'dk',Greenland:'dk',
-  Lappi:'fi',Oulu:'fi',Kuopio:'fi',Mikkeli:'fi',Uusimaa:'fi',
-  Kymi:'fi',Vaasa:'fi',Turku:'fi',Karjala:'fi',Petsamo:'fi',Salla:'fi',Aland_Islands:'fi',
-  Harju:'ee',Virumaa:'ee',Tartu:'ee',Saaremaa:'ee',
-  Vidzeme:'lv',Latgale:'lv',Kurzeme:'lv',Zemgale:'lv',
-  Kaunas:'lt',Klaipeda:'lt',
-  Holland:'nl',Friesland:'nl',Brabant:'nl',
-  Java:'nl',Sumatra:'nl',Kalimantan:'nl',Interior_Borneo:'nl',Sulawesi:'nl',
-  West_Papua:'nl',The_Moluccas:'nl',Aru_Islands:'nl',Lesser_Sunda_Islands:'nl',
-  Antwerpen:'be',Wallonie:'be',Vlaanderen:'be',Ardennes:'be',
-  Leopoldville:'be',Stanleyville:'be',Coquilhatville:'be',Costermansville:'be',
-  Elisabethville:'be',Lusambo:'be',Rwanda:'be',Burundi:'be',
-  Lisbon:'pt',Porto:'pt',Azores:'pt',Madeira:'pt',
-  Portuguese_Guinea:'pt',Luanda:'pt',Cabinda:'pt',
-  Portuguese_Timor:'pt',Macau:'pt',Cabo_Verde:'pt',Sao_Tome:'pt',
-  Swiss_Plateau:'ch',Eastern_Swiss_Alps:'ch',Western_Swiss_Alps:'ch',Jura_Mountains:'ch',Ticino:'ch',
-  Connaught:'ie',Leinster:'ie',Munster:'ie',Luxembourg:'lu',Iceland:'ic',
-  Asturias:'es',Galicia:'es',Burgos:'es',Salamanca:'es',Valladolid:'es',
-  Ciudad_Real:'es',Murcia:'es',Sevilla:'es',Valencia:'es',Navarra:'es',
-  Madrid:'es',Granada:'es',Extremadura:'es',Islas_Baleares:'es',Islas_Canarias:'es',
-  Spanish_Africa:'es',Sidi_Ifni:'es',Rio_de_Oro:'es',Equatorial_Guinea:'es',
-  // EGYPT / AFRICA
-  Cairo:'eg',Alexandria:'eg',Sinai:'eg',Eastern_Desert:'eg',Western_Desert:'eg',
-  Suez:'eg',Aswan:'eg',Matrouh:'eg',Liberia:'li',
-  // USA
-  New_England:'us',New_York:'us',New_Jersey:'us',Pennsylvania:'us',
-  Maryland:'us',Virginia:'us',West_Virginia:'us',North_Carolina:'us',
-  South_Carolina:'us',Georgia_US:'us',Florida:'us',Alabama:'us',
-  Mississippi:'us',Tennessee:'us',Kentucky:'us',Ohio:'us',Indiana:'us',
-  Michigan:'us',Wisconsin:'us',Illinois:'us',Minnesota:'us',Iowa:'us',
-  Missouri:'us',Arkansas:'us',Louisiana:'us',Texas:'us',Oklahoma:'us',
-  Kansas:'us',Nebraska:'us',South_Dakota:'us',North_Dakota:'us',Montana:'us',
-  Wyoming:'us',Colorado:'us',New_Mexico:'us',Arizona:'us',Utah:'us',
-  Idaho:'us',Washington:'us',Oregon:'us',California:'us',Nevada:'us',
-  Hawaii:'us',Alaska:'us',
-  Manila:'us',Eastern_Visayas:'us',Northern_Mindanao:'us',Western_Visayas:'us',
-  Davao:'us',Bataan:'us',Palawan:'us',Zamboanga:'us',Luzon:'us',
-  Puerto_Rico:'us',Guam:'us',Wake_Island:'us',Midway_Island:'us',
-  // LATIN AMERICA
-  Buenos_Aires:'ar',Mendoza:'ar',Santa_Fe:'ar',Chaco_Austral:'ar',
-  Rio_Negro:'ar',Santa_Cruz_AR:'ar',Formosa:'ar',
-  Antofagasta:'cl',Atacama:'cl',Santiago:'cl',
-  Cundinamarca:'co',Meta:'co',Zulia:'ve',Miranda:'ve',
-  Lima:'pe',Loreto:'pe',Ucayali:'pe',Arequipa:'pe',
-  La_Paz:'bo',Paraguay:'py',Chaco_Boreal:'py',Montevideo:'uy',
-  Ecuador:'ec',Pastaza:'ec',
-  Mexico_City:'mx',Sonora:'mx',Chihuahua:'mx',Jalisco:'mx',Veracruz:'mx',
-  Baja_California:'mx',Tamaulipas:'mx',Yucatan:'mx',Oaxaca:'mx',Chiapas:'mx',
-  Cuba:'cu',Haiti:'ht',Dominican_Republic:'do',Guatemala:'gt',
-  Honduras:'hn',El_Salvador:'sv',Nicaragua:'ni',Costa_Rica:'cr'
+// ================================================================
+//  TERRITORY → FACTION  (1936 historical)
+// ================================================================
+var TF = (function() {
+  var t = {
+    // JAPAN HOME
+    Hokkaido:'jp','Kita-Tohoku':'jp','Minami-Tohoku':'jp',Kanto:'jp',
+    Koshinetsu:'jp',Hokuriku:'jp',Tokai:'jp',Kansai:'jp',Shikoku:'jp',Okinawa:'jp',
+    Hamgyong:'jp',Gangwon:'jp',Gyeonggi:'jp',Gyeongsang:'jp',
+    'Pyongan-Hwanghae':'jp','Chungcheong-Jeolla':'jp',
+    Taiwan:'jp','South_Sakhalin':'jp',Saipan:'jp',Palau:'jp',
+    'Marcus_Island':'jp','Iwo_Jima':'jp','Kuril_Islands':'jp',Dalian:'jp',
+    'Caroline_Islands':'jp','Marshall_Islands':'jp',
+    // MANCHUKUO
+    Heilungkiang:'mk',Kirin:'mk',Liaoning:'mk',Liaobei:'mk',
+    Jehol:'mk','East_Hebei':'mk',Sungkiang:'mk','Hebei-Chahar':'mk',
+    // MENGJIANG
+    Chahar:'mg',Suiyuan:'mg',Xilingol:'mg',Ordos:'mg',
+    Alxa:'mg',Pailingmiao:'mg',Hulunbuir:'mg',
+    // CCP
+    Shaanbei:'cc',
+    // XINJIANG
+    Dzungaria:'xj',Taklamakan:'xj',Yarkand:'xj',Khotan:'xj',Urumqi:'xj',Dabancheng:'xj',
+    // TIBET
+    Chamdo:'ti',Ngari:'ti',Shigatse:'ti',Nagqu:'ti',Golog:'ti',
+    // CHINA KMT
+    Shanxi:'cn',Shandong:'cn',Henan:'cn',Hubei:'cn',Hunan:'cn',
+    Jiangsu:'cn',Jiangxi:'cn',Zhejiang:'cn',Anhui:'cn',Fujian:'cn',
+    Guangdong:'cn',Guangxi:'cn',Yunnan:'cn',Guizhou:'cn',
+    Gansu:'cn',Qinghai:'cn',Ningxia:'cn',Hainan:'cn',
+    Beiping:'cn',Nanjing:'cn',Shanghai:'cn',Wuhan:'cn',Chongqing:'cn',
+    Chengdu:'cn',Guangzhou:'cn',Nanning:'cn',Nanlu:'cn',Changde:'cn',
+    Jinan:'cn',Qingdao:'cn',Guangzhouwan:'cn',Suzhou:'cn',Xian:'cn',
+    Zunyi:'cn',Wuwei:'cn',Jiuquan:'cn',Yulin:'cn',Guyuan:'cn',
+    Dali:'cn',Liangshan:'cn',Ganzi:'cn',Gannan:'cn',Gobi:'cn',
+    // MONGOLIA
+    Ulaanbaatar:'mo',Khovd:'mo',Dornod:'mo',Tannu_Tuva:'tn',
+    // SOVIET UNION
+    Leningrad:'su',Moscow:'su',Novgorod:'su',Yaroslavl:'su',Ivanovo:'su',
+    Gorky:'su',Rzhev:'su',Smolensk:'su',Bryansk:'su',Orel:'su',
+    Kursk:'su',Voronezh:'su',Stalingrad:'su',Astrakhan:'su',Kuybyshev:'su',
+    Saratov:'su',Penza:'su',Ryazan:'su',Tula:'su',Lipetsk:'su',
+    Tambov:'su',Millerovo:'su',Kazan:'su',Kirov:'su',Ufa:'su',
+    Orenburg:'su',Chelyabinsk:'su',Sverdlovsk:'su',Perm:'su',Zlatoust:'su',
+    Magnitogorsk:'su',Murmansk:'su',Arkhangelsk:'su',Vologda:'su',
+    Onega:'su',Kargopol:'su',Kotlas:'su',Syktyvkar:'su',Pechora:'su',
+    Nenets:'su',Balakovo:'su',Volgodonsk:'su',Crimea:'su',
+    Kyiv:'su',Zhytomyr:'su',Vinnytsia:'su',Poltava:'su',Kharkov:'su',
+    Stalino:'su',Dnipropetrovsk:'su',Zaporozhe:'su',Kherson:'su',
+    Mykolaiv:'su',Odessa:'su',Sumy:'su',Cherkasy:'su',Chernigov:'su',
+    Balta_Tiraspol:'su',Voroshilovgrad:'su',Minsk:'su',Bobruysk:'su',
+    Gomel:'su',Vitebsk:'su',Mozyr:'su',Georgia:'su',Azerbaijan:'su',
+    Armenia:'su',Abkhazia:'su',Krasnodar:'su',Sochi:'su',Stavropol:'su',
+    Rostov:'su',Kabardino_Balkaria:'su',North_Ossetia:'su',
+    Chechnya_Ingushetia:'su',Dagestan:'su',Kalmykia:'su',
+    Tashkent:'su',Ashkhabad:'su',Bukhara:'su',Khiva:'su',Tashauz:'su',
+    Navoi:'su',Stalinabad:'su',Alma_Ata:'su',Kyzyl_Orda:'su',Ayaguz:'su',
+    Pavlodar:'su',Semipalatinsk:'su',Karagandy:'su',Guryev:'su',
+    Karakalpakstan:'su',Akmolinsk:'su',Kostanay:'su',
+    Omsk:'su',Novosibirsk:'su',Tomsk:'su',Altai_Krai:'su',Oyrot_Region:'su',
+    Krasnoyarsk:'su',Yeniseisk:'su',Irkutsk:'su',Buryatia:'su',Chita:'su',
+    Birobidzhan:'su',Amur:'su',Khabarovsk:'su',Vladivostok:'su',
+    North_Sakhalin:'su',Kamchatka:'su',Chukotka:'su',Chukchi_Peninsula:'su',
+    Okhotsk:'su',Magadan:'su',Kolyma:'su',Yakutsk:'su',Verkhoyansk:'su',
+    Udachny:'su',Dudinka:'su',Salekhard:'su',Yamalia:'su',Khatangsky:'su',
+    Bodaybo:'su',Kirensk:'su',Bratsk:'su',Tobolsk:'su',Tyumen:'su',Surgut:'su',
+    Udmurtia:'su',Chuvashia:'su',Mari_El:'su',Khakassia:'su',Kalinin:'su',
+    Kaluga:'su',Engels_Marxstadt:'su',Belgorod:'su',Northern_Urals:'su',Luga:'su',
+    // THAILAND
+    Siam:'th',Lanna:'th',Isan:'th',
+    // IRAN
+    Tehran:'ir',East_Azerbaijan:'ir',West_Azerbaijan:'ir',Gilan:'ir',
+    Khorasan:'ir',North_Khorasan:'ir',South_Khorasan:'ir',Isfahan:'ir',
+    Fars:'ir',Kerman:'ir',Khuzestan:'ir',Kurdistan:'ir',Lorestan:'ir',
+    Hamadan:'ir',Zanjan:'ir',Semnan:'ir',Yazd:'ir',Bushehr:'ir',Sistan:'ir',Ilam:'ir',
+    // AFGHANISTAN
+    Kabul:'af',Qandahar:'af',Herat:'af',Maymanah:'af',Farah:'af',Qataghan:'af',
+    // IRAQ
+    Baghdad:'iq',Mosul:'iq',Al_Basrah:'iq',Al_Anbar:'iq',
+    // SAUDI ARABIA
+    Al_Qassim:'sa',Dammam:'sa',Asir_Makkah:'sa',Tabuk:'sa',
+    Rub_al_Khali:'sa',Madinah:'sa',Nejd:'sa',
+    // YEMEN
+    North_Yemen:'ye',
+    // TURKEY
+    Istanbul:'tr',Ankara:'tr',Bursa:'tr',Izmir:'tr',Kastamonu:'tr',
+    Amasya:'tr',Samsun:'tr',Trabzon:'tr',Erzurum:'tr',Van:'tr',
+    Hakkari:'tr',Mersin:'tr',Antalya:'tr',Afyon:'tr',Kayseri:'tr',
+    Konya:'tr',Sivas:'tr',Malatya:'tr',Edirne:'tr',Izmit:'tr',Thrace:'tr',
+    Tunceli:'tr',
+    // GERMANY
+    Brandenburg:'de',Sachsen:'de',Hannover:'de',Westfalen:'de',
+    Rhineland:'de',Moselland:'de',Hessen:'de',Weser_Ems:'de',Holstein:'de',
+    Schleswig:'de',Mecklenburg:'de',Vorpommern:'de',Hinterpommern:'de',
+    Oberbayern:'de',Niederbayern:'de',Franken:'de',Baden:'de',
+    Oberschlesien:'de',Niederschlesien:'de',Ermland_Masuren:'de',Danzig:'de',
+    // AUSTRIA
+    Ostmark:'at',Tyrol:'at',Vorarlberg:'at',Burgenland:'at',
+    // ITALY + colonies
+    Piemonte:'it',Lombardia:'it',Veneto:'it',Emilia_Romagna:'it',Toscana:'it',
+    Lazio:'it',Campania:'it',Calabria:'it',Puglia:'it',Abruzzo:'it',
+    Sardegna:'it',Sicilia:'it',Trentino:'it',Alto_Adige:'it',Litorale:'it',
+    Istria:'it',Zara:'it',Dodecanese:'it',
+    Tripolitania:'it',Cyrenaica:'it',Sirte:'it',Libyan_Desert:'it',
+    Benghasi:'it',Derna:'it',El_Agheila:'it',
+    Eritrea:'it',Somaliland:'it',Tigray:'it',Albania:'it',
+    // ETHIOPIA
+    Shewa:'et',Hararghe:'et',Sidamo:'et',Illubabor_Kaffa:'et',
+    Welega:'et',Begemder:'et',Gojjam:'et',Wello:'et',Afar:'et',Bale:'et',
+    // FRANCE + colonies
+    Ile_de_France:'fr',Normandy:'fr',Brittany:'fr',Poitou:'fr',Auvergne:'fr',
+    Languedoc:'fr',Midi_Pyrenees:'fr',Limousin:'fr',Aquitaine:'fr',Loire:'fr',
+    Bourgogne:'fr',Champagne:'fr',Franche_Comte:'fr',Alsace_Lorraine:'fr',
+    Picardy:'fr',Nord_Pas_de_Calais:'fr',Rhone:'fr',Var:'fr',
+    Bouches_du_Rhone:'fr',Savoy:'fr',Centre:'fr',Corsica:'fr',Alpes:'fr',
+    French_Guiana:'fr',French_Caribbean:'fr',French_India:'fr',French_Somaliland:'fr',
+    Equatorial_Africa:'fr',Middle_Congo:'fr',Upper_Volta:'fr',Ivory_Coast:'fr',
+    Dahomey:'fr',Guinea:'fr',Senegal:'fr',Mauritania:'fr',Mauritanian_Desert:'fr',
+    Bamako:'fr',Kayes_Koulikoro:'fr',Gao:'fr',Tombouctou:'fr',Chad:'fr',
+    Borkou_Ennedi_Tibesti:'fr',Southern_Sahara:'fr',Centre_Sud:'fr',
+    Constantine:'fr',Algiers:'fr',Tlemcen:'fr',Casablanca:'fr',Marrakech:'fr',
+    Tunisia:'fr',Togo:'fr',Gabon:'fr',Niger:'fr',
+    New_Caledonia:'fr',Tahiti:'fr',Reunion:'fr',Comoro_Islands:'fr',Madagascar:'fr',
+    Southern_Indochina:'fr',Tonkin:'fr',Trong_Bo:'fr',Laos:'fr',Cambodia:'fr',
+    Cameroon:'fr',Syria:'fr',Lebanon:'fr',Hatay:'fr',
+    // UK + empire
+    Greater_London_Area:'uk',Yorkshire:'uk',East_Anglia:'uk',East_Midlands:'uk',
+    West_Midlands:'uk',South_West_England:'uk',Wales:'uk',Northern_Ireland:'uk',
+    Scottish_Highlands:'uk',Aberdeenshire:'uk',Lanark:'uk',Lothian:'uk',
+    Cumbria:'uk',Lancashire:'uk',Sussex:'uk',Gloucestershire:'uk',Northumberland:'uk',
+    East_Bengal:'uk',West_Bengal:'uk',Bihar:'uk',United_Provinces:'uk',
+    Central_Provinces:'uk',Bombay:'uk',Madras_States:'uk',Northern_Madras:'uk',
+    Southern_Madras:'uk',Orissa:'uk',East_Punjab:'uk',West_Punjab:'uk',
+    Sind:'uk',Rajahsthan:'uk',Gujarat:'uk',Hyderabad:'uk',Mysore:'uk',
+    Gwalior:'uk',Central_India:'uk',Kolhapur_and_Deccan:'uk',Assam:'uk',
+    Manipur:'uk',Andaman:'uk',Bahawalpur:'uk',North_Baluchistan:'uk',
+    South_Baluchistan:'uk',Sibi:'uk',Kalat:'uk',Waziristan:'uk',Peshawar:'uk',
+    Khyber_Pass:'uk',Kashmir:'uk',Northern_Kashmir:'uk',Sikkim:'uk',
+    Bhutan:'uk',Ceylon:'uk',Nepal:'uk',Delhi:'uk',
+    Sagaing:'uk',Irrawaddy:'uk',Mandalay:'uk',Pegu:'uk',Arakan:'uk',
+    Magwe:'uk',Tenasserim:'uk',Federated_Shan_States:'uk',
+    Malaya:'uk',Northern_Malay:'uk',Singapore:'uk',Sabah:'uk',
+    Sarawak:'uk',Brunei:'uk',Hong_Kong:'uk',
+    Rhodesia:'uk',Northeast_Rhodesia:'uk',Zambesi:'uk',Nyanza_Rift_Valley:'uk',
+    Uganda:'uk',Tanganyika:'uk',Nairobi:'uk',Mombasa:'uk',Garissa:'uk',
+    British_Somaliland:'uk',Bechuanaland:'uk',Barotziland:'uk',Malawi:'uk',
+    Borno:'uk',Benue:'uk',Lagos:'uk',Sokoto:'uk',Sierra_Leone:'uk',Gambia:'uk',
+    Ghana:'uk',Khartoum:'uk',Kassala:'uk',Upper_Nile:'uk',Blue_Nile:'uk',
+    Bahr_al_Ghazal:'uk',Kurdufan:'uk',North_Darfur:'uk',South_Darfur:'uk',
+    Palestine:'uk',Jordan:'uk',Kuwait:'uk',Bahrain:'uk',Muscat:'uk',
+    Oman:'uk',Socotra:'uk',Province_of_Aden:'uk',Qatar:'uk',
+    Jamaica:'uk',Trinidad:'uk',Bermuda:'uk',British_Guyana:'uk',British_Honduras:'uk',
+    Gibraltar:'uk',Malta:'uk',Cyprus:'uk',Falkland_Islands:'uk',
+    Saint_Helena:'uk',Seychelles:'uk',Mauritius:'uk',Ellice_Islands:'uk',Gilbert_Islands:'uk',
+    // AUSTRALIA
+    New_South_Wales:'au',Victoria:'au',Queensland:'au',South_Australia:'au',
+    Western_Australia:'au',Northern_Territory:'au',Tasmania:'au',
+    North_Queensland:'au',Central_Australia:'au',Southwest_Queensland:'au',
+    North_West_Australia:'au',South_West_Australia:'au',
+    Papua:'au',Kaiser_Wilhelmsland:'au',Bismarck:'au',Nauru:'au',Solomon_Islands:'au',
+    // CANADA
+    British_Columbia:'ca',Upper_British_Columbia:'ca',Alberta:'ca',Saskatchewan:'ca',
+    Manitoba:'ca',Southern_Ontario:'ca',Districts_of_Ontario:'ca',Northern_Ontario:'ca',
+    Ouest_du_Quebec:'ca',Saguenay:'ca',Nord_du_Quebec:'ca',Saint_Lawrence:'ca',
+    Cote_Nord:'ca',Nova_Scotia:'ca',New_Brunswick:'ca',Newfoundland:'ca',
+    Yukon_Territory:'ca',Northwest_Territories:'ca',Nunavut:'ca',Labrador:'ca',
+    Vancouver_Island:'ca',Haida_Gwaii:'ca',
+    // NZ / ZA
+    North_Island:'nz',South_Island:'nz',Fiji:'nz',
+    Cape:'za',Natal:'za',Transvaal:'za',Karas:'za',Khomas:'za',Kunene:'za',
+    // EUROPE
+    Warszawa:'pl',Lodz:'pl',Lublin:'pl',Kielce:'pl',Gdynia:'pl',Katowice:'pl',
+    Bohemia:'cz',Moravia:'cz',North_Sudetenland:'cz',South_Sudetenland:'cz',
+    Eastern_Slovakia:'cz',Western_Slovakia:'cz',Southern_Slovakia:'cz',
+    North_Transdanubia:'hu',South_Transdanubia:'hu',Northern_Hungary:'hu',
+    Transylvania:'ro',North_Transylvania:'ro',Muntenia:'ro',Oltenia:'ro',
+    Moldova:'ro',Bessarabia:'ro',Dobrudja:'ro',Northern_Dobruja:'ro',
+    Bucovina:'ro',Crisana:'ro',Banat:'ro',West_Banat:'ro',
+    Serbia:'yu',Croatia:'yu',North_Slovenia:'yu',Bosnia:'yu',Herzegovina:'yu',
+    Montenegro:'yu',Macedonia:'yu',Southern_Serbia:'yu',Dalmatia:'yu',
+    Kosovo:'yu',Backa:'yu',Morava:'yu',Ljubljana:'yu',
+    Sofia:'bg',Plovdiv:'bg',Burgas:'bg',Moesia:'bg',Varna:'bg',
+    Attica:'gr',Central_Macedonia:'gr',Epirus:'gr',Thessaly:'gr',Crete:'gr',
+    Peloponnese:'gr',Aegean_Islands:'gr',Western_Macedonia:'gr',
+    Dalarna:'se',Norrbotten:'se',Gotland:'se',Ostergotland:'se',Jamtland:'se',Smaland:'se',
+    Finnmark:'no',Nordland:'no',Troms:'no',Vestlandet:'no',
+    Opplandene:'no',Oslofjord:'no',Telemark:'no',Agder:'no',Helgeland:'no',
+    Jylland:'dk',Fyn:'dk',Sjaelland:'dk',Bornholm:'dk',Faroe_Islands:'dk',Greenland:'dk',
+    Lappi:'fi',Oulu:'fi',Kuopio:'fi',Mikkeli:'fi',Uusimaa:'fi',
+    Kymi:'fi',Vaasa:'fi',Turku:'fi',Karjala:'fi',Petsamo:'fi',Salla:'fi',Aland_Islands:'fi',
+    Harju:'ee',Virumaa:'ee',Tartu:'ee',Saaremaa:'ee',
+    Vidzeme:'lv',Latgale:'lv',Kurzeme:'lv',Zemgale:'lv',
+    Kaunas:'lt',Klaipeda:'lt',
+    Holland:'nl',Friesland:'nl',Brabant:'nl',
+    Java:'nl',Sumatra:'nl',Kalimantan:'nl',Interior_Borneo:'nl',Sulawesi:'nl',
+    West_Papua:'nl',The_Moluccas:'nl',Aru_Islands:'nl',Lesser_Sunda_Islands:'nl',
+    Antwerpen:'be',Wallonie:'be',Vlaanderen:'be',Ardennes:'be',
+    Leopoldville:'be',Stanleyville:'be',Coquilhatville:'be',Costermansville:'be',
+    Elisabethville:'be',Lusambo:'be',Rwanda:'be',Burundi:'be',
+    Lisbon:'pt',Porto:'pt',Azores:'pt',Madeira:'pt',
+    Portuguese_Guinea:'pt',Luanda:'pt',Cabinda:'pt',
+    Portuguese_Timor:'pt',Macau:'pt',Cabo_Verde:'pt',Sao_Tome:'pt',
+    Swiss_Plateau:'ch',Eastern_Swiss_Alps:'ch',Western_Swiss_Alps:'ch',Jura_Mountains:'ch',Ticino:'ch',
+    Connaught:'ie',Leinster:'ie',Munster:'ie',Luxembourg:'lu',Iceland:'ic',
+    Asturias:'es',Galicia:'es',Burgos:'es',Salamanca:'es',Valladolid:'es',
+    Ciudad_Real:'es',Murcia:'es',Sevilla:'es',Valencia:'es',Navarra:'es',
+    Madrid:'es',Granada:'es',Extremadura:'es',Islas_Baleares:'es',Islas_Canarias:'es',
+    Spanish_Africa:'es',Sidi_Ifni:'es',Rio_de_Oro:'es',Equatorial_Guinea:'es',
+    // EGYPT / AFRICA
+    Cairo:'eg',Alexandria:'eg',Sinai:'eg',Eastern_Desert:'eg',Western_Desert:'eg',
+    Suez:'eg',Aswan:'eg',Matrouh:'eg',Liberia:'li',
+    // USA
+    New_England:'us',New_York:'us',New_Jersey:'us',Pennsylvania:'us',
+    Maryland:'us',Virginia:'us',West_Virginia:'us',North_Carolina:'us',
+    South_Carolina:'us',Georgia_US:'us',Florida:'us',Alabama:'us',
+    Mississippi:'us',Tennessee:'us',Kentucky:'us',Ohio:'us',Indiana:'us',
+    Michigan:'us',Wisconsin:'us',Illinois:'us',Minnesota:'us',Iowa:'us',
+    Missouri:'us',Arkansas:'us',Louisiana:'us',Texas:'us',Oklahoma:'us',
+    Kansas:'us',Nebraska:'us',South_Dakota:'us',North_Dakota:'us',Montana:'us',
+    Wyoming:'us',Colorado:'us',New_Mexico:'us',Arizona:'us',Utah:'us',
+    Idaho:'us',Washington:'us',Oregon:'us',California:'us',Nevada:'us',
+    Hawaii:'us',Alaska:'us',
+    Manila:'us',Eastern_Visayas:'us',Northern_Mindanao:'us',Western_Visayas:'us',
+    Davao:'us',Bataan:'us',Palawan:'us',Zamboanga:'us',Luzon:'us',
+    Puerto_Rico:'us',Guam:'us',Wake_Island:'us',Midway_Island:'us',
+    // LATIN AMERICA
+    Buenos_Aires:'ar',Mendoza:'ar',Santa_Fe:'ar',Chaco_Austral:'ar',
+    Rio_Negro:'ar',Santa_Cruz_AR:'ar',Formosa:'ar',
+    Antofagasta:'cl',Atacama:'cl',Santiago:'cl',
+    Cundinamarca:'co',Meta:'co',Zulia:'ve',Miranda:'ve',
+    Lima:'pe',Loreto:'pe',Ucayali:'pe',Arequipa:'pe',
+    La_Paz:'bo',Paraguay:'py',Chaco_Boreal:'py',Montevideo:'uy',
+    Ecuador:'ec',Pastaza:'ec',
+    Mexico_City:'mx',Sonora:'mx',Chihuahua:'mx',Jalisco:'mx',Veracruz:'mx',
+    Baja_California:'mx',Tamaulipas:'mx',Yucatan:'mx',Oaxaca:'mx',Chiapas:'mx',
+    Cuba:'cu',Haiti:'ht',Dominican_Republic:'do',Guatemala:'gt',
+    Honduras:'hn',El_Salvador:'sv',Nicaragua:'ni',Costa_Rica:'cr'
+  };
+  // Add special-char keys that can't be bare identifiers
+  t["San'in"]='jp'; t["San'yo"]='jp'; t["Yan'an"]='cc'; t["Ural'sk"]='su';
+  t["Kitakyūshū"]='jp'; t["Minami_Kyūshū"]='jp';
+  t["Rīga"]='lv'; t["Aukštaitija"]='lt'; t["Žemaitija"]='lt'; t["Sūduva"]='lt';
+  t["Pärnu"]='ee'; t["Khövsgöl"]='mo';
+  t["Thüringen"]='de'; t["Württemberg"]='de'; t["Königsberg"]='de';
+  t["Steiermark_Kärnten"]='at'; t["Oberösterreich"]='at'; t["Niederösterreich"]='at';
+  t["País_Vasco"]='es'; t["Cataluña"]='es'; t["Aragón"]='es';
+  t["Gabès"]='fr'; t["Pyrénées_Atlantiques"]='fr';
+  t["São_Paulo"]='br'; t["Paraná"]='br'; t["Espírito_Santo"]='br';
+  t["Goiás"]='br'; t["Pará"]='br'; t["Ceará"]='br';
+  t["Maranhão"]='br'; t["Amapá"]='br'; t["Piauí"]='br';
+  t["Córdoba"]='ar'; t["Tucumán"]='ar'; t["Entre_Ríos"]='ar';
+  t["Tierra_del_Fuego"]='ar'; t["Bolívar"]='ar';
+  t["Araucanía"]='cl'; t["Aysén"]='cl'; t["Arica_y_Tarapacá"]='cl';
+  t["Trøndelag"]='no'; t["Gävleborg"]='se'; t["Värmland"]='se';
+  t["Östergötland"]='se'; t["Södermanland"]='se'; t["Västerbotten"]='se';
+  t["Skåne"]='se'; t["Bohuslän"]='se'; t["Jämtland"]='se';
+  t["Småland"]='se'; t["Västergötland"]='se';
+  t["Häme"]='fi'; t["Åland_Islands"]='fi';
+  t["Kraków"]='pl'; t["Lwów"]='pl'; t["Białystok"]='pl';
+  t["Stanisławów"]='pl'; t["Nowogródek"]='pl'; t["Wilejka"]='pl';
+  t["Polesie"]='pl'; t["Wołyn"]='pl'; t["Płock"]='pl'; t["Poznań"]='pl';
+  t["Podkarpatská_Rus"]='cz'; t["Tešínsko"]='cz';
+  t["Bács_Kiskun"]='hu'; t["Tiszántúl"]='hu';
+  t["Curaçao"]='nl'; t["Suriname"]='nl';
+  t["Diyarbakır"]='tr';
+  t["Panamá"]='us'; t["Panamá_Canal"]='us';
+  t["Paysandú"]='uy'; t["Cerro_Largo"]='uy';
+  return t;
+}());
+
+// ================================================================
+//  FACTION DEFINITIONS
+// ================================================================
+var FAC = {
+  jp:{n:'大日本帝国',sn:'JPN',c:'#c41230',r:'ASIA',d:'アジアの覇者。満洲・朝鮮を掌握し中国大陸・太平洋への野望を拡げよ。',cap:[1244,183],m:2200},
+  mk:{n:'満洲国',sn:'MNK',c:'#e03838',r:'ASIA',d:'日本の後援を受ける傀儡国家。満洲の資源を活かし独自の地位を確立せよ。',cap:[1151,160],m:1200},
+  mg:{n:'蒙古軍政府',sn:'MNG',c:'#e06868',r:'ASIA',d:'内モンゴルの日本支援傀儡政権。モンゴル民族の理想を掲げながら独立を守れ。',cap:[1068,173],m:700},
+  cn:{n:'中華民国',sn:'CHN',c:'#1848b0',r:'ASIA',d:'蒋介石の国民政府。日本の侵略に抗しながら中国統一を成し遂げよ。',cap:[1163,193],m:1800},
+  cc:{n:'中国共産党',sn:'CCP',c:'#991b1b',r:'ASIA',d:'延安に拠る毛沢東の赤軍。農村から都市を包囲し最終的な勝利を目指せ。',cap:[1060,193],m:600},
+  xj:{n:'新疆省',sn:'XNJ',c:'#7c3aed',r:'ASIA',d:'ソ連の影響下にある新疆軍閥。シルクロードの要衝を握り独自に生き残れ。',cap:[940,193],m:800},
+  ti:{n:'チベット',sn:'TBT',c:'#8b5cf6',r:'ASIA',d:'ダライ・ラマが治める高原の仏教国。列強の圧力に抗い独立を守れ。',cap:[960,215],m:500},
+  mo:{n:'モンゴル人民共和国',sn:'MON',c:'#b45309',r:'ASIA',d:'ソ連の支援を受けるモンゴル。広大な草原を守りながら大国の間で生き延びよ。',cap:[1068,155],m:700},
+  tn:{n:'タンヌ・トゥヴァ',sn:'TAN',c:'#92400e',r:'ASIA',d:'ソ連の後援で独立を保つ小共和国。大国の狭間で民族の誇りを守れ。',cap:[1000,135],m:300},
+  su:{n:'ソビエト連邦',sn:'SOV',c:'#7c0a02',r:'EUROPE',d:'スターリン率いる社会主義超大国。ユーラシアを覆う版図を守り世界革命を推進せよ。',cap:[843,113],m:2800},
+  th:{n:'タイ王国',sn:'THA',c:'#1d4ed8',r:'ASIA',d:'唯一独立を保ったアジアの仏教王国。日英の狭間で巧みな外交により主権を守れ。',cap:[1092,253],m:900},
+  ir:{n:'イラン',sn:'IRN',c:'#15803d',r:'ASIA',d:'レザー・シャーが近代化を推進するイラン。石油資源を武器に大国と渡り合え。',cap:[870,193],m:1100},
+  af:{n:'アフガニスタン',sn:'AFG',c:'#92400e',r:'ASIA',d:'英露の狭間で独立を保ってきた山の国。部族を束ね近代国家建設を目指せ。',cap:[940,200],m:600},
+  iq:{n:'イラク王国',sn:'IRQ',c:'#4d7c0f',r:'ASIA',d:'1932年独立のイラク。石油資源を抱える若き王国として中東の覇権を目指せ。',cap:[820,200],m:800},
+  sa:{n:'サウジアラビア王国',sn:'SAU',c:'#166534',r:'ASIA',d:'1932年統一されたアラビアの王国。イスラムの守護者として中東の盟主を目指せ。',cap:[800,223],m:700},
+  ye:{n:'イエメン王国',sn:'YEM',c:'#854d0e',r:'ASIA',d:'アラビア半島南部の古き王国。英国アデンと対抗しながら独立を維持せよ。',cap:[790,248],m:400},
+  tr:{n:'トルコ共和国',sn:'TUR',c:'#b91c1c',r:'EUROPE',d:'アタトゥルクの近代化改革が進むトルコ。欧亜にまたがる戦略的位置を活かせ。',cap:[840,163],m:1100},
+  de:{n:'ドイツ国',sn:'GER',c:'#525252',r:'EUROPE',d:'ヒトラーの第三帝国。ヴェルサイユ条約の束縛を打ち破り欧州の覇者となれ。',cap:[750,127],m:2400},
+  it:{n:'イタリア王国',sn:'ITA',c:'#9b6a1a',r:'EUROPE',d:'ムッソリーニの地中海帝国。北アフリカとエチオピアを平定しローマの栄光を蘇らせよ。',cap:[749,162],m:1800},
+  fr:{n:'フランス共和国',sn:'FRA',c:'#0284c7',r:'EUROPE',d:'自由・平等・博愛の共和国。広大な植民地帝国を保ちながらドイツの脅威に備えよ。',cap:[709,137],m:2100},
+  uk:{n:'大英帝国',sn:'GBR',c:'#1e3a5f',r:'EUROPE',d:'日の沈まない帝国。インド・オーストラリア・アフリカを束ねる世界最大の帝国を守れ。',cap:[700,128],m:3000},
+  au:{n:'オーストラリア連邦',sn:'AUS',c:'#1e40af',r:'OCEANIA',d:'英連邦の若き大陸国家。広大な土地と資源を活かし太平洋の覇権を目指せ。',cap:[1200,420],m:1300},
+  ca:{n:'カナダ自治領',sn:'CAN',c:'#dc2626',r:'AMERICAS',d:'英連邦の北米大国。豊富な資源と広大な国土を持つ多民族国家。',cap:[290,140],m:1400},
+  nz:{n:'ニュージーランド',sn:'NZL',c:'#2563eb',r:'OCEANIA',d:'英連邦の南太平洋国家。太平洋の要衝として自国の利益を守れ。',cap:[1335,440],m:800},
+  za:{n:'南アフリカ連邦',sn:'ZAF',c:'#166534',r:'AFRICA',d:'英連邦の一員ながら独自性を持つ南アフリカ。金とダイヤモンドで繁栄を築け。',cap:[770,390],m:1100},
+  pl:{n:'ポーランド共和国',sn:'POL',c:'#e11d48',r:'EUROPE',d:'東西の大国に挟まれたポーランド。ドイツとソ連の圧力に抗い独立を守れ。',cap:[781,127],m:1100},
+  cz:{n:'チェコスロバキア',sn:'CZE',c:'#b91c1c',r:'EUROPE',d:'ズデーテンを抱えるドイツの次の標的。民主主義の砦として欧州の平和を守れ。',cap:[768,135],m:1200},
+  at:{n:'オーストリア',sn:'AUT',c:'#c2410c',r:'EUROPE',d:'ナチス・ドイツの統合圧力に抗う共和国。独立を維持できるか。',cap:[770,148],m:1000},
+  hu:{n:'ハンガリー王国',sn:'HUN',c:'#16a34a',r:'EUROPE',d:'トリアノン条約で縮小したハンガリー。失われた領土の回復を夢見ながら外交の綱渡りを。',cap:[785,148],m:900},
+  ro:{n:'ルーマニア王国',sn:'ROM',c:'#2563eb',r:'EUROPE',d:'石油大国ルーマニア。ハンガリーとソ連の脅威の間で自国の利益を守れ。',cap:[810,145],m:1100},
+  yu:{n:'ユーゴスラビア王国',sn:'YUG',c:'#0f766e',r:'EUROPE',d:'多民族が同居するバルカンの国。内部の民族対立を抑え大国の間で生き残れ。',cap:[795,158],m:900},
+  bg:{n:'ブルガリア王国',sn:'BGR',c:'#047857',r:'EUROPE',d:'バルカン半島の農業国。大国の後援を得て失われた領土の回復を目指せ。',cap:[808,158],m:700},
+  gr:{n:'ギリシャ',sn:'GRC',c:'#1d4ed8',r:'EUROPE',d:'古代文明の後継国家。地中海とバルカンを舞台に大国間で外交を展開せよ。',cap:[820,170],m:700},
+  se:{n:'スウェーデン王国',sn:'SWE',c:'#1e40af',r:'EUROPE',d:'厳正中立を保つ北欧の強国。鉄鋼と工業力で繁栄しながら戦争を避け続けよ。',cap:[738,100],m:1200},
+  no:{n:'ノルウェー王国',sn:'NOR',c:'#c0392b',r:'EUROPE',d:'フィヨルドの国ノルウェー。海運と漁業で繁栄する北欧王国。中立を守れ。',cap:[718,100],m:1000},
+  dk:{n:'デンマーク王国',sn:'DNK',c:'#e74c3c',r:'EUROPE',d:'グリーンランドを持つ北欧小国。外交の巧みさで生き残りを図れ。',cap:[728,108],m:900},
+  fi:{n:'フィンランド共和国',sn:'FIN',c:'#1e40af',r:'EUROPE',d:'ソ連と国境を接するフィンランド。冬戦争を前に意志の力で独立を守れ。',cap:[795,98],m:800},
+  ee:{n:'エストニア共和国',sn:'EST',c:'#0369a1',r:'EUROPE',d:'バルト海に面したエストニア。ソ連の脅威に抗し民主主義を守れ。',cap:[800,107],m:600},
+  lv:{n:'ラトビア共和国',sn:'LAT',c:'#9f1239',r:'EUROPE',d:'バルト三国の中央ラトビア。ドイツとソ連に挟まれて独立を守れ。',cap:[793,112],m:600},
+  lt:{n:'リトアニア共和国',sn:'LTU',c:'#15803d',r:'EUROPE',d:'クライペダ問題など複雑な外交環境のリトアニア。主権を守れ。',cap:[785,120],m:600},
+  nl:{n:'オランダ王国',sn:'NLD',c:'#ea580c',r:'EUROPE',d:'インドネシアの広大な植民地を持つ。石油豊かな蘭印を守りながら中立を保て。',cap:[709,120],m:1500},
+  be:{n:'ベルギー王国',sn:'BEL',c:'#92400e',r:'EUROPE',d:'コンゴの豊かな資源を持つ小国。二つの大国の間で生き残れ。',cap:[716,125],m:1100},
+  pt:{n:'ポルトガル',sn:'PRT',c:'#166534',r:'EUROPE',d:'サラザールのポルトガル。アフリカ・アジアに広がる植民地帝国を守れ。',cap:[650,148],m:900},
+  ch:{n:'スイス連邦',sn:'CHE',c:'#dc2626',r:'EUROPE',d:'永世中立国スイス。どんな嵐が来ようとも中立の砦を守り続けよ。',cap:[740,143],m:1000},
+  es:{n:'スペイン共和国',sn:'ESP',c:'#c2410c',r:'EUROPE',d:'内戦の火の手が迫る共和国政府。ファシスト勢力の反乱を鎮圧し民主主義を守れ。',cap:[672,152],m:1000},
+  ie:{n:'アイルランド自由国',sn:'IRL',c:'#16a34a',r:'EUROPE',d:'英国から独立したアイルランド。北アイルランド問題を抱えながら真の独立を目指せ。',cap:[650,118],m:700},
+  lu:{n:'ルクセンブルク大公国',sn:'LUX',c:'#dc2626',r:'EUROPE',d:'欧州の小さな大公国。鉄鋼産業で繁栄しながら大国に囲まれて生き残れ。',cap:[724,132],m:600},
+  ic:{n:'アイスランド',sn:'ISL',c:'#0284c7',r:'EUROPE',d:'北大西洋の孤島。デンマークと緩やかな連合を保ちながら独自の道を歩め。',cap:[580,80],m:500},
+  us:{n:'アメリカ合衆国',sn:'USA',c:'#1565c0',r:'AMERICAS',d:'孤立主義の超大国。膨大な経済力と軍事力を持ちながら、いつ国際舞台に立つかが鍵だ。',cap:[400,170],m:4000},
+  br:{n:'ブラジル連邦共和国',sn:'BRA',c:'#15803d',r:'AMERICAS',d:'南米最大の国家。コーヒーと天然資源を武器に南米の覇権を握れ。',cap:[517,377],m:1300},
+  ar:{n:'アルゼンチン共和国',sn:'ARG',c:'#74acdf',r:'AMERICAS',d:'南米南部の農業大国。肉と小麦の輸出で繁栄し南米のリーダーを目指せ。',cap:[474,413],m:1200},
+  mx:{n:'メキシコ合衆国',sn:'MEX',c:'#16a34a',r:'AMERICAS',d:'カルデナス大統領が改革を推進するメキシコ。石油国有化で米国との摩擦を乗り越えよ。',cap:[270,237],m:900},
+  cl:{n:'チリ共和国',sn:'CHL',c:'#dc2626',r:'AMERICAS',d:'アンデス沿いの細長い国。硝石と銅の資源国として太平洋覇権を目指せ。',cap:[400,440],m:800},
+  co:{n:'コロンビア共和国',sn:'COL',c:'#f59e0b',r:'AMERICAS',d:'コーヒーの国コロンビア。カリブと太平洋の二海岸を持つ南米北部の国。',cap:[342,283],m:700},
+  ve:{n:'ベネズエラ',sn:'VEN',c:'#f59e0b',r:'AMERICAS',d:'石油大国ベネズエラ。マラカイボ湖の黒い金で繁栄するが政情不安が続く。',cap:[380,263],m:800},
+  pe:{n:'ペルー共和国',sn:'PER',c:'#dc2626',r:'AMERICAS',d:'インカ文明の後継国家。アマゾンとアンデスにまたがる資源大国。',cap:[355,322],m:700},
+  bo:{n:'ボリビア共和国',sn:'BOL',c:'#d97706',r:'AMERICAS',d:'チャコ戦争で敗れた内陸国。豊かな資源で再建し海へのアクセスを夢見る。',cap:[405,367],m:600},
+  py:{n:'パラグアイ共和国',sn:'PRY',c:'#dc2626',r:'AMERICAS',d:'チャコ戦争でボリビアに勝利。強いアイデンティティで南米を生き抜け。',cap:[450,393],m:500},
+  uy:{n:'ウルグアイ東方共和国',sn:'URY',c:'#1d4ed8',r:'AMERICAS',d:'南米のスイス。高い民主主義と福祉国家を誇るウルグアイで平和な繁栄を。',cap:[467,420],m:600},
+  ec:{n:'エクアドル共和国',sn:'ECU',c:'#f59e0b',r:'AMERICAS',d:'ガラパゴス諸島を持つ赤道直下の国。バナナと石油で繁栄するアンデスの小国。',cap:[325,293],m:500},
+  cu:{n:'キューバ共和国',sn:'CUB',c:'#dc2626',r:'AMERICAS',d:'砂糖の島キューバ。アメリカの影響下から独立性を高め自立した国家を建設せよ。',cap:[290,218],m:500},
+  et:{n:'エチオピア帝国',sn:'ETH',c:'#166534',r:'AFRICA',d:'ハイレ・セラシエ皇帝のエチオピア。イタリアの侵略に抗い国際連盟に訴えながら独立を守れ。',cap:[812,268],m:700},
+  eg:{n:'エジプト王国',sn:'EGY',c:'#d97706',r:'AFRICA',d:'英国の影響下にある独立王国。スエズ運河を持つ文明大国として自立を目指せ。',cap:[790,207],m:900},
+  li:{n:'リベリア共和国',sn:'LBR',c:'#dc2626',r:'AFRICA',d:'アフリカ唯一の黒人共和国。アメリカの影響下で独立を守る西アフリカの小国。',cap:[625,270],m:400}
 };
-// Add special-character keys that can't be in object literals
-Object.assign(TF, {
-  "San'in":    'jp',
-  "San'yo":    'jp',
-  "Yan'an":    'cc',
-  "Ural'sk":   'su',
-  "Tunceli":   'tr',
-  "Diyarbak\u0131r": 'tr',
-  "Kit\u0101kyūshū": 'jp',
-  "Minami_Ky\u016bshū": 'jp',
-  "R\u012bg\u0101": 'lv',
-  "Aukt\u0161aitija": 'lt',
-  "\u017demaiti\u006a\u0061": 'lt',
-  "S\u016bduva":   'lt',
-  "P\u0228rnu":    'ee',
-  "Kh\u00f6vsg\u00f6l": 'mo',
-  "Th\u00fcringen": 'de',
-  "W\u00fcrttemberg": 'de',
-  "Steiermark_K\u00e4rnten": 'at',
-  "Ober\u00f6sterreich": 'at',
-  "Nieder\u00f6sterreich": 'at',
-  "Podk\u00e1rpatsk\u00e1_Rus": 'cz',
-  "Te\u0161\u00ednsko": 'cz',
-  "\u010ceske_Slezsko": 'cz',
-  "Pais_Vasco":    'es',
-  "Catalu\u00f1a": 'es',
-  "Pyr\u00e9n\u00e9es_Atlantiques": 'fr',
-  "Gab\u00e8s":   'fr',
-  "Gij\u00f3n":   'es',
-  "Cura\u00e7ao": 'nl',
-  "Lourenco_Marques": 'pt',
-  "Zambezia_Mocambique": 'pt',
-  "Manica_e_Sofala": 'pt',
-  "S\u00e3o_Paulo": 'br',
-  "Paran\u00e1":   'br',
-  "Esp\u00edrito_Santo": 'br',
-  "Goi\u00e1s":   'br',
-  "Mato_Grosso": 'br',
-  "Par\u00e1":    'br',
-  "Cear\u00e1":   'br',
-  "Maranh\u00e3o": 'br',
-  "Amap\u00e1":   'br',
-  "Rondônia":    'br',
-  "Piau\u00ed":   'br',
-  "C\u00f3rdoba": 'ar',
-  "Tucum\u00e1n": 'ar',
-  "Entre_R\u00edos": 'ar',
-  "Tierra_del_Fuego": 'ar',
-  "Arauc\u00e4n\u00eda": 'cl',
-  "Ays\u00e9n":   'cl',
-  "Arica_y_Tarapac\u00e1": 'cl',
-  "Bogot\u00e1":  'co',
-  "Panam\u00e1":  'us',
-  "Panam\u00e1_Canal": 'us'
-});
-
-const FAC = {
-  jp:{n:'大日本帝国',en:'Empire of Japan',sn:'JPN',c:'#c41230',r:'ASIA',
-    d:'アジアの覇者。満洲・朝鮮を掌握し中国大陸・太平洋への野望を拡げよ。',cap:[1244,183],m:2200},
-  mk:{n:'満洲国',en:'Manchukuo',sn:'MNK',c:'#e03838',r:'ASIA',
-    d:'日本の後援を受ける傀儡国家。満洲の資源を活かし独自の地位を確立せよ。',cap:[1151,160],m:1200},
-  mg:{n:'蒙古軍政府',en:'Mengjiang',sn:'MNG',c:'#e06868',r:'ASIA',
-    d:'内モンゴルの日本支援傀儡政権。モンゴル民族の理想を掲げながら独立を守れ。',cap:[1068,173],m:700},
-  cn:{n:'中華民国',en:'Republic of China',sn:'CHN',c:'#1848b0',r:'ASIA',
-    d:'蒋介石の国民政府。日本の侵略に抗しながら中国統一を成し遂げよ。',cap:[1163,193],m:1800},
-  cc:{n:'中国共産党',en:'CCP / Red Army',sn:'CCP',c:'#991b1b',r:'ASIA',
-    d:'延安に拠る毛沢東の赤軍。農村から都市を包囲し最終的な勝利を目指せ。',cap:[1060,193],m:600},
-  xj:{n:'新疆省',en:'Xinjiang Warlord',sn:'XNJ',c:'#7c3aed',r:'ASIA',
-    d:'ソ連の影響下にある新疆軍閥。シルクロードの要衝を握り独自に生き残れ。',cap:[940,193],m:800},
-  ti:{n:'チベット',en:'Tibet',sn:'TBT',c:'#8b5cf6',r:'ASIA',
-    d:'ダライ・ラマが治める高原の仏教国。列強の圧力に抗い独立を守れ。',cap:[960,215],m:500},
-  mo:{n:'モンゴル人民共和国',en:'Mongolia MPR',sn:'MON',c:'#b45309',r:'ASIA',
-    d:'ソ連の支援を受けるモンゴル。広大な草原を守りながら大国の間で生き延びよ。',cap:[1068,155],m:700},
-  tn:{n:'タンヌ・トゥヴァ',en:'Tannu Tuva',sn:'TAN',c:'#92400e',r:'ASIA',
-    d:'ソ連の後援で独立を保つ小共和国。大国の狭間で民族の誇りを守れ。',cap:[1000,135],m:300},
-  su:{n:'ソビエト連邦',en:'Soviet Union',sn:'SOV',c:'#7c0a02',r:'EUROPE',
-    d:'スターリン率いる社会主義超大国。ユーラシアを覆う版図を守り世界革命を推進せよ。',cap:[843,113],m:2800},
-  th:{n:'タイ王国',en:'Kingdom of Thailand',sn:'THA',c:'#1d4ed8',r:'ASIA',
-    d:'唯一独立を保ったアジアの仏教王国。日英の狭間で巧みな外交により主権を守れ。',cap:[1092,253],m:900},
-  ir:{n:'イラン',en:'Iran (Persia)',sn:'IRN',c:'#15803d',r:'ASIA',
-    d:'レザー・シャーが近代化を推進するイラン。石油資源を武器に大国と渡り合え。',cap:[870,193],m:1100},
-  af:{n:'アフガニスタン',en:'Afghanistan',sn:'AFG',c:'#92400e',r:'ASIA',
-    d:'英露の狭間で独立を保ってきた山の国。部族を束ね近代国家建設を目指せ。',cap:[940,200],m:600},
-  iq:{n:'イラク王国',en:'Kingdom of Iraq',sn:'IRQ',c:'#4d7c0f',r:'ASIA',
-    d:'1932年独立のイラク。石油資源を抱える若き王国として中東の覇権を目指せ。',cap:[820,200],m:800},
-  sa:{n:'サウジアラビア王国',en:'Saudi Arabia',sn:'SAU',c:'#166534',r:'ASIA',
-    d:'1932年統一されたアラビアの王国。イスラムの守護者として中東の盟主を目指せ。',cap:[800,223],m:700},
-  ye:{n:'イエメン王国',en:'Yemen Imamate',sn:'YEM',c:'#854d0e',r:'ASIA',
-    d:'アラビア半島南部の古き王国。英国アデンと対抗しながら独立を維持せよ。',cap:[790,248],m:400},
-  tr:{n:'トルコ共和国',en:'Republic of Turkey',sn:'TUR',c:'#b91c1c',r:'EUROPE',
-    d:'アタトゥルクの近代化改革が進むトルコ。欧亜にまたがる戦略的位置を活かせ。',cap:[840,163],m:1100},
-  de:{n:'ドイツ国',en:'German Reich',sn:'GER',c:'#525252',r:'EUROPE',
-    d:'ヒトラーの第三帝国。ヴェルサイユ条約の束縛を打ち破り欧州の覇者となれ。',cap:[750,127],m:2400},
-  it:{n:'イタリア王国',en:'Kingdom of Italy',sn:'ITA',c:'#9b6a1a',r:'EUROPE',
-    d:'ムッソリーニの地中海帝国。北アフリカとエチオピアを平定しローマの栄光を蘇らせよ。',cap:[749,162],m:1800},
-  fr:{n:'フランス共和国',en:'French Republic',sn:'FRA',c:'#0284c7',r:'EUROPE',
-    d:'自由・平等・博愛の共和国。広大な植民地帝国を保ちながらドイツの脅威に備えよ。',cap:[709,137],m:2100},
-  uk:{n:'大英帝国',en:'British Empire',sn:'GBR',c:'#1e3a5f',r:'EUROPE',
-    d:'日の沈まない帝国。インド・オーストラリア・アフリカを束ねる世界最大の帝国を守れ。',cap:[700,128],m:3000},
-  au:{n:'オーストラリア連邦',en:'Australia',sn:'AUS',c:'#1e40af',r:'OCEANIA',
-    d:'英連邦の若き大陸国家。広大な土地と資源を活かし太平洋の覇権を目指せ。',cap:[1200,420],m:1300},
-  ca:{n:'カナダ自治領',en:'Canada',sn:'CAN',c:'#dc2626',r:'AMERICAS',
-    d:'英連邦の北米大国。豊富な資源と広大な国土を持つ多民族国家。',cap:[290,140],m:1400},
-  nz:{n:'ニュージーランド',en:'New Zealand',sn:'NZL',c:'#2563eb',r:'OCEANIA',
-    d:'英連邦の南太平洋国家。太平洋の要衝として自国の利益を守れ。',cap:[1335,440],m:800},
-  za:{n:'南アフリカ連邦',en:'South Africa',sn:'ZAF',c:'#166534',r:'AFRICA',
-    d:'英連邦の一員ながら独自性を持つ南アフリカ。金とダイヤモンドで繁栄を築け。',cap:[770,390],m:1100},
-  pl:{n:'ポーランド共和国',en:'Republic of Poland',sn:'POL',c:'#e11d48',r:'EUROPE',
-    d:'東西の大国に挟まれたポーランド。ドイツとソ連の圧力に抗い独立を守れ。',cap:[781,127],m:1100},
-  cz:{n:'チェコスロバキア',en:'Czechoslovakia',sn:'CZE',c:'#b91c1c',r:'EUROPE',
-    d:'ズデーテンを抱えるドイツの次の標的。民主主義の砦として欧州の平和を守れ。',cap:[768,135],m:1200},
-  at:{n:'オーストリア',en:'Austria',sn:'AUT',c:'#c2410c',r:'EUROPE',
-    d:'ナチス・ドイツの統合圧力に抗う共和国。独立を維持できるか。',cap:[770,148],m:1000},
-  hu:{n:'ハンガリー王国',en:'Kingdom of Hungary',sn:'HUN',c:'#16a34a',r:'EUROPE',
-    d:'トリアノン条約で縮小したハンガリー。失われた領土の回復を夢見ながら外交の綱渡りを。',cap:[785,148],m:900},
-  ro:{n:'ルーマニア王国',en:'Kingdom of Romania',sn:'ROM',c:'#2563eb',r:'EUROPE',
-    d:'石油大国ルーマニア。ハンガリーとソ連の脅威の間で自国の利益を守れ。',cap:[810,145],m:1100},
-  yu:{n:'ユーゴスラビア王国',en:'Kingdom of Yugoslavia',sn:'YUG',c:'#0f766e',r:'EUROPE',
-    d:'多民族が同居するバルカンの国。内部の民族対立を抑え大国の間で生き残れ。',cap:[795,158],m:900},
-  bg:{n:'ブルガリア王国',en:'Kingdom of Bulgaria',sn:'BGR',c:'#047857',r:'EUROPE',
-    d:'バルカン半島の農業国。大国の後援を得て失われた領土の回復を目指せ。',cap:[808,158],m:700},
-  gr:{n:'ギリシャ',en:'Greece',sn:'GRC',c:'#1d4ed8',r:'EUROPE',
-    d:'古代文明の後継国家。地中海とバルカンを舞台に大国間で外交を展開せよ。',cap:[820,170],m:700},
-  se:{n:'スウェーデン王国',en:'Kingdom of Sweden',sn:'SWE',c:'#1e40af',r:'EUROPE',
-    d:'厳正中立を保つ北欧の強国。鉄鋼と工業力で繁栄しながら戦争を避け続けよ。',cap:[738,100],m:1200},
-  no:{n:'ノルウェー王国',en:'Kingdom of Norway',sn:'NOR',c:'#c0392b',r:'EUROPE',
-    d:'フィヨルドの国ノルウェー。海運と漁業で繁栄する北欧王国。中立を守れ。',cap:[718,100],m:1000},
-  dk:{n:'デンマーク王国',en:'Kingdom of Denmark',sn:'DNK',c:'#e74c3c',r:'EUROPE',
-    d:'グリーンランドを持つ北欧小国。外交の巧みさで生き残りを図れ。',cap:[728,108],m:900},
-  fi:{n:'フィンランド共和国',en:'Republic of Finland',sn:'FIN',c:'#1e40af',r:'EUROPE',
-    d:'ソ連と国境を接するフィンランド。冬戦争を前に意志の力で独立を守れ。',cap:[795,98],m:800},
-  ee:{n:'エストニア共和国',en:'Republic of Estonia',sn:'EST',c:'#0369a1',r:'EUROPE',
-    d:'バルト海に面したエストニア。ソ連の脅威に抗し民主主義を守れ。',cap:[800,107],m:600},
-  lv:{n:'ラトビア共和国',en:'Republic of Latvia',sn:'LAT',c:'#9f1239',r:'EUROPE',
-    d:'バルト三国の中央ラトビア。ドイツとソ連に挟まれて独立を守れ。',cap:[793,112],m:600},
-  lt:{n:'リトアニア共和国',en:'Republic of Lithuania',sn:'LTU',c:'#15803d',r:'EUROPE',
-    d:'クライペダ問題など複雑な外交環境のリトアニア。主権を守れ。',cap:[785,120],m:600},
-  nl:{n:'オランダ王国',en:'Kingdom of Netherlands',sn:'NLD',c:'#ea580c',r:'EUROPE',
-    d:'インドネシアの広大な植民地を持つ。石油豊かな蘭印を守りながら中立を保て。',cap:[709,120],m:1500},
-  be:{n:'ベルギー王国',en:'Kingdom of Belgium',sn:'BEL',c:'#92400e',r:'EUROPE',
-    d:'コンゴの豊かな資源を持つ小国。二つの大国の間で生き残れ。',cap:[716,125],m:1100},
-  pt:{n:'ポルトガル',en:'Portugal',sn:'PRT',c:'#166534',r:'EUROPE',
-    d:'サラザールのポルトガル。アフリカ・アジアに広がる植民地帝国を守れ。',cap:[650,148],m:900},
-  ch:{n:'スイス連邦',en:'Switzerland',sn:'CHE',c:'#dc2626',r:'EUROPE',
-    d:'永世中立国スイス。どんな嵐が来ようとも中立の砦を守り続けよ。',cap:[740,143],m:1000},
-  es:{n:'スペイン共和国',en:'Spanish Republic',sn:'ESP',c:'#c2410c',r:'EUROPE',
-    d:'内戦の火の手が迫る共和国政府。ファシスト勢力の反乱を鎮圧し民主主義を守れ。',cap:[672,152],m:1000},
-  ie:{n:'アイルランド自由国',en:'Irish Free State',sn:'IRL',c:'#16a34a',r:'EUROPE',
-    d:'英国から独立したアイルランド。北アイルランド問題を抱えながら真の独立を目指せ。',cap:[650,118],m:700},
-  lu:{n:'ルクセンブルク大公国',en:'Luxembourg',sn:'LUX',c:'#dc2626',r:'EUROPE',
-    d:'欧州の小さな大公国。鉄鋼産業で繁栄しながら大国に囲まれて生き残れ。',cap:[724,132],m:600},
-  ic:{n:'アイスランド',en:'Iceland',sn:'ISL',c:'#0284c7',r:'EUROPE',
-    d:'北大西洋の孤島。デンマークと緩やかな連合を保ちながら独自の道を歩め。',cap:[580,80],m:500},
-  us:{n:'アメリカ合衆国',en:'United States',sn:'USA',c:'#1565c0',r:'AMERICAS',
-    d:'孤立主義の超大国。膨大な経済力と軍事力を持ちながら、いつ国際舞台に立つかが鍵だ。',cap:[400,170],m:4000},
-  br:{n:'ブラジル連邦共和国',en:'Brazil',sn:'BRA',c:'#15803d',r:'AMERICAS',
-    d:'南米最大の国家。コーヒーと天然資源を武器に南米の覇権を握れ。',cap:[517,377],m:1300},
-  ar:{n:'アルゼンチン共和国',en:'Argentina',sn:'ARG',c:'#74acdf',r:'AMERICAS',
-    d:'南米南部の農業大国。肉と小麦の輸出で繁栄し南米のリーダーを目指せ。',cap:[474,413],m:1200},
-  mx:{n:'メキシコ合衆国',en:'Mexico',sn:'MEX',c:'#16a34a',r:'AMERICAS',
-    d:'カルデナス大統領が改革を推進するメキシコ。石油国有化で米国との摩擦を乗り越えよ。',cap:[270,237],m:900},
-  cl:{n:'チリ共和国',en:'Chile',sn:'CHL',c:'#dc2626',r:'AMERICAS',
-    d:'アンデス沿いの細長い国。硝石と銅の資源国として太平洋覇権を目指せ。',cap:[400,440],m:800},
-  co:{n:'コロンビア共和国',en:'Colombia',sn:'COL',c:'#f59e0b',r:'AMERICAS',
-    d:'コーヒーの国コロンビア。カリブと太平洋の二海岸を持つ南米北部の国。',cap:[342,283],m:700},
-  ve:{n:'ベネズエラ',en:'Venezuela',sn:'VEN',c:'#f59e0b',r:'AMERICAS',
-    d:'石油大国ベネズエラ。マラカイボ湖の黒い金で繁栄するが政情不安が続く。',cap:[380,263],m:800},
-  pe:{n:'ペルー共和国',en:'Peru',sn:'PER',c:'#dc2626',r:'AMERICAS',
-    d:'インカ文明の後継国家。アマゾンとアンデスにまたがる資源大国。',cap:[355,322],m:700},
-  bo:{n:'ボリビア共和国',en:'Bolivia',sn:'BOL',c:'#d97706',r:'AMERICAS',
-    d:'チャコ戦争で敗れた内陸国。豊かな資源で再建し海へのアクセスを夢見る。',cap:[405,367],m:600},
-  py:{n:'パラグアイ共和国',en:'Paraguay',sn:'PRY',c:'#dc2626',r:'AMERICAS',
-    d:'チャコ戦争でボリビアに勝利。強いアイデンティティで南米を生き抜け。',cap:[450,393],m:500},
-  uy:{n:'ウルグアイ東方共和国',en:'Uruguay',sn:'URY',c:'#1d4ed8',r:'AMERICAS',
-    d:'南米のスイス。高い民主主義と福祉国家を誇るウルグアイで平和な繁栄を。',cap:[467,420],m:600},
-  ec:{n:'エクアドル共和国',en:'Ecuador',sn:'ECU',c:'#f59e0b',r:'AMERICAS',
-    d:'ガラパゴス諸島を持つ赤道直下の国。バナナと石油で繁栄するアンデスの小国。',cap:[325,293],m:500},
-  cu:{n:'キューバ共和国',en:'Cuba',sn:'CUB',c:'#dc2626',r:'AMERICAS',
-    d:'砂糖の島キューバ。アメリカの影響下から独立性を高め自立した国家を建設せよ。',cap:[290,218],m:500},
-  et:{n:'エチオピア帝国',en:'Ethiopian Empire',sn:'ETH',c:'#166534',r:'AFRICA',
-    d:'ハイレ・セラシエ皇帝のエチオピア。イタリアの侵略に抗い国際連盟に訴えながら独立を守れ。',cap:[812,268],m:700},
-  eg:{n:'エジプト王国',en:'Kingdom of Egypt',sn:'EGY',c:'#d97706',r:'AFRICA',
-    d:'英国の影響下にある独立王国。スエズ運河を持つナイル川沿いの文明大国として自立を目指せ。',cap:[790,207],m:900},
-  li:{n:'リベリア共和国',en:'Liberia',sn:'LBR',c:'#dc2626',r:'AFRICA',
-    d:'アフリカ唯一の黒人共和国。アメリカの影響下で独立を守る西アフリカの小国。',cap:[625,270],m:400}
-};
-
-const REGIONS = ['EUROPE','ASIA','AMERICAS','AFRICA','OCEANIA'];
-
-const RELS_1936 = [
+var REGIONS = ['EUROPE','ASIA','AMERICAS','AFRICA','OCEANIA'];
+var RELS_1936 = [
   ['it','et','war'],['mk','cn','war'],['mg','cn','war'],
   ['uk','fr','allied'],['uk','au','allied'],['uk','ca','allied'],
   ['uk','nz','allied'],['uk','za','allied'],
@@ -620,930 +566,979 @@ const RELS_1936 = [
   ['de','su','hostile'],['de','fr','hostile'],['de','uk','hostile'],
   ['de','pl','hostile'],['de','cz','hostile'],['it','uk','hostile']
 ];
-
-const ECO_BONUS = {
+var ECO_BASE = {
   Kanto:42,Kansai:33,Liaoning:22,Taiwan:19,Moscow:44,Leningrad:28,
-  Stalingrad:20,Kharkov:22,Kyiv:24,Nanjing:28,Shanghai:36,Guangzhou:25,
-  Wuhan:20,Brandenburg:26,Oberbayern:20,Sachsen:22,Westfalen:24,Rhineland:28,
-  Lazio:22,Lombardia:26,Piemonte:18,Ile_de_France:34,Greater_London_Area:38,
-  Bombay:24,West_Bengal:20,New_England:30,New_York:36,Texas:22,California:24
+  Kharkov:22,Kyiv:24,Nanjing:28,Shanghai:36,Guangzhou:25,Wuhan:20,
+  Brandenburg:26,Sachsen:22,Westfalen:24,Rhineland:28,Lazio:22,Lombardia:26,
+  Ile_de_France:34,Greater_London_Area:38,Bombay:24,West_Bengal:20,
+  New_England:30,New_York:36,Texas:22,California:24
 };
 
-const BASE_U = {
-  jp:{i:22,t:6,a:5},mk:{i:15,t:4,a:3},mg:{i:10,t:2,a:1},
-  cn:{i:14,t:2,a:2},cc:{i:8,t:1,a:1},xj:{i:8,t:1,a:0},
-  ti:{i:5,t:0,a:0},mo:{i:8,t:2,a:0},tn:{i:3,t:0,a:0},
-  su:{i:18,t:5,a:3},th:{i:10,t:1,a:1},ir:{i:10,t:2,a:1},
-  af:{i:8,t:0,a:0},iq:{i:8,t:1,a:0},sa:{i:6,t:0,a:0},
-  ye:{i:4,t:0,a:0},tr:{i:12,t:2,a:2},
-  de:{i:24,t:8,a:5},it:{i:18,t:5,a:3},fr:{i:18,t:5,a:3},
-  uk:{i:16,t:4,a:3},au:{i:14,t:3,a:2},ca:{i:14,t:3,a:2},
-  nz:{i:10,t:2,a:1},za:{i:12,t:3,a:2},
-  pl:{i:14,t:3,a:2},cz:{i:14,t:3,a:2},at:{i:10,t:2,a:2},
-  hu:{i:10,t:2,a:1},ro:{i:12,t:2,a:2},yu:{i:12,t:2,a:2},
-  bg:{i:10,t:1,a:1},gr:{i:10,t:1,a:1},
-  se:{i:12,t:2,a:2},no:{i:10,t:1,a:1},dk:{i:8,t:1,a:1},
-  fi:{i:10,t:1,a:1},ee:{i:6,t:0,a:0},lv:{i:6,t:0,a:0},
-  lt:{i:6,t:0,a:0},nl:{i:10,t:2,a:2},be:{i:10,t:2,a:1},
-  pt:{i:10,t:1,a:1},ch:{i:10,t:2,a:2},es:{i:12,t:2,a:2},
-  ie:{i:6,t:0,a:0},lu:{i:3,t:0,a:0},ic:{i:2,t:0,a:0},
-  us:{i:18,t:5,a:4},br:{i:12,t:2,a:2},ar:{i:12,t:2,a:2},
-  mx:{i:10,t:1,a:1},cl:{i:10,t:1,a:1},co:{i:8,t:1,a:0},
-  ve:{i:8,t:1,a:0},pe:{i:8,t:1,a:0},bo:{i:6,t:0,a:0},
-  py:{i:6,t:0,a:0},uy:{i:6,t:0,a:0},ec:{i:5,t:0,a:0},
-  cu:{i:5,t:0,a:0},et:{i:8,t:0,a:0},eg:{i:10,t:1,a:1},li:{i:3,t:0,a:0}
-};
-function mkU(f){
-  const b=BASE_U[f]||{i:5,t:0,a:0};
-  const r=()=>Math.floor(Math.random()*5)-2;
-  return{i:Math.max(0,b.i+r()),t:Math.max(0,b.t+r()),a:Math.max(0,b.a+r())};
-}
+// ================================================================
+//  GAME OBJECT  — single namespace, no globals except G
+// ================================================================
+var G = (function() {
+  'use strict';
 
-// ── STATE ────────────────────────────────────────────────────────
-let G={player:null,money:0,turn:0,yr:1936,mo:1,
-  sel:null,lastOwn:null,atkMode:null,atkFrom:null,hl:new Set(),sendPct:50,
-  curUnit:'i',rel:{},wCaps:{},negot:null};
-const S={},ADJ={};
+  // ── State ────────────────────────────────────────────────────
+  var player = null;
+  var money  = 0;
+  var turn   = 0;
+  var yr     = 1936;
+  var mo     = 1;
+  var sel    = null;
+  var lastOwn= null;
+  var atkMode= null;
+  var atkFrom= null;
+  var hl     = {};        // highlighted ids
+  var sendPct= 50;
+  var curUnit= 'i';
+  var rel    = {};        // relation map
+  var wCaps  = {};        // war captures
+  var negot  = null;
+  var S      = {};        // territories
+  var ADJ    = {};        // adjacency
+  var _mT    = null;
+  var _mId   = null;
+  var _af    = null;
+  var _at    = null;
+  var _am    = null;
 
-const P=()=>G.player;
-function rk(a,b){return[a,b].sort().join('-')}
-function getRel(a,b){return G.rel[rk(a,b)]||'peace'}
-function setRel(a,b,v){G.rel[rk(a,b)]=v;updTB()}
-function isWar(a,b){return getRel(a,b)==='war'}
-function isAlly(a,b){return getRel(a,b)==='allied'}
-function cAtk(u){return u.i*1.0+u.t*3.2}
-function cDef(u){return u.i*1.5+u.t*2.0+u.a*0.4}
-function cPow(u){return Math.round(cAtk(u)+cDef(u))}
-function incOf(f){let s=0;for(const t of Object.values(S))if(t.own===f)s+=t.eco;return s}
-function cntOf(f){let c=0;for(const t of Object.values(S))if(t.own===f)c++;return c}
-function powOf(f){let s=0;for(const t of Object.values(S))if(t.own===f)s+=cPow(t.u);return s}
-function adj(id){return ADJ[id]?[...ADJ[id]]:[]}
-function fcol(f){return FAC[f]?.c||'#3c5c28'}
+  // ── Helpers ──────────────────────────────────────────────────
+  function rk(a,b){return[a,b].sort().join('-')}
+  function getRel(a,b){return rel[rk(a,b)]||'peace'}
+  function setRel(a,b,v){rel[rk(a,b)]=v;updTB()}
+  function isWar(a,b){return getRel(a,b)==='war'}
+  function isAlly(a,b){return getRel(a,b)==='allied'}
+  function cAtk(u){return(u.i||0)*1.0+(u.t||0)*3.2}
+  function cDef(u){return(u.i||0)*1.5+(u.t||0)*2.0+(u.a||0)*0.4}
+  function cPow(u){return Math.round(cAtk(u)+cDef(u))}
+  function incOf(f){var s=0;for(var id in S)if(S[id].own===f)s+=S[id].eco;return s}
+  function cntOf(f){var c=0;for(var id in S)if(S[id].own===f)c++;return c}
+  function powOf(f){var s=0;for(var id in S)if(S[id].own===f)s+=cPow(S[id].u);return s}
+  function adjOf(id){return ADJ[id]?Object.keys(ADJ[id]):[];}
+  function fcol(f){return(FAC[f]&&FAC[f].c)||'#3c5c28'}
+  function mkU(f){
+    var B={jp:{i:22,t:6,a:5},mk:{i:15,t:4,a:3},mg:{i:10,t:2,a:1},
+           cn:{i:14,t:2,a:2},cc:{i:8,t:1,a:1},xj:{i:8,t:1,a:0},
+           ti:{i:5,t:0,a:0},mo:{i:8,t:2,a:0},tn:{i:3,t:0,a:0},
+           su:{i:18,t:5,a:3},th:{i:10,t:1,a:1},ir:{i:10,t:2,a:1},
+           af:{i:8,t:0,a:0},iq:{i:8,t:1,a:0},sa:{i:6,t:0,a:0},
+           ye:{i:4,t:0,a:0},tr:{i:12,t:2,a:2},
+           de:{i:24,t:8,a:5},it:{i:18,t:5,a:3},fr:{i:18,t:5,a:3},
+           uk:{i:16,t:4,a:3},au:{i:14,t:3,a:2},ca:{i:14,t:3,a:2},
+           nz:{i:10,t:2,a:1},za:{i:12,t:3,a:2},
+           pl:{i:14,t:3,a:2},cz:{i:14,t:3,a:2},at:{i:10,t:2,a:2},
+           hu:{i:10,t:2,a:1},ro:{i:12,t:2,a:2},yu:{i:12,t:2,a:2},
+           bg:{i:10,t:1,a:1},gr:{i:10,t:1,a:1},
+           se:{i:12,t:2,a:2},no:{i:10,t:1,a:1},dk:{i:8,t:1,a:1},
+           fi:{i:10,t:1,a:1},ee:{i:6,t:0,a:0},lv:{i:6,t:0,a:0},
+           lt:{i:6,t:0,a:0},nl:{i:10,t:2,a:2},be:{i:10,t:2,a:1},
+           pt:{i:10,t:1,a:1},ch:{i:10,t:2,a:2},es:{i:12,t:2,a:2},
+           ie:{i:6,t:0,a:0},lu:{i:3,t:0,a:0},ic:{i:2,t:0,a:0},
+           us:{i:18,t:5,a:4},br:{i:12,t:2,a:2},ar:{i:12,t:2,a:2},
+           mx:{i:10,t:1,a:1},cl:{i:10,t:1,a:1},co:{i:8,t:1,a:0},
+           ve:{i:8,t:1,a:0},pe:{i:8,t:1,a:0},bo:{i:6,t:0,a:0},
+           py:{i:6,t:0,a:0},uy:{i:6,t:0,a:0},ec:{i:5,t:0,a:0},
+           cu:{i:5,t:0,a:0},et:{i:8,t:0,a:0},eg:{i:10,t:1,a:1},li:{i:3,t:0,a:0}};
+    var b=B[f]||{i:5,t:0,a:0};
+    var r=function(){return Math.floor(Math.random()*5)-2;};
+    return{i:Math.max(0,b.i+r()),t:Math.max(0,b.t+r()),a:Math.max(0,b.a+r())};
+  }
 
-// ── FACTION SELECT ───────────────────────────────────────────────
-function buildFsel(){
-  const tabs=document.getElementById('ftabs');
-  REGIONS.forEach((r,i)=>{
-    const b=document.createElement('button');
-    b.className='ftab'+(i===0?' on':'');b.textContent=r;
-    b.onclick=()=>{tabs.querySelectorAll('.ftab').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderCards(r)};
-    tabs.appendChild(b);
-  });
-  renderCards('EUROPE');
-}
-function renderCards(region){
-  const g=document.getElementById('fgrid');g.innerHTML='';
-  Object.entries(FAC).filter(([,f])=>f.r===region).forEach(([fid,f])=>{
-    const c=document.createElement('div');c.className='fc';
-    c.style.setProperty('--cc',f.c);
-    c.innerHTML=`<div class="fc-sn">${f.sn}</div><div class="fc-n">${f.n}</div><div class="fc-e">${f.en.toUpperCase()}</div><div class="fc-d">${f.d}</div><button class="fc-b" onclick="startGame('${fid}')">SELECT &#9654;</button>`;
-    g.appendChild(c);
-  });
-}
+  // ── Loading UI ───────────────────────────────────────────────
+  function ldp(pct,txt){
+    var f=document.getElementById('ldf');
+    var s=document.getElementById('lds');
+    if(f)f.style.width=pct+'%';
+    if(s)s.textContent=txt;
+  }
+  function showErr(msg){
+    var e=document.getElementById('ld-err');
+    if(e){e.textContent=msg;e.classList.add('on');}
+    ldp(100,'ERROR — 上のメッセージを確認してください');
+    addLog('[ERROR] '+msg,'lw');
+  }
 
-// ── GAME START ───────────────────────────────────────────────────
-function ldp(p,t){document.getElementById('ldf').style.width=p+'%';document.getElementById('lds').textContent=t}
-async function startGame(fid){
-  document.getElementById('fsel').classList.add('hide');
-  document.getElementById('ld').classList.remove('hide');
-  G.player=fid;G.money=FAC[fid].m;G.rel={};
-  for(const[a,b,r]of RELS_1936)G.rel[rk(a,b)]=r;
-  document.getElementById('tb-n').textContent=FAC[fid].n;
-  await loadSVG();
-}
+  // ── Faction Selection ────────────────────────────────────────
+  function buildFsel(){
+    var tabs=document.getElementById('ftabs');
+    if(!tabs)return;
+    REGIONS.forEach(function(reg,i){
+      var btn=document.createElement('button');
+      btn.className='ftab'+(i===0?' on':'');
+      btn.textContent=reg;
+      btn.onclick=function(){
+        tabs.querySelectorAll('.ftab').forEach(function(b){b.classList.remove('on');});
+        btn.classList.add('on');
+        renderCards(reg);
+      };
+      tabs.appendChild(btn);
+    });
+    renderCards('EUROPE');
+  }
+  function renderCards(region){
+    var g=document.getElementById('fgrid');
+    if(!g)return;
+    g.innerHTML='';
+    Object.keys(FAC).forEach(function(fid){
+      var f=FAC[fid];
+      if(f.r!==region)return;
+      var c=document.createElement('div');
+      c.className='fc';
+      c.style.setProperty('--cc',f.c);
+      // Use data attribute to avoid quoting issues in onclick
+      c.innerHTML='<div class="fc-sn">'+f.sn+'</div>'+
+        '<div class="fc-n">'+f.n+'</div>'+
+        '<div class="fc-e">'+(f.en||f.sn)+'</div>'+
+        '<div class="fc-d">'+f.d+'</div>'+
+        '<button class="fc-b" data-fid="'+fid+'">SELECT &#9654;</button>';
+      c.querySelector('.fc-b').addEventListener('click',function(e){
+        e.stopPropagation();
+        startGame(e.currentTarget.getAttribute('data-fid'));
+      });
+      g.appendChild(c);
+    });
+  }
 
-// ── SVG LOAD ─────────────────────────────────────────────────────
-const SKIP=/^(pattern|diagonal|vertical|horizontal|crosshatch|checkers|texture|circles|raindrops|subtlepatch|wrapper|svg-|map-|legend|credit)/i;
-async function loadSVG(){
-  ldp(10,'SVGマップ読み込み中...');
-  let txt;
-  try{
-    // Try both possible filenames
-    let r=await fetch('MapChart_Map.svg.svg').catch(()=>null);
-    if(!r||!r.ok) r=await fetch('MapChart_Map.svg');
-    if(!r||!r.ok) throw new Error('SVG not found');
-    txt=await r.text();
-  }catch(e){document.getElementById('lds').textContent='ERROR: MapChart_Map.svg が同ディレクトリにありません。';return}
-  ldp(35,'領土データ解析中...');
-  injectSVG(txt);
-  ldp(62,'隣接関係計算中...');
-  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-  await new Promise(r=>setTimeout(r,80));
-  buildAdj();
-  ldp(84,'霧と視界を適用中...');
-  applyFoW();ldp(96,'初期化完了...');
-  updTB();updPanel(null);setupCtrl();
-  document.getElementById('ld').classList.add('hide');
-  log('1936年1月 — '+FAC[P()].n+'として世界大戦略を開始。','lt');
-  log('自国領土クリック → 攻勢命令 → 赤域クリックで攻撃','ld2');
-  log('視界外の敵兵力は「???」表示。包囲(ENCIRCLED)で防御力-50%','ld2');
-}
+  // ── Game Start ───────────────────────────────────────────────
+  function startGame(fid){
+    if(!FAC[fid]){console.error('Unknown faction:',fid);return;}
+    // 1. Hide faction select
+    var fsel=document.getElementById('fsel');
+    if(fsel)fsel.classList.add('off');
+    // 2. Show loading screen
+    var ld=document.getElementById('ld');
+    if(ld)ld.classList.add('on');
+    ldp(5,'国家設定中...');
 
-function injectSVG(txt){
-  const h=document.getElementById('svgh');h.innerHTML=txt;
-  const sv=h.querySelector('svg');if(!sv)return;
-  sv.removeAttribute('width');sv.removeAttribute('height');
-  sv.style.cssText='width:100%;height:auto;display:block';
-  sv.querySelectorAll('[id]').forEach(el=>{
-    const id=el.getAttribute('id');
-    if(!id||SKIP.test(id))return;
-    const own=TF[id]||'nt';
-    el.setAttribute('fill',fcol(own));
-    el.classList.add('tl2');
-    el.addEventListener('click',e=>{e.stopPropagation();onClick(id)});
-    S[id]={el,name:id.replace(/_/g,' '),own,
-      eco:ECO_BONUS[id]||(10+Math.floor(Math.random()*12)),
-      u:mkU(own)};
-  });
-}
+    // 3. Init state
+    player=fid;
+    money=FAC[fid].m;
+    rel={};
+    for(var i=0;i<RELS_1936.length;i++){
+      var r=RELS_1936[i];
+      rel[rk(r[0],r[1])]=r[2];
+    }
+    var tn=document.getElementById('tb-n');
+    if(tn){tn.textContent=FAC[fid].n;tn.style.color=FAC[fid].c;}
 
-// ── ADJACENCY ────────────────────────────────────────────────────
-function buildAdj(){
-  const ids=Object.keys(S),rc={};
-  for(const id of ids){const e=S[id].el;if(e)rc[id]=e.getBoundingClientRect()}
-  const P2=3;
-  for(let i=0;i<ids.length;i++){
-    const a=ids[i],ra=rc[a];if(!ra||ra.width<1)continue;
-    if(!ADJ[a])ADJ[a]=new Set();
-    for(let j=i+1;j<ids.length;j++){
-      const b=ids[j],rb=rc[b];if(!rb||rb.width<1)continue;
-      if(!(ra.right<rb.left-P2||ra.left>rb.right+P2||ra.bottom<rb.top-P2||ra.top>rb.bottom+P2)){
-        ADJ[a]=ADJ[a]||new Set();ADJ[b]=ADJ[b]||new Set();
-        ADJ[a].add(b);ADJ[b].add(a);
+    // 4. Load SVG (async, non-blocking)
+    loadSVG();
+  }
+
+  // ── SVG Loading ──────────────────────────────────────────────
+  var SKIP_RE=/^(pattern|diagonal|vertical|horizontal|crosshatch|checkers|texture|circles|raindrops|subtlepatch|wrapper|svg-|map-|legend|credit)/i;
+
+  function loadSVG(){
+    ldp(12,'SVGマップを取得中...');
+    var filenames=['MapChart_Map.svg','MapChart_Map.svg.svg','./MapChart_Map.svg'];
+    var idx=0;
+    function tryNext(){
+      if(idx>=filenames.length){
+        showErr(
+          'SVGファイルが見つかりませんでした。\n'+
+          '確認事項:\n'+
+          '  1. index.html と MapChart_Map.svg が同じフォルダにあるか\n'+
+          '  2. GitHub Pages でデプロイされているか\n'+
+          '  3. ブラウザのコンソール(F12)でエラーを確認\n\n'+
+          '試したURL: '+filenames.join(', ')
+        );
+        return;
+      }
+      var fname=filenames[idx++];
+      var xhr=new XMLHttpRequest();
+      xhr.open('GET',fname,true);
+      xhr.timeout=15000;
+      xhr.onload=function(){
+        if(xhr.status===200||xhr.status===0){
+          var txt=xhr.responseText;
+          if(txt&&txt.length>500){
+            ldp(30,'SVG取得完了 ('+fname+') — 解析中...');
+            processSVG(txt);
+          } else {
+            tryNext();
+          }
+        } else {
+          tryNext();
+        }
+      };
+      xhr.onerror=function(){tryNext();};
+      xhr.ontimeout=function(){tryNext();};
+      try{xhr.send();}catch(e){tryNext();}
+    }
+    tryNext();
+  }
+
+  function processSVG(txt){
+    ldp(40,'SVG解析・注入中...');
+    var host=document.getElementById('svgh');
+    if(!host){showErr('内部エラー: #svgh が見つかりません');return;}
+
+    // Inject SVG
+    try{host.innerHTML=txt;}
+    catch(e){showErr('SVG注入エラー: '+e.message);return;}
+
+    var svgEl=host.querySelector('svg');
+    if(!svgEl){showErr('SVGタグが見つかりません。ファイルが正しいSVGか確認してください。');return;}
+
+    // Remove fixed dimensions so SVG scales with viewport
+    svgEl.removeAttribute('width');
+    svgEl.removeAttribute('height');
+    svgEl.style.cssText='width:100%;height:auto;display:block';
+
+    // Register territories
+    S={};
+    var allEls=svgEl.querySelectorAll('[id]');
+    var count=0;
+    for(var i=0;i<allEls.length;i++){
+      var el=allEls[i];
+      var id=el.getAttribute('id');
+      if(!id||SKIP_RE.test(id))continue;
+      var own=TF[id]||'nt';
+      el.setAttribute('fill',fcol(own));
+      el.setAttribute('stroke-width','0.5');
+      el.classList.add('tl2');
+      // Closure to capture id
+      (function(tid){
+        el.addEventListener('click',function(e){e.stopPropagation();onClick(tid);});
+      }(id));
+      S[id]={
+        el:el,
+        name:id.replace(/_/g,' '),
+        own:own,
+        eco:(ECO_BASE[id]||(8+Math.floor(Math.random()*12))),
+        u:mkU(own)
+      };
+      count++;
+    }
+    console.log('[WARCMD] Territories registered:',count);
+
+    if(count<10){
+      showErr('地域データが不足しています ('+count+'個)。SVGファイルが正しいか確認してください。');
+      return;
+    }
+
+    ldp(55,'レイアウト計算待機中...');
+    // Wait 2 frames for browser to layout the SVG
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        ldp(60,'隣接関係を計算中... (時間がかかります)');
+        // Run buildAdj in chunks to prevent UI freeze
+        buildAdjChunked(Object.keys(S), function(){
+          ldp(88,'霧と視界を適用中...');
+          try{applyFoW();}catch(e){console.warn('FoW error:',e);}
+          ldp(95,'初期化完了...');
+          updTB();
+          updPanel(null);
+          setupCtrl();
+          // Hide loading screen
+          var ld=document.getElementById('ld');
+          if(ld)ld.classList.remove('on');
+          addLog('1936年1月 — '+FAC[player].n+'として世界大戦略を開始。','lt');
+          addLog('自国領土クリック→攻勢命令→赤域クリックで攻撃','li');
+          addLog('包囲(ENCIRCLED)状態の敵は防御力-50%。','li');
+        });
+      });
+    });
+  }
+
+  // ── Chunked Adjacency (prevents UI freeze) ───────────────────
+  // KEY FIX: Build in batches of 50 rows, yield between each
+  function buildAdjChunked(ids, onDone){
+    // Phase 1: Batch all getBoundingClientRect at once (forces 1 reflow only)
+    var rects={};
+    for(var i=0;i<ids.length;i++){
+      var el=S[ids[i]]&&S[ids[i]].el;
+      if(el)rects[ids[i]]=el.getBoundingClientRect();
+    }
+
+    // Check if rects are valid
+    var zeroCount=0;
+    for(var id in rects){
+      if(rects[id].width===0&&rects[id].height===0)zeroCount++;
+    }
+    if(zeroCount>ids.length*0.9){
+      console.warn('[WARCMD] Warning: '+zeroCount+'/'+ids.length+' rects are zero. SVG may not be visible.');
+    }
+
+    ADJ={};
+    var PAD=3;
+    var row=0;
+    var CHUNK=40; // process 40 rows per frame
+
+    function processChunk(){
+      var end=Math.min(row+CHUNK, ids.length);
+      for(var i=row;i<end;i++){
+        var a=ids[i], ra=rects[a];
+        if(!ra||ra.width<1)continue;
+        if(!ADJ[a])ADJ[a]={};
+        for(var j=i+1;j<ids.length;j++){
+          var b=ids[j], rb=rects[b];
+          if(!rb||rb.width<1)continue;
+          if(!(ra.right<rb.left-PAD||ra.left>rb.right+PAD||
+               ra.bottom<rb.top-PAD||ra.top>rb.bottom+PAD)){
+            if(!ADJ[a])ADJ[a]={};
+            if(!ADJ[b])ADJ[b]={};
+            ADJ[a][b]=1;ADJ[b][a]=1;
+          }
+        }
+      }
+      row=end;
+      var pct=60+Math.round((row/ids.length)*25);
+      ldp(pct,'隣接計算中... ('+row+'/'+ids.length+')');
+      if(row<ids.length){
+        // Yield to browser, then continue
+        setTimeout(processChunk,0);
+      } else {
+        // Count edges
+        var edges=0;
+        for(var id in ADJ)edges+=Object.keys(ADJ[id]).length;
+        console.log('[WARCMD] buildAdj done: edges=',edges/2);
+        onDone();
       }
     }
+    processChunk();
   }
-}
 
-// ── FOG OF WAR ───────────────────────────────────────────────────
-function getVis(){
-  const v=new Set();
-  for(const[id,t]of Object.entries(S)){
-    if(t.own===P())v.add(id);
-    if(t.own!==P()&&isAlly(P(),t.own))v.add(id);
+  // ── Fog of War ───────────────────────────────────────────────
+  function getVis(){
+    var vis={};
+    for(var id in S){
+      var t=S[id];
+      if(t.own===player)vis[id]=1;
+      else if(isAlly(player,t.own))vis[id]=1;
+    }
+    for(var id in vis){
+      var nbrs=adjOf(id);
+      for(var i=0;i<nbrs.length;i++)vis[nbrs[i]]=1;
+    }
+    return vis;
   }
-  for(const id of[...v])for(const a of adj(id))v.add(a);
-  return v;
-}
-function applyFoW(){
-  const v=getVis();
-  for(const[id,t]of Object.entries(S)){
-    const el=t.el;if(!el)continue;
-    el.classList.remove('fh2','fs2','enc');
-    if(t.own===P()){}
-    else if(v.has(id))el.classList.add('fs2');
-    else el.classList.add('fh2');
-    if(t.own!==P()&&v.has(id)&&isEnc(id))el.classList.add('enc');
-  }
-}
-function isEnc(id){
-  const t=S[id];if(!t)return false;
-  const al=adj(id);if(!al.length)return false;
-  for(const a of al){const x=S[a];if(!x)continue;if(x.own===t.own)return false;if(isAlly(t.own,x.own))return false}
-  return true;
-}
-
-// ── BFS ──────────────────────────────────────────────────────────
-function reach(fromId,mx){
-  const v=new Map([[fromId,0]]),q=[[fromId,0]],atk=new Set(),mov=new Set([fromId]);
-  while(q.length){
-    const[id,d]=q.shift();if(d>=mx)continue;
-    for(const n of adj(id)){
-      if(v.has(n))continue;const nt=S[n];if(!nt)continue;v.set(n,d+1);
-      const fr=nt.own===P()||isAlly(P(),nt.own);
-      if(fr){mov.add(n);q.push([n,d+1])}else atk.add(n);
+  function applyFoW(){
+    var vis=getVis();
+    for(var id in S){
+      var t=S[id];
+      if(!t.el)continue;
+      t.el.classList.remove('fh2','fs2','enc');
+      if(t.own===player){}
+      else if(vis[id]){
+        t.el.classList.add('fs2');
+        if(isEnc(id))t.el.classList.add('enc');
+      } else t.el.classList.add('fh2');
     }
   }
-  return{atk,mov};
-}
-function bombTgts(id){
-  const t=new Set();
-  for(const a of adj(id)){const x=S[a];if(x&&x.own!==P()&&!isAlly(P(),x.own))t.add(a)}
-  return t;
-}
-
-// ── HIGHLIGHT ────────────────────────────────────────────────────
-function applyHL(as,ms){
-  clearHL();G.hl=as||new Set();
-  for(const id of(as||[]))S[id]?.el?.classList.add('ha');
-  for(const id of(ms||[]))if(!as?.has(id))S[id]?.el?.classList.add('hm');
-}
-function clearHL(){
-  for(const id of G.hl)S[id]?.el?.classList.remove('ha','hm');
-  document.querySelectorAll('.ha,.hm').forEach(e=>e.classList.remove('ha','hm'));
-  G.hl=new Set();
-}
-
-// ── CLICK & PANEL ────────────────────────────────────────────────
-function onClick(id){
-  if(G.atkMode){
-    if(S[id]?.own===P()){cancelAtk();selTerr(id);return}
-    if(G.hl.has(id)){G.atkMode==='bombard'?execBomb(G.atkFrom,id):showAM(G.atkFrom,id,G.atkMode);return}
-    log('その地域は射程外です。','lw');return;
+  function isEnc(id){
+    var t=S[id];if(!t)return false;
+    var nbrs=adjOf(id);if(!nbrs.length)return false;
+    for(var i=0;i<nbrs.length;i++){
+      var a=S[nbrs[i]];
+      if(!a)continue;
+      if(a.own===t.own)return false;
+      if(isAlly(t.own,a.own))return false;
+    }
+    return true;
   }
-  selTerr(id);
-}
-function selTerr(id){
-  document.querySelectorAll('.sel').forEach(e=>e.classList.remove('sel'));
-  G.sel=id;if(S[id]?.own===P())G.lastOwn=id;
-  S[id]?.el?.classList.add('sel');updPanel(id);
-}
-function updPanel(id){
-  const po=document.getElementById('ph-o'),pn=document.getElementById('ph-n'),
-    pt=document.getElementById('ph-t'),pc=document.getElementById('pc');
-  if(!id){po.textContent='SELECT TERRITORY';pn.textContent='地域を選択してください';pt.innerHTML='';pc.innerHTML='...';return}
-  const t=S[id];if(!t)return;
-  const vis=getVis(),isOwn=t.own===P(),isVis=isOwn||vis.has(id),rel=getRel(P(),t.own);
-  po.textContent=FAC[t.own]?.n||'中立国';pn.textContent=t.name;
-  let tg='';
-  if(isOwn)tg='<span class="tag t-o">OWNED</span>';
-  else if(rel==='war')tg='<span class="tag t-w">AT WAR</span>';
-  else if(rel==='allied')tg='<span class="tag t-a">ALLIED</span>';
-  else if(rel==='hostile')tg='<span class="tag t-h">HOSTILE</span>';
-  else tg='<span class="tag t-n">NEUTRAL</span>';
-  if(!isOwn&&vis.has(id)&&isEnc(id))tg+='<span class="tag t-e">ENCIRCLED</span>';
-  if(!isVis&&!isOwn)tg+='<span class="tag t-f">FOG OF WAR</span>';
-  pt.innerHTML=tg;
-  let h=`<div class="sg">
-    <div class="sc"><div class="sl">[I] INF</div><div class="sv${!isVis?' fog':''}">${isVis?t.u.i:'???'}</div></div>
-    <div class="sc"><div class="sl">[T] TNK</div><div class="sv${!isVis?' fog':''}">${isVis?t.u.t:'???'}</div></div>
-    <div class="sc"><div class="sl">[A] ART</div><div class="sv${!isVis?' fog':''}">${isVis?t.u.a:'???'}</div></div>
-    <div class="sc"><div class="sl">ECO</div><div class="sv">${t.eco}</div></div>
-  </div>`;
-  if(isVis)h+=`<div class="cw"><div class="cwn">${cPow(t.u)}</div><div class="cws">COMBAT POWER</div></div>`;
-  if(isOwn){
-    h+=`<div class="sd">RECRUIT / 徴兵</div>
-    <div class="bg3">
-      <button class="btn${G.curUnit==='i'?' on':''}" onclick="setU('i')">[I] 歩兵<br><span style="color:var(--ac)">Y10x10</span><br><span style="font-size:6.5px">Rng:2</span></button>
-      <button class="btn${G.curUnit==='t'?' on':''}" onclick="setU('t')">[T] 戦車<br><span style="color:var(--ac)">Y50x2</span><br><span style="font-size:6.5px">Rng:3</span></button>
-      <button class="btn${G.curUnit==='a'?' on':''}" onclick="setU('a')">[A] 砲兵<br><span style="color:var(--ac)">Y30x3</span><br><span style="font-size:6.5px">Rng:1</span></button>
-    </div>
-    <button class="ab" onclick="recruit()">+ 部隊を生産・招集</button>
-    <div class="sd">OFFENSIVE ORDERS / 攻勢命令</div>
-    <button class="ab r${G.atkMode==='assault'&&G.atkFrom===id?' p':''}" onclick="setAtk('assault','${id}')">[ASSAULT] 歩兵突撃  Rng:2</button>
-    <button class="ab r${G.atkMode==='tankrush'&&G.atkFrom===id?' p':''}" onclick="setAtk('tankrush','${id}')">[TANK RUSH] 機甲突破  Rng:3</button>
-    <button class="ab r${G.atkMode==='bombard'&&G.atkFrom===id?' p':''}" onclick="setAtk('bombard','${id}')">[BOMBARD] 砲兵遠撃  Rng:1</button>
-    ${G.atkMode?'<button class="ab" onclick="cancelAtk()">[CANCEL] キャンセル</button>':''}`;
-  } else {
-    h+=`<div class="sd">DIPLOMACY / 外交</div><div class="bg2">`;
-    if(rel!=='war'){
-      h+=`<button class="db" onclick="opD('alliance','${id}')">同盟<br>ALLIANCE</button>
-      <button class="db" onclick="opD('aid','${id}')">援助<br>AID</button>
-      <button class="db" onclick="opD('guarantee','${id}')">独立保障<br>GUARANTEE</button>
-      <button class="db" onclick="opD('puppet','${id}')">傀儡化<br>PUPPET</button>`;
+
+  // ── Movement BFS ─────────────────────────────────────────────
+  function reach(fromId,maxR){
+    var vis={};vis[fromId]=0;
+    var q=[[fromId,0]];
+    var atk={},mov={};mov[fromId]=1;
+    while(q.length){
+      var pair=q.shift();var id=pair[0];var d=pair[1];
+      if(d>=maxR)continue;
+      var nbrs=adjOf(id);
+      for(var i=0;i<nbrs.length;i++){
+        var nId=nbrs[i];
+        if(vis[nId]!==undefined)continue;
+        var nt=S[nId];if(!nt)continue;
+        vis[nId]=d+1;
+        var fr=nt.own===player||isAlly(player,nt.own);
+        if(fr){mov[nId]=1;q.push([nId,d+1]);}
+        else atk[nId]=1;
+      }
+    }
+    return{atk:atk,mov:mov};
+  }
+  function bombTgts(fromId){
+    var tgts={};
+    var nbrs=adjOf(fromId);
+    for(var i=0;i<nbrs.length;i++){
+      var a=S[nbrs[i]];
+      if(a&&a.own!==player&&!isAlly(player,a.own))tgts[nbrs[i]]=1;
+    }
+    return tgts;
+  }
+
+  // ── Highlight ────────────────────────────────────────────────
+  function applyHL(atkSet,movSet){
+    clearHL();hl=atkSet||{};
+    for(var id in(atkSet||{}))if(S[id])S[id].el.classList.add('ha');
+    for(var id in(movSet||{}))if(!atkSet||!atkSet[id])if(S[id])S[id].el.classList.add('hm');
+  }
+  function clearHL(){
+    for(var id in hl)if(S[id])S[id].el.classList.remove('ha','hm');
+    var els=document.querySelectorAll('.ha,.hm');
+    for(var i=0;i<els.length;i++)els[i].classList.remove('ha','hm');
+    hl={};
+  }
+
+  // ── Panel ────────────────────────────────────────────────────
+  function onClick(id){
+    if(atkMode){
+      if(S[id]&&S[id].own===player){cancelAtk();selTerr(id);return;}
+      if(hl[id]){
+        if(atkMode==='bombard')execBomb(atkFrom,id);
+        else showAM(atkFrom,id,atkMode);
+        return;
+      }
+      addLog('射程外です。','lw');return;
+    }
+    selTerr(id);
+  }
+  function selTerr(id){
+    document.querySelectorAll('.sel').forEach(function(e){e.classList.remove('sel');});
+    sel=id;
+    if(S[id]&&S[id].own===player)lastOwn=id;
+    if(S[id])S[id].el.classList.add('sel');
+    updPanel(id);
+  }
+  function updPanel(id){
+    var po=document.getElementById('ph-o');
+    var pn=document.getElementById('ph-n');
+    var pt=document.getElementById('ph-t');
+    var pc=document.getElementById('pc');
+    if(!id){
+      if(po)po.textContent='SELECT TERRITORY';
+      if(pn)pn.textContent='地域を選択してください';
+      if(pt)pt.innerHTML='';
+      if(pc)pc.innerHTML='<div style="color:var(--dm);font-size:8px;text-align:center;padding:30px 10px;line-height:2.4">CLICK TERRITORY<br><span style="font-size:7px">OWN=RECRUIT/ATTACK<br>ENEMY=DIPLOMACY</span></div>';
+      return;
+    }
+    var t=S[id];if(!t)return;
+    var vis=getVis();
+    var isOwn=t.own===player;
+    var isVis=isOwn||!!vis[id];
+    var r=getRel(player,t.own);
+    if(po)po.textContent=(FAC[t.own]&&FAC[t.own].n)||'中立国';
+    if(pn)pn.textContent=t.name;
+    var tg='';
+    if(isOwn)tg='<span class="tag to">OWNED</span>';
+    else if(r==='war')tg='<span class="tag tw">AT WAR</span>';
+    else if(r==='allied')tg='<span class="tag ta">ALLIED</span>';
+    else if(r==='hostile')tg='<span class="tag th">HOSTILE</span>';
+    else tg='<span class="tag tn">NEUTRAL</span>';
+    if(!isOwn&&vis[id]&&isEnc(id))tg+='<span class="tag te">ENCIRCLED</span>';
+    if(!isVis&&!isOwn)tg+='<span class="tag tf">FOG OF WAR</span>';
+    if(pt)pt.innerHTML=tg;
+    var h='<div class="sg">'+
+      '<div class="sc"><div class="sl">[I] INF</div><div class="sv'+(isVis?'':' fog')+'">'+(isVis?t.u.i:'???')+'</div></div>'+
+      '<div class="sc"><div class="sl">[T] TNK</div><div class="sv'+(isVis?'':' fog')+'">'+(isVis?t.u.t:'???')+'</div></div>'+
+      '<div class="sc"><div class="sl">[A] ART</div><div class="sv'+(isVis?'':' fog')+'">'+(isVis?t.u.a:'???')+'</div></div>'+
+      '<div class="sc"><div class="sl">ECO</div><div class="sv">'+t.eco+'</div></div>'+
+      '</div>';
+    if(isVis)h+='<div class="cw"><div class="cwn">'+cPow(t.u)+'</div><div class="cws">COMBAT POWER</div></div>';
+    if(isOwn){
+      h+='<div class="sd">RECRUIT / 徴兵</div>'+
+        '<div class="bg3">'+
+        '<button class="btn'+(curUnit==='i'?' on':'')+'" onclick="G.setU(\'i\')">[I] 歩兵<br><span style="color:var(--ac)">Y10x10</span><br><span style="font-size:6.5px">Rng:2</span></button>'+
+        '<button class="btn'+(curUnit==='t'?' on':'')+'" onclick="G.setU(\'t\')">[T] 戦車<br><span style="color:var(--ac)">Y50x2</span><br><span style="font-size:6.5px">Rng:3</span></button>'+
+        '<button class="btn'+(curUnit==='a'?' on':'')+'" onclick="G.setU(\'a\')">[A] 砲兵<br><span style="color:var(--ac)">Y30x3</span><br><span style="font-size:6.5px">Rng:1</span></button>'+
+        '</div>'+
+        '<button class="ab" onclick="G.recruit()">+ 部隊を生産・招集</button>'+
+        '<div class="sd">OFFENSIVE ORDERS</div>'+
+        '<button class="ab r'+(atkMode==='assault'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'assault\',\''+id+'\')">[ASSAULT] 歩兵突撃 Rng:2</button>'+
+        '<button class="ab r'+(atkMode==='tankrush'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'tankrush\',\''+id+'\')">[TANK RUSH] 機甲突破 Rng:3</button>'+
+        '<button class="ab r'+(atkMode==='bombard'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'bombard\',\''+id+'\')">[BOMBARD] 砲兵遠撃 Rng:1</button>'+
+        (atkMode?'<button class="ab" onclick="G.cancelAtk()">[CANCEL]</button>':'');
     } else {
-      h+=`<button class="db" disabled>同盟</button><button class="db" disabled>援助</button>
-      <button class="db war" onclick="opPeace('${id}')">講和<br>PEACE</button>
-      <button class="db" disabled>傀儡化</button>`;
-    }
-    h+=`<button class="db full" onclick="opNeg('${id}')">GIVE &amp; TAKE — 外交交渉</button></div>`;
-    const lo=G.lastOwn;
-    if(lo&&S[lo]?.own===P()){
-      const{atk:a2}=reach(lo,2),{atk:a3}=reach(lo,3);
-      if(a2.has(id)||a3.has(id)){
-        const m2=a2.has(id)?'assault':'tankrush';
-        h+=`<div class="sd">QUICK ATTACK</div>
-        <button class="ab r" onclick="showAM('${lo}','${id}','${m2}')">[${m2==='assault'?'ASSAULT':'TANK RUSH'}] ${S[lo].name} → ${t.name}</button>`;
+      h+='<div class="sd">DIPLOMACY</div><div class="bg2">';
+      if(r!=='war'){
+        h+='<button class="db" onclick="G.opD(\'alliance\',\''+id+'\')">同盟<br>ALLIANCE</button>'+
+           '<button class="db" onclick="G.opD(\'aid\',\''+id+'\')">援助<br>AID</button>'+
+           '<button class="db" onclick="G.opD(\'guarantee\',\''+id+'\')">独立保障<br>GUARANTEE</button>'+
+           '<button class="db" onclick="G.opD(\'puppet\',\''+id+'\')">傀儡化<br>PUPPET</button>';
+      } else {
+        h+='<button class="db" disabled>同盟</button>'+
+           '<button class="db" disabled>援助</button>'+
+           '<button class="db war" onclick="G.opPeace(\''+id+'\')">講和<br>PEACE</button>'+
+           '<button class="db" disabled>傀儡化</button>';
       }
-    }
-  }
-  pc.innerHTML=h;
-}
-
-// ── RECRUIT ──────────────────────────────────────────────────────
-const UC={i:{c:10,b:10},t:{c:50,b:2},a:{c:30,b:3}};
-function setU(u){G.curUnit=u;if(G.sel)updPanel(G.sel)}
-function recruit(){
-  const id=G.sel;if(!id||S[id]?.own!==P())return;
-  const u=UC[G.curUnit],cost=u.c*u.b;
-  if(G.money<cost){log('資金不足: Y'+cost+'必要','lw');return}
-  G.money-=cost;S[id].u[G.curUnit]+=u.b;
-  log(S[id].name+': '+G.curUnit.toUpperCase()+'x'+u.b+'生産 (Y'+cost+')','lk');
-  updTB();updPanel(id);
-}
-
-// ── ATTACK MODE ──────────────────────────────────────────────────
-function setAtk(mode,id){
-  const fid=id||G.sel||G.lastOwn;if(!fid||S[fid]?.own!==P())return;
-  G.atkMode=mode;G.atkFrom=fid;
-  let as=new Set(),ms=new Set();
-  if(mode==='bombard')as=bombTgts(fid);
-  else{const{atk,mov}=reach(fid,mode==='tankrush'?3:2);as=atk;ms=mov}
-  applyHL(as,ms);
-  const mi=document.getElementById('mind');mi.style.display='block';
-  mi.textContent=mode.toUpperCase()+' — ['+S[fid].name+'] から目標を選択';
-  if(G.sel)updPanel(G.sel);
-}
-function cancelAtk(){
-  G.atkMode=null;G.atkFrom=null;clearHL();
-  document.getElementById('mind').style.display='none';
-  if(G.sel)updPanel(G.sel);
-}
-
-// ── ATTACK MODAL ─────────────────────────────────────────────────
-let _af,_at,_am;
-function showAM(fid,tid,mode){
-  _af=fid;_at=tid;_am=mode;G.sendPct=50;
-  const at=S[fid],df=S[tid];
-  const vis=getVis(),enc=isEnc(tid),dk=vis.has(tid);
-  document.getElementById('m-t').textContent='攻撃確認 — ATTACK ORDER';
-  document.getElementById('m-s').textContent=at.name+' → '+df.name+' | '+mode.toUpperCase();
-  document.getElementById('m-r').style.display='none';
-  document.getElementById('m-b').innerHTML=`
-    <div class="mi" style="font-size:8.5px;line-height:2">
-      攻撃元: <b>${at.name}</b><br>
-      目標: <b>${df.name}</b> (${FAC[df.own]?.sn||'NTR'})
-      ${enc?'<br><span style="color:#ff4050">■ 包囲殲滅: 敵防御力 -50%</span>':''}
-    </div>
-    <div class="sd">SEND FORCES / 派遣兵力</div>
-    <div class="sr"><span class="sl2">派遣割合</span>
-      <input type="range" min="10" max="90" step="10" value="50" id="sl-s"
-        oninput="G.sendPct=+this.value;document.getElementById('sv-s').textContent=this.value+'%';updAP()">
-      <span class="sv2" id="sv-s">50%</span></div>
-    <div id="ap2" style="font-size:8px;color:var(--dm);margin:5px 0"></div>
-    <div class="mi" style="font-size:7.5px">${dk?'敵戦力: DEF '+Math.round(cDef(df.u)*(enc?.5:1))+(enc?' (包囲補正済)':''):'敵戦力: FOG OF WAR — 不明'}</div>`;
-  document.getElementById('m-btns').innerHTML=
-    '<button class="mb cl" onclick="closeModal()">CANCEL</button>'+
-    '<button class="mb ok" onclick="execAM()">CONFIRM ATTACK</button>';
-  updAP();
-  document.getElementById('modal').classList.add('open');
-}
-function updAP(){
-  const at=S[_af];if(!at)return;
-  const p=G.sendPct/100;
-  const si=Math.max(1,Math.floor(at.u.i*p)),st=Math.max(0,Math.floor(at.u.t*p)),sa=Math.max(0,Math.floor(at.u.a*p));
-  let ap=_am==='tankrush'?st*3.2+si*1.0*.3:si*1.0+st*3.2;ap+=sa*.5;
-  const el=document.getElementById('ap2');
-  if(el)el.innerHTML='派遣: [I]'+si+' [T]'+st+' [A]'+sa+' | 攻撃力: <span style="color:var(--ac);font-family:var(--hd)">'+Math.round(ap)+'</span>';
-}
-function execAM(){closeModal();cancelAtk();execAtk(_af,_at,_am)}
-
-// ── COMBAT ───────────────────────────────────────────────────────
-function execAtk(fid,tid,mode){
-  const at=S[fid],df=S[tid];
-  if(!at||!df||at.own!==P()||df.own===P())return;
-  const{atk}=reach(fid,mode==='tankrush'?3:2);
-  if(!atk.has(tid)){log(df.name+'は射程外です。','lw');return}
-  if(!isWar(P(),df.own)){
-    setRel(P(),df.own,'war');
-    G.wCaps[rk(P(),df.own)]=G.wCaps[rk(P(),df.own)]||[];
-    log('[宣戦布告] '+FAC[P()].sn+' → '+(FAC[df.own]?.sn||'NTR'),'lw');
-  }
-  const p=G.sendPct/100;
-  const si=Math.max(1,Math.floor(at.u.i*p)),st=Math.max(0,Math.floor(at.u.t*p)),sa=Math.max(0,Math.floor(at.u.a*p));
-  let ap=mode==='tankrush'?st*3.2+si*1.0*.3:si*1.0+st*3.2;ap+=sa*.5;ap*=(.78+Math.random()*.44);
-  const enc=isEnc(tid);
-  let dp=cDef(df.u)*(enc?.5:1)*(.78+Math.random()*.44);
-  if(enc)log('[包囲殲滅] '+df.name+': 防御力-50%','lt');
-  at.u.i=Math.max(0,at.u.i-Math.floor(dp*.14));at.u.t=Math.max(0,at.u.t-Math.floor(dp*.05));
-  if(ap>dp){
-    const prev=df.own;
-    df.own=P();df.u={i:si,t:st,a:sa};
-    at.u.i=Math.max(0,at.u.i-si);at.u.t=Math.max(0,at.u.t-st);
-    df.el.setAttribute('fill',fcol(P()));df.el.classList.remove('fh2','fs2','enc');
-    (G.wCaps[rk(P(),prev)]=G.wCaps[rk(P(),prev)]||[]).push({id:tid,prev});
-    log('[占領] '+df.name+'を占領！ ATK:'+Math.round(ap)+' vs DEF:'+Math.round(dp),'lk');
-    if(!Object.values(S).some(t=>t.own===prev))log('[降伏] '+(FAC[prev]?.n||prev)+'が降伏！','lk');
-  } else {
-    df.u.i=Math.max(0,df.u.i-Math.floor(df.u.i*.13));
-    log('[失敗] '+df.name+'への攻撃失敗。ATK:'+Math.round(ap)+' vs DEF:'+Math.round(dp),'lw');
-  }
-  applyFoW();updTB();if(G.sel)updPanel(G.sel);
-}
-function execBomb(fid,tid){
-  const at=S[fid],df=S[tid];
-  if(!at||!df||at.own!==P())return;
-  if(!adj(fid).includes(tid)){log('砲兵射程外（隣接のみ）','lw');return}
-  if(at.u.a<=0){log(at.name+'に砲兵がいません','lw');return}
-  const dmg=Math.max(1,Math.floor(at.u.a*2*(.7+Math.random()*.6)));
-  df.u.i=Math.max(0,df.u.i-Math.floor(dmg*.7));df.u.t=Math.max(0,df.u.t-Math.floor(dmg*.1));
-  log('[砲撃] '+at.name+'→'+df.name+': '+dmg+'ダメージ（占領なし）','lt');
-  cancelAtk();if(G.sel)updPanel(G.sel);
-}
-
-// ── DIPLOMACY ────────────────────────────────────────────────────
-let _mT,_mId;
-function aiAcc(type,id,offer){
-  const fac=S[id].own,r=powOf(P())/Math.max(1,powOf(fac)),aid=offer?.money||0;
-  let p=.35;
-  if(type==='alliance'){p=fac==='nt'?.45:.18;p+=aid/600}
-  else if(type==='guarantee'){p=r>1.3?.58:.35;p+=aid/450}
-  else if(type==='puppet'){p=r>2.8?.52:.05;p+=aid/350}
-  else if(type==='peace'){const tr=powOf(fac)/Math.max(1,powOf(P()));p=tr<.5?.82:tr<.8?.55:.22;p+=aid/700}
-  return Math.random()<Math.min(.92,Math.max(.03,p));
-}
-function opD(type,id){
-  _mT=type;_mId=id;const t=S[id];
-  const infos={alliance:'相互防衛同盟を提案します。',aid:'資金を提供して外交関係を改善します。',
-    guarantee:'対象国が攻撃された場合、自動参戦することを宣言します。',
-    puppet:'対象国を属国化します。国力差が判定に大きく影響します。'};
-  const maxA=Math.min(G.money,800);
-  const titles={alliance:'同盟交渉',aid:'資金援助',guarantee:'独立保障',puppet:'保護国化'};
-  document.getElementById('m-t').textContent=titles[type];
-  document.getElementById('m-s').textContent='交渉相手: '+t.name+' / '+(FAC[t.own]?.n||'中立国');
-  document.getElementById('m-r').style.display='none';document.getElementById('m-r').className='mr';
-  document.getElementById('m-b').innerHTML='<div class="mi">'+infos[type]+'</div>'+
-    '<div class="sd">OFFER</div>'+
-    '<div class="sr"><span class="sl2">金銭援助 Y</span>'+
-    '<input type="range" min="0" max="'+maxA+'" step="50" value="0" id="sl-aid" '+
-    'oninput="document.getElementById(\'sv-aid\').textContent=this.value">'+
-    '<span class="sv2" id="sv-aid">0</span></div>';
-  document.getElementById('m-btns').innerHTML=
-    '<button class="mb cl" onclick="closeModal()">CANCEL</button>'+
-    '<button class="mb ok" onclick="execD()">EXECUTE</button>';
-  document.getElementById('modal').classList.add('open');
-}
-function execD(){
-  const type=_mT,id=_mId,t=S[id];
-  const aid=parseInt(document.getElementById('sl-aid')?.value||0);
-  if(aid>G.money){showMR('資金不足。',false);return}
-  if(type==='guarantee'){G.wCaps['g-'+id]=1;log('[独立保障] '+t.name+'の独立を保障。','ld2');showMR('独立保障を宣言しました。',true);return}
-  if(type==='aid'){G.money-=aid;log('[援助] '+t.name+'にY'+aid+'援助。','ld2');showMR('Y'+aid+'援助完了。',true);updTB();return}
-  if(aiAcc(type,id,{money:aid})){
-    G.money-=aid;
-    if(type==='alliance'){setRel(P(),t.own,'allied');log('[同盟] '+(FAC[t.own]?.n||t.own)+'と同盟締結。','ld2');showMR('同盟条約締結。相互防衛義務が発生します。',true)}
-    else if(type==='puppet'){t.own=P();t.el.setAttribute('fill',fcol(P()));applyFoW();log('[傀儡化] '+t.name+'を保護国化。','lk');showMR(t.name+'は保護国となりました。',true)}
-    updTB();if(G.sel)updPanel(G.sel);
-  } else {log('[外交失敗] '+t.name+'との交渉失敗。','lw');showMR('提案は拒否されました。',false)}
-}
-
-// GIVE & TAKE
-function opNeg(id){
-  _mT='negot';_mId=id;const t=S[id],fac=t.own;
-  const inc=incOf(fac),ratio=powOf(P())/Math.max(1,powOf(fac));
-  const d={money:Math.ceil(inc*(ratio>1.5?.6:ratio>1?.9:1.3)*(.8+Math.random()*.4)/50)*50,
-            nonagg:ratio<.9,peace:isWar(P(),fac)};
-  G.negot={id,fac,round:1,max:3,d};renderNeg(d);
-  document.getElementById('modal').classList.add('open');
-}
-function renderNeg(d){
-  const id=_mId,t=S[id],n=G.negot,maxO=Math.min(G.money,1200);
-  const ownT=Object.entries(S).filter(([,s])=>s.own===P())
-    .map(([sid,s])=>'<option value="'+sid+'">'+s.name+'</option>').join('');
-  document.getElementById('m-t').textContent='外交交渉 — GIVE & TAKE';
-  document.getElementById('m-s').textContent=t.name+' / '+(FAC[t.own]?.n||'中立国')+'  |  Round '+n.round+'/'+n.max;
-  document.getElementById('m-r').style.display='none';document.getElementById('m-r').className='mr';
-  document.getElementById('m-b').innerHTML=`
-    <div class="mc2">
-      <div><div class="mch">YOUR OFFER</div>
-        <div class="sr"><span class="sl2">金銭 Y</span>
-          <input type="range" min="0" max="${maxO}" step="50" value="0" id="n-m"
-            oninput="document.getElementById('n-mv').textContent=this.value;updNB()">
-          <span class="sv2" id="n-mv">0</span></div>
-        <select class="tsel" id="n-t" onchange="updNB()"><option value="">領土割譲なし</option>${ownT}</select>
-        <label class="mchk"><input type="checkbox" id="n-na" onchange="updNB()"> 不可侵条約</label>
-        <label class="mchk"><input type="checkbox" id="n-pe" onchange="updNB()"> 停戦提案</label>
-      </div>
-      <div><div class="mch">THEIR DEMANDS</div>
-        ${d.money>0?'<div class="mdi">金銭: Y'+d.money+'</div>':''}
-        ${d.nonagg?'<div class="mdi">不可侵条約</div>':''}
-        ${d.peace?'<div class="mdi">停戦合意</div>':''}
-        ${!d.money&&!d.nonagg&&!d.peace?'<div class="mdi" style="color:var(--dm)">要求なし</div>':''}
-      </div>
-    </div>
-    <div class="lb"><div class="lbl"><span>合意可能性</span><span id="n-pct" style="font-family:var(--hd);color:var(--ac)">0%</span></div>
-    <div class="lbt"><div class="lbf" id="n-bar" style="width:0%"></div></div></div>`;
-  document.getElementById('m-btns').innerHTML=
-    '<button class="mb cl" onclick="closeModal()">CANCEL</button>'+
-    '<button class="mb ng" onclick="exCtr()">COUNTER</button>'+
-    '<button class="mb ok" onclick="exNeg()">SUBMIT</button>';
-  updNB();
-}
-function updNB(){
-  const d=G.negot?.d||{};
-  const m=parseInt(document.getElementById('n-m')?.value||0);
-  const na=document.getElementById('n-na')?.checked;
-  const pe=document.getElementById('n-pe')?.checked;
-  const tr=document.getElementById('n-t')?.value;
-  let sc=0,tot=0;
-  if(d.money>0){sc+=Math.min(1,m/d.money)*40;tot+=40}
-  if(d.nonagg){sc+=(na?30:0);tot+=30}
-  if(d.peace){sc+=(pe?30:0);tot+=30}
-  if(tr)sc+=20;
-  const pct=tot>0?Math.round(sc/tot*100):40;
-  document.getElementById('n-bar').style.width=pct+'%';
-  document.getElementById('n-pct').textContent=pct+'%';
-}
-function exNeg(){
-  const n=G.negot,d=n.d,id=_mId,t=S[id];
-  const m=parseInt(document.getElementById('n-m')?.value||0);
-  const tr=document.getElementById('n-t')?.value;
-  const na=document.getElementById('n-na')?.checked;
-  const pe=document.getElementById('n-pe')?.checked;
-  let sc=0,tot=0;
-  if(d.money>0){sc+=Math.min(1,m/d.money)*40;tot+=40}
-  if(d.nonagg){sc+=(na?30:0);tot+=30}
-  if(d.peace){sc+=(pe?30:0);tot+=30}
-  if(tr)sc+=20;
-  const thresh=tot>0?65:50,pct=tot>0?sc/tot*100:40;
-  if(pct>=thresh){
-    G.money-=m;
-    if(tr&&S[tr]){S[tr].own=t.own;S[tr].el.setAttribute('fill',fcol(t.own));log('[交渉] '+S[tr].name+'を割譲','ld2')}
-    if(na||pe)setRel(P(),t.own,'peace');
-    log('[交渉成立] '+t.name+'との交渉成立！','ld2');
-    showMR('交渉成立。(達成率'+Math.round(pct)+'%/閾値'+thresh+'%)',true);
-    G.negot=null;updTB();applyFoW();if(G.sel)updPanel(G.sel);
-  } else {
-    n.round++;
-    if(n.round>n.max){log('[交渉決裂] '+t.name+'との交渉決裂。','lw');showMR('交渉決裂。',false);G.negot=null}
-    else{d.money=Math.ceil(d.money*.84/50)*50;showMR('条件不足。Round '+n.round+'/'+n.max,false,'info');setTimeout(()=>{document.getElementById('m-r').style.display='none';renderNeg(d)},2100)}
-  }
-}
-function exCtr(){
-  const n=G.negot;n.round++;
-  if(n.round>n.max){showMR('交渉期限超過。',false);G.negot=null;return}
-  n.d.money=Math.ceil(n.d.money*.80/50)*50;if(n.round>=2)n.d.nonagg=false;
-  renderNeg(n.d);
-}
-
-// PEACE
-function opPeace(id){
-  _mT='peace';_mId=id;const t=S[id],fac=t.own;
-  const jP=powOf(P()),fP=powOf(fac),isWin=jP>fP*.7;
-  const wk=rk(P(),fac),caps=(G.wCaps[wk]||[]).filter(c=>S[c.id]?.own===P()).length;
-  const vp=Math.max(1,Math.floor((jP/Math.max(1,fP))*1.5)+caps);
-  document.getElementById('m-t').textContent='講和交渉 — PEACE TREATY';
-  document.getElementById('m-s').textContent='交戦国: '+(FAC[fac]?.n||fac)+' | '+(isWin?'自国有利':'敵方有利');
-  document.getElementById('m-r').style.display='none';document.getElementById('m-r').className='mr';
-  const maxA=Math.min(G.money,800);
-  document.getElementById('m-b').innerHTML=
-    '<div class="vpd"><div class="vpn">'+vp+'</div><div class="vpl">VICTORY POINTS</div></div>'+
-    '<div class="mi" style="font-size:7.5px">勝利点は戦力比と占領数から算出。</div>'+
-    (isWin?(vp>=1?'<label class="mchk"><input type="checkbox" id="d-m" checked> 賠償金 Y'+(vp*100)+'を要求</label>':'')+(vp>=5?'<label class="mchk"><input type="checkbox" id="d-p"> '+(FAC[fac]?.n||fac)+'の傀儡化を要求</label>':''):
-    '<div class="mi" style="color:#ff8090;font-size:7.5px">不利な戦況。無条件講和のみ提案可能。</div>')+
-    '<div class="sd">COMPENSATION</div>'+
-    '<div class="sr"><span class="sl2">補償金 Y</span>'+
-    '<input type="range" min="0" max="'+maxA+'" step="50" value="0" id="sl-pa" '+
-    'oninput="document.getElementById(\'pav\').textContent=this.value">'+
-    '<span class="sv2" id="pav">0</span></div>';
-  document.getElementById('m-btns').innerHTML=
-    '<button class="mb cl" onclick="closeModal()">CANCEL</button>'+
-    '<button class="mb ok" onclick="execPeace(\''+id+'\','+isWin+','+vp+')">PROPOSE PEACE</button>';
-  document.getElementById('modal').classList.add('open');
-}
-function execPeace(id,isWin,vp){
-  const t=S[id],fac=t.own;
-  const aid=parseInt(document.getElementById('sl-pa')?.value||0);
-  const demM=document.getElementById('d-m')?.checked;
-  const demP=document.getElementById('d-p')?.checked;
-  const wk=rk(P(),fac),tr=powOf(fac)/Math.max(1,powOf(P()));
-  let p=isWin?(tr<.4?.88:tr<.7?.62:.32):.55;
-  p+=aid/1200;if(demP)p-=.35;if(demM)p-=.08;
-  if(Math.random()<Math.min(.94,Math.max(.02,p))){
-    G.money-=aid;
-    if(demM){const rep=vp*100;G.money+=rep;log('[賠償] '+(FAC[fac]?.n||fac)+'よりY'+rep+'獲得','lk')}
-    if(demP)for(const c of(G.wCaps[wk]||[]))if(S[c.id]?.own===fac){S[c.id].own=P();S[c.id].el.setAttribute('fill',fcol(P()))}
-    setRel(P(),fac,'peace');delete G.wCaps[wk];
-    log('[講和成立] '+(FAC[fac]?.n||fac)+'との講和条約締結。','ld2');
-    showMR('講和条約締結。戦争終結。',true);
-    updTB();applyFoW();if(G.sel)updPanel(G.sel);
-  } else {log('[講和拒否] '+(FAC[fac]?.n||fac)+'が拒否。','lw');showMR('講和条件を拒否されました。',false)}
-}
-function showMR(txt,ok,cls){
-  const d=document.getElementById('m-r');
-  d.className='mr '+(cls||(ok?'ok':'no'));d.style.display='block';d.textContent=txt;
-}
-function closeModal(){document.getElementById('modal').classList.remove('open');_mT=null}
-
-// ── AI ───────────────────────────────────────────────────────────
-function aiTurn(){
-  const ai=Object.keys(FAC).filter(f=>f!==P());
-  for(const fac of ai){
-    if(isWar(P(),fac))aiFAtk(fac,P());
-    for(const o of ai)if(o!==fac&&isWar(fac,o)&&Math.random()<.25)aiFAtk(fac,o);
-    if(Math.random()<.35)aiFRein(fac);
-  }
-}
-function aiFAtk(af,df){
-  let best=null,bestR=-1;
-  for(const[fid,at]of Object.entries(S)){
-    if(at.own!==af)continue;
-    for(const a of adj(fid)){
-      const dt=S[a];if(!dt||dt.own!==df)continue;
-      const enc=isEnc(a)?.5:1;
-      const r=cAtk(at.u)/(Math.max(.1,cDef(dt.u)*enc));
-      if(r>bestR){bestR=r;best={fid,tid:a}}
-    }
-  }
-  if(!best||bestR<.45)return;
-  const at=S[best.fid],dt=S[best.tid];
-  const enc=isEnc(best.tid)?.5:1;
-  const ap=cAtk(at.u)*(.78+Math.random()*.44);
-  const dp=cDef(dt.u)*enc*(.78+Math.random()*.44);
-  if(ap>dp){
-    const xf=Math.max(1,Math.floor(at.u.i*.22));
-    at.u.i=Math.max(0,at.u.i-xf);dt.own=af;dt.u={i:xf,t:0,a:0};
-    dt.el.setAttribute('fill',fcol(af));
-    log('[AI] '+(FAC[af]?.sn||af)+': '+dt.name+'を占領','lai');applyFoW();
-  } else at.u.i=Math.max(0,at.u.i-Math.floor(at.u.i*.1));
-}
-function aiFRein(fac){
-  let c=0;
-  for(const t of Object.values(S)){
-    if(t.own!==fac||c>8)continue;
-    if(Math.random()<.4){t.u.i+=Math.floor(Math.random()*6)+1;c++}
-  }
-}
-
-// ── NEXT TURN ────────────────────────────────────────────────────
-function nextTurn(){
-  G.turn++;G.mo++;if(G.mo>12){G.mo=1;G.yr++}
-  const ds=G.yr+'.'+String(G.mo).padStart(2,'0');
-  document.getElementById('tb-d').textContent=ds;
-  const inc=incOf(P());G.money+=inc;
-  log('━━ TURN '+G.turn+' / '+ds+' | 歳入 +Y'+inc+' | 残高 Y'+G.money+' ━━','lt');
-  aiTurn();applyFoW();updTB();if(G.sel)updPanel(G.sel);
-}
-
-// ── TOP BAR ──────────────────────────────────────────────────────
-function updTB(){
-  document.getElementById('tb-m').textContent=G.money.toLocaleString();
-  document.getElementById('tb-i').textContent='+Y'+incOf(P());
-  document.getElementById('tb-t').textContent=cntOf(P());
-  const w=document.getElementById('tb-w');
-  w.innerHTML=Object.keys(FAC).filter(f=>f!==P()&&isWar(P(),f))
-    .map(f=>'<span class="wb">WAR: '+FAC[f].sn+'</span>').join('');
-}
-
-// ── LOG ──────────────────────────────────────────────────────────
-function log(msg,cls){
-  cls=cls||'ld2';
-  const c=document.getElementById('llist'),d=document.createElement('div');
-  d.className='le '+cls;d.textContent=msg;c.insertBefore(d,c.firstChild);
-  while(c.children.length>28)c.removeChild(c.lastChild);
-}
-
-// ── MAP CONTROLS ─────────────────────────────────────────────────
-function setupCtrl(){
-  const mi=document.getElementById('mi'),vp=document.getElementById('vp');
-  let zoom=1.5,ox=0,oy=0,drag=false,lx=0,ly=0;
-  const cap=FAC[P()]?.cap||[700,300];
-  const vw=vp.clientWidth,vh=vp.clientHeight;
-  ox=vw/2-cap[0]*zoom;oy=vh/2-cap[1]*zoom;
-  function apT(){mi.style.transform='translate('+ox+'px,'+oy+'px) scale('+zoom+')'}
-  apT();
-  vp.addEventListener('mousedown',e=>{
-    if(e.target.classList.contains('tl2'))return;
-    drag=true;lx=e.clientX;ly=e.clientY;vp.classList.add('drag');
-  });
-  window.addEventListener('mousemove',e=>{
-    if(!drag)return;ox+=e.clientX-lx;oy+=e.clientY-ly;lx=e.clientX;ly=e.clientY;apT();
-  });
-  window.addEventListener('mouseup',()=>{drag=false;vp.classList.remove('drag')});
-  vp.addEventListener('wheel',e=>{
-    e.preventDefault();
-    const dz=e.deltaY*-.0009,nz=Math.min(Math.max(.18,zoom+dz),6);
-    const r=vp.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
-    ox=mx-(mx-ox)*(nz/zoom);oy=my-(my-oy)*(nz/zoom);zoom=nz;apT();
-  },{passive:false});
-  let lts=[];
-  vp.addEventListener('touchstart',e=>{lts=[...e.touches]},{passive:true});
-  vp.addEventListener('touchmove',e=>{
-    e.preventDefault();
-    if(e.touches.length===1&&lts.length===1){ox+=e.touches[0].clientX-lts[0].clientX;oy+=e.touches[0].clientY-lts[0].clientY}
-    else if(e.touches.length===2&&lts.length>=2){
-      const pd=Math.hypot(lts[1].clientX-lts[0].clientX,lts[1].clientY-lts[0].clientY);
-      const nd=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
-      zoom=Math.min(Math.max(.18,zoom*(nd/pd)),6);
-    }
-    lts=[...e.touches];apT();
-  },{passive:false});
-}
-
-// ── INIT ─────────────────────────────────────────────────────────
-
-// ================================================================
-//  SYSTEM 1: ENHANCED ECONOMY & PROVINCE DATA
-// ================================================================
-// Province eco values by importance tier
-function getEco(id, own) {
-  if (ECO_BONUS[id]) return ECO_BONUS[id];
-  const tier = { jp:14, su:11, de:16, it:12, fr:13, uk:12, us:18,
-    cn:10, mk:12, mg:7, cc:7, xj:8, ti:5, mo:7, tn:3,
-    au:13, ca:14, nz:10, za:12, pl:11, cz:12, at:10,
-    hu:9, ro:10, yu:9, bg:8, gr:8, se:12, no:10, dk:9, fi:8,
-    ee:6, lv:6, lt:6, nl:14, be:11, pt:9, ch:10, es:10, ie:7, lu:6, ic:5,
-    th:9, ir:10, af:5, iq:8, sa:7, ye:4, tr:10,
-    br:11, ar:11, mx:9, cl:8, co:7, ve:8, pe:7, bo:5,
-    py:4, uy:5, ec:5, cu:5,
-    et:6, eg:9, za:11, li:3, nt:5 };
-  return (tier[own]||5) + Math.floor(Math.random()*8) + 2;
-}
-
-// Override injectSVG to use getEco()
-const _origInject = injectSVG;
-// (injectSVG already handles this via ECO_BONUS + random fallback)
-
-// ================================================================
-//  SYSTEM 2: WAR SCORE TRACKING
-// ================================================================
-// War score: tracks captured territories per war
-function getWarScore(attacker, defender) {
-  const wk = rk(attacker, defender);
-  const caps = G.wCaps[wk] || [];
-  return caps.filter(c => S[c.id] && S[c.id].own === attacker).length;
-}
-
-function addWarCapture(attacker, defender, tid) {
-  const wk = rk(attacker, defender);
-  if (!G.wCaps[wk]) G.wCaps[wk] = [];
-  // Remove if previously listed
-  G.wCaps[wk] = G.wCaps[wk].filter(c => c.id !== tid);
-  G.wCaps[wk].push({ id: tid, prev: defender });
-}
-
-// ================================================================
-//  SYSTEM 3: COMPLETE COMBAT SYSTEM (enhanced execAtk)
-// ================================================================
-// Terrain modifier (coastal/landlocked)
-function getTerrainMod(id) {
-  // Territories near sea get slight attack bonus
-  return 1.0 + (Math.random() * 0.1);
-}
-
-// Full combat with modifiers
-function resolveCombat(atkPow, defPow, enc) {
-  const atkRoll = atkPow * (0.75 + Math.random() * 0.5);
-  const defRoll = defPow * (enc ? 0.5 : 1.0) * (0.75 + Math.random() * 0.5);
-  return { atkRoll, defRoll, win: atkRoll > defRoll };
-}
-
-// ================================================================
-//  SYSTEM 4: ENHANCED AI DECISION MAKING
-// ================================================================
-function aiFullTurn() {
-  const allFacs = Object.keys(FAC).filter(f => f !== P());
-  
-  for (const fac of allFacs) {
-    const facIncome = incOf(fac);
-    const facTerrs = Object.entries(S).filter(([,t]) => t.own === fac);
-    
-    // AI ECONOMY: Reinforce with probability based on income
-    if (facTerrs.length > 0 && Math.random() < 0.4) {
-      // Pick a random territory to reinforce
-      const idx = Math.floor(Math.random() * facTerrs.length);
-      const [,terr] = facTerrs[idx];
-      const boost = Math.floor(facIncome / 15) + Math.floor(Math.random() * 5);
-      terr.u.i = (terr.u.i || 0) + Math.max(1, boost);
-    }
-    
-    // AI COMBAT: Attack if at war with player
-    if (isWar(P(), fac)) {
-      aiFAtk(fac, P());
-      // AI may do multiple attacks
-      if (Math.random() < 0.3) aiFAtk(fac, P());
-    }
-    
-    // AI vs AI wars (historical conflicts)
-    for (const other of allFacs) {
-      if (other !== fac && isWar(fac, other) && Math.random() < 0.25) {
-        aiFAtk(fac, other);
-      }
-    }
-    
-    // AI DIPLOMACY: Minor factions may join wars
-    if (Math.random() < 0.02) { // 2% chance per turn per faction
-      const enemies = allFacs.filter(e => e !== fac && isWar(P(), e));
-      if (enemies.length > 0) {
-        // Small chance to join an existing war
-        const joinTarget = enemies[Math.floor(Math.random() * enemies.length)];
-        if (Math.random() < 0.15) { // 15% of 2% = 0.3% per turn
-          // Small faction joins war on one side
+      h+='<button class="db full" onclick="G.opNeg(\''+id+'\')">GIVE &amp; TAKE</button></div>';
+      if(lastOwn&&S[lastOwn]&&S[lastOwn].own===player){
+        var r2=reach(lastOwn,2),r3=reach(lastOwn,3);
+        if(r2.atk[id]||r3.atk[id]){
+          var m2=r2.atk[id]?'assault':'tankrush';
+          h+='<div class="sd">QUICK ATTACK</div>'+
+             '<button class="ab r" onclick="G.showAM(\''+lastOwn+'\',\''+id+'\',\''+m2+'\')">'+
+             '['+( m2==='assault'?'ASSAULT':'TANK RUSH')+'] '+S[lastOwn].name+' → '+t.name+'</button>';
         }
       }
     }
+    if(pc)pc.innerHTML=h;
   }
-}
 
-// ================================================================
-//  SYSTEM 4B: ENHANCED NEXT TURN (replaces simple version)
-// ================================================================
-const _origNextTurn = nextTurn;
-
-// Override nextTurn with full version
-// (Already implemented - just ensure AI runs)
-// The existing nextTurn calls aiTurn() which calls aiFAtk and aiFRein
-
-// ================================================================
-//  SYSTEM 5: RELATION DISPLAY & TOOLTIPS
-// ================================================================
-function getRelIcon(rel) {
-  const icons = { war:'⚔', hostile:'⚡', allied:'🤝', peace:'🕊' };
-  return icons[rel] || '○';
-}
-
-// Show war score in panel when at war
-function getWarScoreDisplay(targetFac) {
-  if (!isWar(P(), targetFac)) return '';
-  const ws = getWarScore(P(), targetFac);
-  const wsEnemy = getWarScore(targetFac, P());
-  return `<div class="mi" style="font-size:8px;margin:5px 0">
-    <b>WAR SCORE</b><br>
-    自国: <span style="color:var(--ac);font-family:var(--hd)">${ws}</span> pts
-    vs 敵国: <span style="color:#ff7080;font-family:var(--hd)">${wsEnemy}</span> pts
-  </div>`;
-}
-
-// ================================================================
-//  SYSTEM 6: ENCIRCLEMENT CHECK (enhanced)  
-// ================================================================
-function checkEncircledAll() {
-  // After each turn, log newly encircled territories
-  const vis = getVis();
-  let encCount = 0;
-  for (const [id, t] of Object.entries(S)) {
-    if (t.own !== P() && vis.has(id) && isEnc(id)) encCount++;
+  // ── Recruit ──────────────────────────────────────────────────
+  var UC={i:{c:10,b:10},t:{c:50,b:2},a:{c:30,b:3}};
+  function setU(u){curUnit=u;if(sel)updPanel(sel);}
+  function recruit(){
+    var id=sel;if(!id||!S[id]||S[id].own!==player)return;
+    var u=UC[curUnit],cost=u.c*u.b;
+    if(money<cost){addLog('資金不足: Y'+cost+'必要','lw');return;}
+    money-=cost;S[id].u[curUnit]=(S[id].u[curUnit]||0)+u.b;
+    addLog(S[id].name+': '+curUnit.toUpperCase()+'x'+u.b+'生産 (Y'+cost+')','lk');
+    updTB();updPanel(id);
   }
-  if (encCount > 0) {
-    log(`[包囲] 敵${encCount}地域が包囲状態（防御力-50%）`, 'lt');
+
+  // ── Attack Mode ──────────────────────────────────────────────
+  function setAtk(mode,id){
+    var fid=id||sel||lastOwn;
+    if(!fid||!S[fid]||S[fid].own!==player)return;
+    atkMode=mode;atkFrom=fid;
+    var atkSet,movSet;
+    if(mode==='bombard'){atkSet=bombTgts(fid);movSet={};}
+    else{var res=reach(fid,mode==='tankrush'?3:2);atkSet=res.atk;movSet=res.mov;}
+    applyHL(atkSet,movSet);
+    var mi=document.getElementById('mind');
+    if(mi){mi.style.display='block';mi.textContent=mode.toUpperCase()+' — ['+S[fid].name+'] から目標を選択';}
+    if(sel)updPanel(sel);
   }
-}
+  function cancelAtk(){
+    atkMode=null;atkFrom=null;clearHL();
+    var mi=document.getElementById('mind');if(mi)mi.style.display='none';
+    if(sel)updPanel(sel);
+  }
 
-// ================================================================
-//  PATCH: Enhanced nextTurn with all systems
-// ================================================================
-// Store original
-const _nextTurnOrig = nextTurn;
+  // ── Attack Modal ─────────────────────────────────────────────
+  function showAM(fid,tid,mode){
+    _af=fid;_at=tid;_am=mode;sendPct=50;
+    var at=S[fid],df=S[tid];if(!at||!df)return;
+    var vis=getVis(),enc=isEnc(tid),dk=!!vis[tid];
+    document.getElementById('m-t').textContent='攻撃確認 — ATTACK ORDER';
+    document.getElementById('m-s').textContent=at.name+' → '+df.name+' | '+mode.toUpperCase();
+    document.getElementById('m-r').style.display='none';
+    document.getElementById('m-b').innerHTML=
+      '<div class="mi">攻撃元: <b>'+at.name+'</b><br>目標: <b>'+df.name+'</b>'+(enc?'<br><span style="color:#ff4050">■ 包囲殲滅: 防御力-50%</span>':'')+'</div>'+
+      '<div class="sd">SEND FORCES</div>'+
+      '<div class="sr"><span class="sl2">派遣割合</span>'+
+        '<input type="range" min="10" max="90" step="10" value="50" id="sl-s" oninput="G._slS(this.value)">'+
+        '<span class="sv2" id="sv-s">50%</span></div>'+
+      '<div id="ap2" style="font-size:8px;color:var(--dm);margin:5px 0"></div>'+
+      '<div class="mi" style="font-size:7.5px">'+(dk?'敵戦力: DEF '+Math.round(cDef(df.u)*(enc?.5:1))+(enc?' (包囲補正済)':''):'敵戦力: FOG OF WAR')+'</div>';
+    document.getElementById('m-btns').innerHTML=
+      '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
+      '<button class="mb ok" onclick="G.execAM()">CONFIRM ATTACK</button>';
+    updAP();
+    document.getElementById('modal').classList.add('open');
+  }
+  function _slS(v){sendPct=+v;var s=document.getElementById('sv-s');if(s)s.textContent=v+'%';updAP();}
+  function updAP(){
+    var at=S[_af];if(!at)return;
+    var p=sendPct/100;
+    var si=Math.max(1,Math.floor((at.u.i||0)*p));
+    var st=Math.max(0,Math.floor((at.u.t||0)*p));
+    var sa=Math.max(0,Math.floor((at.u.a||0)*p));
+    var ap=(_am==='tankrush'?st*3.2+si*0.3:si*1.0+st*3.2)+sa*0.5;
+    var el=document.getElementById('ap2');
+    if(el)el.innerHTML='派遣: [I]'+si+' [T]'+st+' [A]'+sa+' | 攻撃力: <span style="color:var(--ac);font-family:var(--hd)">'+Math.round(ap)+'</span>';
+  }
+  function execAM(){closeModal();cancelAtk();execAtk(_af,_at,_am);}
 
-// Redefine nextTurn to include enhancements
-function nextTurn() {
-  G.turn++;
-  G.mo++;
-  if (G.mo > 12) { G.mo = 1; G.yr++; }
-  
-  const ds = G.yr + '.' + String(G.mo).padStart(2, '0');
-  document.getElementById('tb-d').textContent = ds;
-  
-  // Economy: collect income
-  const inc = incOf(P());
-  G.money += inc;
-  
-  log('━━ TURN ' + G.turn + ' / ' + ds + ' | 歳入 +Y' + inc + ' | 残高 Y' + G.money + ' ━━', 'lt');
-  
-  // Run enhanced AI
-  aiFullTurn();
-  
-  // Check encirclement
-  checkEncircledAll();
-  
-  // Historical events (scripted)
-  triggerHistoricalEvents();
-  
-  // Update display
-  applyFoW();
-  updTB();
-  if (G.sel) updPanel(G.sel);
-}
+  // ── Combat ───────────────────────────────────────────────────
+  function execAtk(fid,tid,mode){
+    var at=S[fid],df=S[tid];
+    if(!at||!df||at.own!==player||df.own===player)return;
+    var res=reach(fid,mode==='tankrush'?3:2);
+    if(!res.atk[tid]){addLog(df.name+'は射程外','lw');return;}
+    if(!isWar(player,df.own)){
+      setRel(player,df.own,'war');
+      wCaps[rk(player,df.own)]=wCaps[rk(player,df.own)]||[];
+      addLog('[宣戦布告] '+(FAC[player]&&FAC[player].sn)+' → '+((FAC[df.own]&&FAC[df.own].sn)||df.own),'lw');
+    }
+    var p=sendPct/100;
+    var si=Math.max(1,Math.floor((at.u.i||0)*p));
+    var st=Math.max(0,Math.floor((at.u.t||0)*p));
+    var sa=Math.max(0,Math.floor((at.u.a||0)*p));
+    var ap=(_am==='tankrush'?st*3.2+si*0.3:si*1.0+st*3.2)+sa*0.5;
+    ap*=(0.75+Math.random()*0.5);
+    var enc=isEnc(tid);
+    var dp=cDef(df.u)*(enc?0.5:1.0)*(0.75+Math.random()*0.5);
+    if(enc)addLog('[包囲殲滅] '+df.name+': 防御力-50%','lt');
+    at.u.i=Math.max(0,(at.u.i||0)-Math.floor(dp*0.14));
+    at.u.t=Math.max(0,(at.u.t||0)-Math.floor(dp*0.05));
+    if(ap>dp){
+      var prev=df.own;
+      df.own=player;df.u={i:si,t:st,a:sa};
+      at.u.i=Math.max(0,(at.u.i||0)-si);at.u.t=Math.max(0,(at.u.t||0)-st);
+      df.el.setAttribute('fill',fcol(player));
+      df.el.classList.remove('fh2','fs2','enc');
+      var wk=rk(player,prev);
+      (wCaps[wk]=wCaps[wk]||[]).push({id:tid,prev:prev});
+      addLog('[占領] '+df.name+'を占領！ ATK:'+Math.round(ap)+' vs DEF:'+Math.round(dp),'lk');
+      var rem=0;for(var id in S)if(S[id].own===prev)rem++;
+      if(rem===0)addLog('[降伏] '+((FAC[prev]&&FAC[prev].n)||prev)+'が降伏！','lk');
+    } else {
+      df.u.i=Math.max(0,(df.u.i||0)-Math.floor((df.u.i||0)*0.13));
+      addLog('[失敗] '+df.name+'への攻撃失敗 ATK:'+Math.round(ap)+' vs DEF:'+Math.round(dp),'lw');
+    }
+    applyFoW();updTB();if(sel)updPanel(sel);
+  }
+  function execBomb(fid,tid){
+    var at=S[fid],df=S[tid];
+    if(!at||!df||at.own!==player)return;
+    var nbrs=adjOf(fid);var ok=false;
+    for(var i=0;i<nbrs.length;i++)if(nbrs[i]===tid){ok=true;break;}
+    if(!ok){addLog('砲兵射程外（隣接のみ）','lw');return;}
+    if(!(at.u.a>0)){addLog(at.name+'に砲兵がいません','lw');return;}
+    var dmg=Math.max(1,Math.floor(at.u.a*2*(0.7+Math.random()*0.6)));
+    df.u.i=Math.max(0,(df.u.i||0)-Math.floor(dmg*0.7));
+    df.u.t=Math.max(0,(df.u.t||0)-Math.floor(dmg*0.1));
+    addLog('[砲撃] '+at.name+'→'+df.name+': '+dmg+'ダメージ（占領なし）','lt');
+    cancelAtk();if(sel)updPanel(sel);
+  }
 
-// ================================================================
-//  HISTORICAL EVENTS SYSTEM
-// ================================================================
-const EVENTS = [
-  { turn: 3, yr: 1936, mo: 7, fac: 'es', msg: '[歴史イベント] スペイン内戦勃発！フランコ軍がマドリードに向けて進軍。', cls: 'lw',
-    action: () => { /* Spanish Nationalists appear */ } },
-  { turn: 6, yr: 1936, mo: 10, fac: 'de', msg: '[歴史イベント] ローマ・ベルリン枢軸協定締結！ドイツとイタリアが正式に同盟。', cls: 'lai',
-    action: () => { if(!G.rel[rk('de','it')]) G.rel[rk('de','it')]='allied'; } },
-  { turn: 10, yr: 1936, mo: 11, fac: 'jp', msg: '[歴史イベント] 日独防共協定締結！日本とドイツの連携強化。', cls: 'lai',
-    action: () => { G.rel[rk('jp','de')] = 'allied'; } },
-];
-
-function triggerHistoricalEvents() {
-  for (const ev of EVENTS) {
-    if (G.yr === ev.yr && G.mo === ev.mo) {
-      log(ev.msg, ev.cls);
-      if (ev.action) ev.action();
+  // ── Diplomacy ────────────────────────────────────────────────
+  function aiAcc(type,id,offer){
+    if(!S[id])return false;
+    var fac=S[id].own,r=powOf(player)/Math.max(1,powOf(fac)),aid=(offer&&offer.money)||0;
+    var p=0.35;
+    if(type==='alliance'){p=(fac==='nt'?.45:.18)+aid/600;}
+    else if(type==='guarantee'){p=(r>1.3?.58:.35)+aid/450;}
+    else if(type==='puppet'){p=(r>2.8?.52:.05)+aid/350;}
+    else if(type==='peace'){var tr=powOf(fac)/Math.max(1,powOf(player));p=(tr<.5?.82:tr<.8?.55:.22)+aid/700;}
+    return Math.random()<Math.min(0.92,Math.max(0.03,p));
+  }
+  function opD(type,id){
+    _mT=type;_mId=id;if(!S[id])return;
+    var t=S[id];
+    var infos={alliance:'相互防衛同盟を提案します。',aid:'資金を提供して外交関係を改善します。',
+      guarantee:'対象国が攻撃された場合、自動参戦することを宣言します。',
+      puppet:'対象国を属国化します。国力差が判定に大きく影響します。'};
+    var titles={alliance:'同盟交渉',aid:'資金援助',guarantee:'独立保障',puppet:'保護国化'};
+    var maxA=Math.min(money,800);
+    document.getElementById('m-t').textContent=titles[type];
+    document.getElementById('m-s').textContent='交渉相手: '+t.name+' / '+((FAC[t.own]&&FAC[t.own].n)||'中立国');
+    document.getElementById('m-r').style.display='none';document.getElementById('m-r').className='mr';
+    document.getElementById('m-b').innerHTML='<div class="mi">'+infos[type]+'</div>'+
+      '<div class="sd">OFFER</div>'+
+      '<div class="sr"><span class="sl2">金銭援助 Y</span>'+
+        '<input type="range" min="0" max="'+maxA+'" step="50" value="0" id="sl-aid" oninput="document.getElementById(\'sv-aid\').textContent=this.value">'+
+        '<span class="sv2" id="sv-aid">0</span></div>';
+    document.getElementById('m-btns').innerHTML=
+      '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
+      '<button class="mb ok" onclick="G.execD()">EXECUTE</button>';
+    document.getElementById('modal').classList.add('open');
+  }
+  function execD(){
+    var type=_mT,id=_mId;if(!S[id])return;
+    var t=S[id],aidEl=document.getElementById('sl-aid'),aid=aidEl?parseInt(aidEl.value):0;
+    if(aid>money){showMR('資金不足。',false);return;}
+    if(type==='guarantee'){wCaps['g-'+id]=1;addLog('[独立保障] '+t.name,'li');showMR('独立保障を宣言しました。',true);return;}
+    if(type==='aid'){money-=aid;addLog('[援助] '+t.name+'にY'+aid,'li');showMR('Y'+aid+'援助完了。',true);updTB();return;}
+    if(aiAcc(type,id,{money:aid})){
+      money-=aid;
+      if(type==='alliance'){setRel(player,t.own,'allied');addLog('[同盟] '+((FAC[t.own]&&FAC[t.own].n)||t.own)+'と同盟締結','li');showMR('同盟条約締結。',true);}
+      else if(type==='puppet'){t.own=player;t.el.setAttribute('fill',fcol(player));applyFoW();addLog('[傀儡化] '+t.name,'lk');showMR(t.name+'は保護国となりました。',true);}
+      updTB();if(sel)updPanel(sel);
+    } else {addLog('[外交失敗] '+t.name,'lw');showMR('提案は拒否されました。',false);}
+  }
+  function opNeg(id){
+    _mT='negot';_mId=id;if(!S[id])return;
+    var t=S[id],fac=t.own;
+    var inc=incOf(fac),ratio=powOf(player)/Math.max(1,powOf(fac));
+    var d={money:Math.ceil(inc*(ratio>1.5?.6:ratio>1?.9:1.3)*(0.8+Math.random()*0.4)/50)*50,
+           nonagg:ratio<0.9,peace:isWar(player,fac)};
+    negot={id:id,fac:fac,round:1,max:3,d:d};
+    renderNeg(d);
+    document.getElementById('modal').classList.add('open');
+  }
+  function renderNeg(d){
+    var id=_mId,n=negot;if(!S[id]||!n)return;
+    var t=S[id],maxO=Math.min(money,1200),ownOpts='';
+    for(var sid in S)if(S[sid].own===player)ownOpts+='<option value="'+sid+'">'+S[sid].name+'</option>';
+    document.getElementById('m-t').textContent='外交交渉 — GIVE & TAKE';
+    document.getElementById('m-s').textContent=t.name+' | Round '+n.round+'/'+n.max;
+    document.getElementById('m-r').style.display='none';document.getElementById('m-r').className='mr';
+    document.getElementById('m-b').innerHTML=
+      '<div class="mc2"><div><div class="mch">YOUR OFFER</div>'+
+        '<div class="sr"><span class="sl2">金銭 Y</span>'+
+          '<input type="range" min="0" max="'+maxO+'" step="50" value="0" id="n-m" oninput="document.getElementById(\'n-mv\').textContent=this.value;G._updNB()">'+
+          '<span class="sv2" id="n-mv">0</span></div>'+
+        '<select class="tsel" id="n-t" onchange="G._updNB()"><option value="">領土割譲なし</option>'+ownOpts+'</select>'+
+        '<label class="mchk"><input type="checkbox" id="n-na" onchange="G._updNB()"> 不可侵条約</label>'+
+        '<label class="mchk"><input type="checkbox" id="n-pe" onchange="G._updNB()"> 停戦提案</label>'+
+      '</div><div><div class="mch">THEIR DEMANDS</div>'+
+        (d.money>0?'<div class="mdi">金銭: Y'+d.money+'</div>':'')+
+        (d.nonagg?'<div class="mdi">不可侵条約</div>':'')+
+        (d.peace?'<div class="mdi">停戦合意</div>':'')+
+        (!d.money&&!d.nonagg&&!d.peace?'<div class="mdi" style="color:var(--dm)">要求なし</div>':'')+
+      '</div></div>'+
+      '<div class="lb"><div class="lbl"><span>合意可能性</span><span id="n-pct" style="font-family:var(--hd);color:var(--ac)">0%</span></div>'+
+      '<div class="lbt"><div class="lbf" id="n-bar" style="width:0%"></div></div></div>';
+    document.getElementById('m-btns').innerHTML=
+      '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
+      '<button class="mb ng" onclick="G.exCtr()">COUNTER</button>'+
+      '<button class="mb ok" onclick="G.exNeg()">SUBMIT</button>';
+    _updNB();
+  }
+  function _updNB(){
+    if(!negot)return;
+    var d=negot.d;
+    var m=parseInt((document.getElementById('n-m')||{value:'0'}).value);
+    var na=((document.getElementById('n-na')||{}).checked);
+    var pe=((document.getElementById('n-pe')||{}).checked);
+    var tr=((document.getElementById('n-t')||{}).value)||'';
+    var sc=0,tot=0;
+    if(d.money>0){sc+=Math.min(1,m/d.money)*40;tot+=40;}
+    if(d.nonagg){sc+=(na?30:0);tot+=30;}
+    if(d.peace){sc+=(pe?30:0);tot+=30;}
+    if(tr)sc+=20;
+    var pct=tot>0?Math.round(sc/tot*100):40;
+    var bar=document.getElementById('n-bar'),pctEl=document.getElementById('n-pct');
+    if(bar)bar.style.width=pct+'%';if(pctEl)pctEl.textContent=pct+'%';
+  }
+  function exNeg(){
+    if(!negot||!S[_mId])return;
+    var n=negot,d=n.d,t=S[_mId];
+    var m=parseInt((document.getElementById('n-m')||{value:'0'}).value);
+    var tr=((document.getElementById('n-t')||{}).value)||'';
+    var na=((document.getElementById('n-na')||{}).checked);
+    var pe=((document.getElementById('n-pe')||{}).checked);
+    var sc=0,tot=0;
+    if(d.money>0){sc+=Math.min(1,m/d.money)*40;tot+=40;}
+    if(d.nonagg){sc+=(na?30:0);tot+=30;}
+    if(d.peace){sc+=(pe?30:0);tot+=30;}
+    if(tr)sc+=20;
+    var thresh=tot>0?65:50,pct=tot>0?sc/tot*100:40;
+    if(pct>=thresh){
+      money-=m;
+      if(tr&&S[tr]){S[tr].own=t.own;S[tr].el.setAttribute('fill',fcol(t.own));addLog('[交渉] '+S[tr].name+'を割譲','li');}
+      if(na||pe)setRel(player,t.own,'peace');
+      addLog('[交渉成立] '+t.name,'li');showMR('交渉成立。('+Math.round(pct)+'%)',true);
+      negot=null;updTB();applyFoW();if(sel)updPanel(sel);
+    } else {
+      n.round++;
+      if(n.round>n.max){addLog('[交渉決裂] '+t.name,'lw');showMR('交渉決裂。',false);negot=null;}
+      else{d.money=Math.ceil(d.money*0.84/50)*50;showMR('条件不足。Round '+n.round+'/'+n.max,false,'inf');setTimeout(function(){document.getElementById('m-r').style.display='none';renderNeg(d);},2000);}
     }
   }
-}
+  function exCtr(){
+    if(!negot)return;var n=negot;n.round++;
+    if(n.round>n.max){showMR('交渉期限超過。',false);negot=null;return;}
+    n.d.money=Math.ceil(n.d.money*0.80/50)*50;if(n.round>=2)n.d.nonagg=false;
+    renderNeg(n.d);
+  }
+  function opPeace(id){
+    _mT='peace';_mId=id;if(!S[id])return;
+    var t=S[id],fac=t.own,jP=powOf(player),fP=powOf(fac),isWin=jP>fP*0.7;
+    var wk=rk(player,fac),ws=((wCaps[wk]||[]).filter(function(c){return S[c.id]&&S[c.id].own===player;})).length;
+    var vp=Math.max(1,Math.floor((jP/Math.max(1,fP))*1.5)+ws);
+    var maxA=Math.min(money,800);
+    document.getElementById('m-t').textContent='講和交渉 — PEACE TREATY';
+    document.getElementById('m-s').textContent='交戦国: '+((FAC[fac]&&FAC[fac].n)||fac)+' | '+(isWin?'自国有利':'敵方有利');
+    document.getElementById('m-r').style.display='none';document.getElementById('m-r').className='mr';
+    document.getElementById('m-b').innerHTML=
+      '<div class="vpd"><div class="vpn">'+vp+'</div><div class="vpl">VICTORY POINTS</div></div>'+
+      '<div class="mi" style="font-size:7.5px">戦勝点=占領地域数×戦力比。高いほど有利な要求が可能です。</div>'+
+      (isWin?(vp>=1?'<label class="mchk"><input type="checkbox" id="d-m" checked> 賠償金 Y'+(vp*100)+'を要求</label>':'')+
+             (vp>=5?'<label class="mchk"><input type="checkbox" id="d-p"> 傀儡化を要求</label>':''):
+       '<div class="mi" style="color:#ff8090;font-size:7.5px">不利な戦況。無条件講和のみ。</div>')+
+      '<div class="sd">COMPENSATION</div>'+
+      '<div class="sr"><span class="sl2">補償金 Y</span>'+
+        '<input type="range" min="0" max="'+maxA+'" step="50" value="0" id="sl-pa" oninput="document.getElementById(\'pav\').textContent=this.value">'+
+        '<span class="sv2" id="pav">0</span></div>';
+    document.getElementById('m-btns').innerHTML=
+      '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
+      '<button class="mb ok" onclick="G.execPeace(\''+id+'\','+isWin+','+vp+')">PROPOSE</button>';
+    document.getElementById('modal').classList.add('open');
+  }
+  function execPeace(id,isWin,vp){
+    if(!S[id])return;var t=S[id],fac=t.own;
+    var aid=parseInt((document.getElementById('sl-pa')||{value:'0'}).value);
+    var demM=(document.getElementById('d-m')||{}).checked;
+    var demP=(document.getElementById('d-p')||{}).checked;
+    var wk=rk(player,fac),tr=powOf(fac)/Math.max(1,powOf(player));
+    var p=isWin?(tr<.4?.88:tr<.7?.62:.32):.55;
+    p+=aid/1200;if(demP)p-=.35;if(demM)p-=.08;
+    if(Math.random()<Math.min(.94,Math.max(.02,p))){
+      money-=aid;
+      if(demM){var rep=vp*100;money+=rep;addLog('[賠償] Y'+rep+'獲得','lk');}
+      if(demP){var caps=wCaps[wk]||[];for(var i=0;i<caps.length;i++){if(S[caps[i].id]&&S[caps[i].id].own===fac){S[caps[i].id].own=player;S[caps[i].id].el.setAttribute('fill',fcol(player));}}}
+      setRel(player,fac,'peace');delete wCaps[wk];
+      addLog('[講和成立] '+((FAC[fac]&&FAC[fac].n)||fac),'li');showMR('講和条約締結。',true);
+      updTB();applyFoW();if(sel)updPanel(sel);
+    } else {addLog('[講和拒否]','lw');showMR('講和条件を拒否されました。',false);}
+  }
+  function showMR(txt,ok,cls){
+    var d=document.getElementById('m-r');
+    d.className='mr '+(cls||(ok?'ok':'no'));d.style.display='block';d.textContent=txt;
+  }
+  function closeModal(){document.getElementById('modal').classList.remove('open');_mT=null;}
 
-// ================================================================
-//  INIT OVERRIDE: Ensure correct startup sequence
-// ================================================================
-// Override buildFsel to also hide game UI until started
-const _origBuildFsel = buildFsel;
-function buildFsel() {
-  // Hide all game UI elements until faction is selected
-  document.getElementById('tb').style.display = 'none';
-  document.getElementById('sp').style.display = 'none';
-  document.getElementById('vp').style.display = 'none';
-  document.getElementById('log').style.display = 'none';
-  document.getElementById('nxt').style.display = 'none';
-  _origBuildFsel();
-}
+  // ── AI ───────────────────────────────────────────────────────
+  function aiTurn(){
+    var facs=Object.keys(FAC).filter(function(f){return f!==player;});
+    for(var i=0;i<facs.length;i++){
+      var fac=facs[i];
+      if(Math.random()<0.38)aiRein(fac);
+      if(isWar(player,fac))aiAtk(fac,player);
+      for(var j=0;j<facs.length;j++){
+        if(facs[j]!==fac&&isWar(fac,facs[j])&&Math.random()<0.25)aiAtk(fac,facs[j]);
+      }
+    }
+  }
+  function aiAtk(af,df){
+    var best=null,bestR=-1;
+    for(var fid in S){
+      if(S[fid].own!==af)continue;
+      var nbrs=adjOf(fid);
+      for(var k=0;k<nbrs.length;k++){
+        var tid=nbrs[k],dt=S[tid];if(!dt||dt.own!==df)continue;
+        var enc=isEnc(tid)?0.5:1.0;
+        var r=cAtk(S[fid].u)/Math.max(0.1,cDef(dt.u)*enc);
+        if(r>bestR){bestR=r;best={fid:fid,tid:tid};}
+      }
+    }
+    if(!best||bestR<0.45)return;
+    var at=S[best.fid],dt=S[best.tid];
+    var enc=isEnc(best.tid)?0.5:1.0;
+    var ap=cAtk(at.u)*(0.78+Math.random()*0.44);
+    var dp=cDef(dt.u)*enc*(0.78+Math.random()*0.44);
+    if(ap>dp){
+      var xf=Math.max(1,Math.floor((at.u.i||0)*0.22));
+      at.u.i=Math.max(0,(at.u.i||0)-xf);
+      dt.own=af;dt.u={i:xf,t:0,a:0};
+      dt.el.setAttribute('fill',fcol(af));
+      addLog('[AI] '+((FAC[af]&&FAC[af].sn)||af)+': '+dt.name+'を占領','lai');
+      applyFoW();
+    } else {
+      at.u.i=Math.max(0,(at.u.i||0)-Math.floor((at.u.i||0)*0.1));
+    }
+  }
+  function aiRein(fac){
+    var cnt=0;
+    for(var id in S){
+      if(S[id].own!==fac||cnt>8)continue;
+      if(Math.random()<0.4){S[id].u.i=(S[id].u.i||0)+Math.floor(Math.random()*6)+1;cnt++;}
+    }
+  }
 
-// Override startGame to restore UI
-const _origStartGame = startGame;
-async function startGame(fid) {
-  // Restore game UI
-  document.getElementById('tb').style.display = '';
-  document.getElementById('sp').style.display = '';
-  document.getElementById('vp').style.display = '';
-  document.getElementById('log').style.display = '';
-  document.getElementById('nxt').style.display = '';
-  await _origStartGame(fid);
-}
+  // ── Next Turn ────────────────────────────────────────────────
+  function nextTurn(){
+    turn++;mo++;if(mo>12){mo=1;yr++;}
+    var ds=yr+'.'+String(mo).padStart(2,'0');
+    document.getElementById('tb-d').textContent=ds;
+    var inc=incOf(player);money+=inc;
+    addLog('━━ TURN '+turn+' / '+ds+' | 歳入 +Y'+inc+' | 残高 Y'+money+' ━━','lt');
+    // Historical events
+    var HEVTS=[
+      {yr:1936,mo:7,msg:'[歴史イベント] スペイン内戦勃発！フランコ軍がマドリードへ進軍。',cls:'lw'},
+      {yr:1936,mo:10,msg:'[歴史イベント] ローマ・ベルリン枢軸協定締結！独伊が正式同盟。',cls:'lai',act:function(){rel[rk('de','it')]='allied';}},
+      {yr:1936,mo:11,msg:'[歴史イベント] 日独防共協定締結！',cls:'lai',act:function(){if(!rel[rk('jp','de')]||rel[rk('jp','de')]==='peace')rel[rk('jp','de')]='allied';}},
+      {yr:1937,mo:7,msg:'[歴史イベント] 盧溝橋事件！日中戦争が正式に勃発。',cls:'lw',act:function(){rel[rk('jp','cn')]='war';}},
+      {yr:1939,mo:9,msg:'[歴史イベント] ドイツがポーランドに侵攻！第二次世界大戦勃発！',cls:'lw',act:function(){rel[rk('de','pl')]='war';rel[rk('de','uk')]='war';rel[rk('de','fr')]='war';}}
+    ];
+    for(var i=0;i<HEVTS.length;i++){
+      var e=HEVTS[i];
+      if(yr===e.yr&&mo===e.mo){addLog(e.msg,e.cls);if(e.act)try{e.act();}catch(ex){}}
+    }
+    aiTurn();applyFoW();updTB();if(sel)updPanel(sel);
+  }
 
-buildFsel();
+  // ── Top Bar ──────────────────────────────────────────────────
+  function updTB(){
+    var m=document.getElementById('tb-m'),i=document.getElementById('tb-i'),
+        t=document.getElementById('tb-t'),w=document.getElementById('tb-w');
+    if(m)m.textContent=(money||0).toLocaleString();
+    if(i)i.textContent='+Y'+incOf(player);
+    if(t)t.textContent=cntOf(player);
+    if(!w)return;
+    var wh='';
+    for(var f in FAC){if(f!==player&&isWar(player,f))wh+='<span class="wb">WAR: '+FAC[f].sn+'</span>';}
+    w.innerHTML=wh;
+  }
+
+  // ── Log ──────────────────────────────────────────────────────
+  function addLog(msg,cls){
+    var c=document.getElementById('llist');if(!c)return;
+    var d=document.createElement('div');
+    d.className='le '+(cls||'li');d.textContent=msg;
+    c.insertBefore(d,c.firstChild);
+    while(c.children.length>30)c.removeChild(c.lastChild);
+  }
+
+  // ── Map Controls ─────────────────────────────────────────────
+  function setupCtrl(){
+    var mi=document.getElementById('mi'),vp=document.getElementById('vp');
+    if(!mi||!vp)return;
+    var zoom=1.5,ox=0,oy=0,drag=false,lx=0,ly=0;
+    var cap=(FAC[player]&&FAC[player].cap)||[700,300];
+    ox=vp.clientWidth/2-cap[0]*zoom;oy=vp.clientHeight/2-cap[1]*zoom;
+    function apT(){mi.style.transform='translate('+ox+'px,'+oy+'px) scale('+zoom+')';}
+    apT();
+    vp.addEventListener('mousedown',function(e){
+      if(e.target.classList.contains('tl2'))return;
+      drag=true;lx=e.clientX;ly=e.clientY;vp.classList.add('drag');
+    });
+    window.addEventListener('mousemove',function(e){
+      if(!drag)return;ox+=e.clientX-lx;oy+=e.clientY-ly;lx=e.clientX;ly=e.clientY;apT();
+    });
+    window.addEventListener('mouseup',function(){drag=false;vp.classList.remove('drag');});
+    vp.addEventListener('wheel',function(e){
+      e.preventDefault();
+      var dz=e.deltaY*-0.0009,nz=Math.min(Math.max(0.18,zoom+dz),6);
+      var r=vp.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+      ox=mx-(mx-ox)*(nz/zoom);oy=my-(my-oy)*(nz/zoom);zoom=nz;apT();
+    },{passive:false});
+    var lts=[];
+    vp.addEventListener('touchstart',function(e){lts=Array.prototype.slice.call(e.touches);},{passive:true});
+    vp.addEventListener('touchmove',function(e){
+      e.preventDefault();
+      if(e.touches.length===1&&lts.length===1){ox+=e.touches[0].clientX-lts[0].clientX;oy+=e.touches[0].clientY-lts[0].clientY;}
+      else if(e.touches.length===2&&lts.length>=2){
+        var pd=Math.hypot(lts[1].clientX-lts[0].clientX,lts[1].clientY-lts[0].clientY);
+        var nd=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
+        zoom=Math.min(Math.max(0.18,zoom*(nd/pd)),6);
+      }
+      lts=Array.prototype.slice.call(e.touches);apT();
+    },{passive:false});
+  }
+
+  // ── Public API ───────────────────────────────────────────────
+  return {
+    // Init
+    buildFsel:  buildFsel,
+    startGame:  startGame,
+    // Panel
+    setU:       setU,
+    recruit:    recruit,
+    setAtk:     setAtk,
+    cancelAtk:  cancelAtk,
+    // Combat
+    showAM:     showAM,
+    execAM:     execAM,
+    _slS:       _slS,
+    // Diplomacy
+    opD:        opD,
+    execD:      execD,
+    opNeg:      opNeg,
+    exNeg:      exNeg,
+    exCtr:      exCtr,
+    opPeace:    opPeace,
+    execPeace:  execPeace,
+    closeModal: closeModal,
+    // Turns
+    nextTurn:   nextTurn,
+    // Negot helpers
+    _updNB:     _updNB
+  };
+}());
+
+// ── Bootstrap ────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  G.buildFsel();
+});
 </script>
 </body>
 </html>
