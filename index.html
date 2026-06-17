@@ -103,8 +103,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #svgh{display:block;line-height:0;font-size:0}
 /* SVG element: preserve aspect ratio, never stretch */
 #svgh svg{display:block;width:100%;height:auto;max-width:none;
-  /* CRITICAL: force correct aspect-ratio behaviour */
-  preserveAspectRatio:xMidYMid meet}
+  /* preserveAspectRatio set via JS setAttribute in processSVG */}
 .tl2{cursor:pointer;transition:filter .1s}
 .tl2:hover{filter:brightness(1.45) drop-shadow(0 0 4px rgba(200,162,72,.4))!important}
 .sel{stroke:#c8a248!important;stroke-width:2.5!important;filter:drop-shadow(0 0 9px rgba(200,162,72,.85)) brightness(1.2)!important;vector-effect:non-scaling-stroke!important}
@@ -115,9 +114,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes enct{from{filter:none}to{filter:drop-shadow(0 0 8px #ff0020)}}
 .fh2{filter:grayscale(90%) brightness(.22)!important}
 .fs2{filter:grayscale(20%) brightness(.58)!important}
-/* TROOP TOWER (HOI4-style division badges) */
-#troop-overlay{position:absolute;top:0;left:0;pointer-events:none;z-index:500}
-.troop-tower{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:1px;align-items:center;pointer-events:none;user-select:none}
+/* TROOP TOWER - inside #mi, so transforms with map */
+#troop-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:500;overflow:visible}
+.troop-tower{position:absolute;display:flex;flex-direction:column;gap:1px;align-items:center;pointer-events:none;user-select:none;transform-origin:center center}
 .tb-badge{display:flex;align-items:center;gap:2px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.18);padding:1px 3px;border-radius:2px;white-space:nowrap;line-height:1}
 .tb-badge.inf{border-color:rgba(100,220,120,.5)}
 .tb-badge.tnk{border-color:rgba(240,180,60,.5)}
@@ -215,8 +214,21 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .mbtns{gap:5px;margin-top:8px}.sr{gap:4px}.sl2{min-width:54px;font-size:7px}
   .tb-badge{padding:1px 2px}.tb-num{font-size:6px}.tb-icon{font-size:7px}
 }
+/* MOB LOG - shown inside bottom sheet on mobile */
+#mob-log{display:none;border-top:1px solid var(--b1);background:rgba(0,0,0,.35);
+  flex-shrink:0;padding:5px 10px 6px;height:96px;flex-direction:column}
+.mob-lhdr{font-size:6px;color:var(--dm);letter-spacing:2px;margin-bottom:3px;flex-shrink:0}
+#mob-llist{flex:1;max-height:100px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;
+  scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+@media(max-width:768px){
+  #mob-log{display:flex;flex-direction:column}
+  #sp{flex-direction:column}
+  #pb{flex:1 1 auto;min-height:0;overflow-y:auto}
+  #sp.open #pb{max-height:calc(42vh - 42px - 96px)}
+}
 @media(max-width:400px){
   #sp{height:45vh;max-height:45vh}
+  #sp.open #pb{max-height:calc(45vh - 42px - 96px)}
   .fgrid{grid-template-columns:1fr 1fr;gap:5px}
   .fh-t{font-size:13px;letter-spacing:2px}
 }
@@ -252,12 +264,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="ptg" id="ph-t"></div>
   </div>
   <div id="pb"><div id="pc" style="color:var(--dm);font-size:8px;text-align:center;padding:20px 10px;line-height:2.4">CLICK TERRITORY<br><span style="font-size:7px">OWN=RECRUIT/ATTACK<br>ENEMY=DIPLOMACY</span></div></div>
+  <div id="mob-log">
+    <div class="mob-lhdr">📡 OPERATIONS LOG</div>
+    <div id="mob-llist"></div>
+  </div>
 </div>
 <div id="vp">
   <div id="mi">
     <div id="svgh"></div>
+    <div id="troop-overlay"></div>
   </div>
-  <div id="troop-overlay"></div>
 </div>
 <button id="sp-tog" onclick="G.togglePanel()">▲ PANEL</button>
 <div id="mind">TARGET SELECTION MODE</div>
@@ -730,11 +746,24 @@ function showErr(msg){
 }
 // ── Log ──
 function addLog(msg,cls){
-  var ll=document.getElementById('llist');if(!ll)return;
-  var d=document.createElement('div');
-  d.className='le '+(cls||'');d.textContent=msg;
-  ll.insertBefore(d,ll.firstChild);
-  if(ll.children.length>8)ll.removeChild(ll.lastChild);
+  // Main log (#log, desktop) — newest entry at TOP (no scroll needed)
+  var ll=document.getElementById('llist');
+  if(ll){
+    var d=document.createElement('div');
+    d.className='le '+(cls||'');d.textContent=msg;
+    ll.insertBefore(d,ll.firstChild);
+    while(ll.children.length>12)ll.removeChild(ll.lastChild);
+  }
+  // Mobile log (bottom sheet) — chronological, newest at BOTTOM, auto-scroll down
+  var ml=document.getElementById('mob-llist');
+  if(ml){
+    var d2=document.createElement('div');
+    d2.className='le '+(cls||'');d2.textContent=msg;
+    ml.appendChild(d2);
+    while(ml.children.length>30)ml.removeChild(ml.firstChild);
+    // Auto-scroll to bottom so newest message is always visible
+    requestAnimationFrame(function(){ml.scrollTop=ml.scrollHeight;});
+  }
 }
 // ── Faction Select ──
 function buildFsel(){
@@ -911,8 +940,41 @@ function buildAdjChunked(ids,onDone){
     ldp(60+Math.round((row/ids.length)*25),'隣接計算中... ('+row+'/'+ids.length+')');
     if(row<ids.length)setTimeout(processChunk,0);
     else{
+      // ── Pacific Wrap: connect East Asia ↔ North America ──────────────
+      var PLINKS=[
+        // Kamchatka/Chukotka ↔ Alaska
+        ['Kamchatka','Alaska'],['Chukotka','Alaska'],
+        ['Chukchi_Peninsula','Alaska'],
+        // Japan ↔ Aleutians/Alaska
+        ['Hokkaido','Alaska'],['Kuril_Islands','Alaska'],
+        // Pacific island chains
+        ['Hawaii','Midway_Island'],['Midway_Island','Wake_Island'],
+        ['Wake_Island','Guam'],['Guam','Saipan'],
+        ['Saipan','Wake_Island'],
+        ['Marshall_Islands','Hawaii'],
+        ['Caroline_Islands','Guam'],['Caroline_Islands','Saipan'],
+        ['Palau','Caroline_Islands'],
+        // Marcus → Saipan/Japan
+        ['Marcus_Island','Saipan'],
+        // Kuril → Hokkaido (already may exist from BBox but force it)
+        ['Kuril_Islands','Hokkaido'],
+        // Iwo Jima chain
+        ['Iwo_Jima','Saipan'],['Iwo_Jima','Marcus_Island'],
+        // Attu (westernmost Aleutian) ↔ Japan/Kamchatka
+        ['Attu_Island','Kamchatka'],['Attu_Island','Hokkaido'],
+        // Canada Pacific ↔ Japan via Aleutians
+        ['Upper_British_Columbia','Alaska'],
+        ['Alaska','Hokkaido'],['Alaska','Kamchatka']
+      ];
+      PLINKS.forEach(function(p){
+        var a=p[0],b=p[1];
+        if(!S[a]||!S[b])return;
+        if(!ADJ[a])ADJ[a]={};if(!ADJ[b])ADJ[b]={};
+        ADJ[a][b]=1;ADJ[b][a]=1;
+      });
       var edges=0;for(var id in ADJ)edges+=Object.keys(ADJ[id]).length;
-      console.log('[WARCMD] adj edges:',edges/2);onDone();
+      console.log('[WARCMD] adj edges (incl Pacific wrap):',edges/2);
+      onDone();
     }
   }
   processChunk();
@@ -1404,42 +1466,56 @@ function showDiplomStatus(){
   document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()" style="flex:1">CLOSE</button>';
   document.getElementById('modal').classList.add('open');
 }
-// ── Troop Tower (HOI4-style division badges) ──
+// ── Troop Tower (HOI4-style) ─────────────────────────────────────
+// Overlay is INSIDE #mi so towers follow pan/zoom automatically.
+// We use getBBox() in SVG-space coordinates (not screen coords).
 function updTroopLabels(){
   var ov=document.getElementById('troop-overlay');if(!ov)return;
   ov.innerHTML='';
-  var vp=document.getElementById('vp');if(!vp)return;
-  var vpRect=vp.getBoundingClientRect();
+  var svgEl=document.querySelector('#svgh svg');if(!svgEl)return;
+  // Get the viewBox dimensions to map SVG-space → pixel-space
+  var vbAttr=svgEl.getAttribute('viewBox')||'0 0 960 500';
+  var vbParts=vbAttr.split(/[\s,]+/);
+  var svgW=parseFloat(vbParts[2])||960;
+  var svgH=parseFloat(vbParts[3])||500;
+  // #svgh svg has fixed pixel size (set in processSVG): svgW x svgH
+  // So SVG-space coords = pixel coords inside #mi directly
   var vis=getVis();
+  var isMob=checkMobile();
   for(var id in S){
     var t=S[id];if(!t.el)continue;
     if(t.own!==player&&!vis[id])continue;
     var hasAny=(t.u.i||0)+(t.u.t||0)+(t.u.a||0);
     if(!hasAny)continue;
-    var r=t.el.getBoundingClientRect();
-    if(r.width<4||r.height<4)continue;
-    var cx=r.left+r.width/2-vpRect.left;
-    var cy=r.top+r.height/2-vpRect.top;
-    if(cx<-20||cy<-20||cx>vpRect.width+20||cy>vpRect.height+20)continue;
+    // Use getBBox() to get center in SVG coordinate space
+    var bbox;
+    try{bbox=t.el.getBBox();}catch(e){continue;}
+    if(!bbox||bbox.width<1)continue;
+    var cx=bbox.x+bbox.width/2;
+    var cy=bbox.y+bbox.height/2;
+    // Clamp to SVG bounds
+    if(cx<0||cy<0||cx>svgW||cy>svgH)continue;
     var tower=document.createElement('div');
     tower.className='troop-tower';
-    tower.style.left=cx+'px';tower.style.top=cy+'px';
-    // INF badge
+    // Position in SVG pixel coords (inside #mi which IS the SVG space)
+    tower.style.left=cx+'px';
+    tower.style.top=cy+'px';
+    // Scale badge slightly based on zoom for readability
+    var bs=Math.max(0.7,Math.min(1.4,1/_camZ));
+    tower.style.transform='translate(-50%,-50%) scale('+bs+')';
     if(t.u.i>0){
       var b=document.createElement('div');b.className='tb-badge inf';
-      b.innerHTML='<span class="tb-icon">&#128100;</span><span class="tb-num">'+t.u.i+'</span>';
+      b.innerHTML='<span class="tb-icon">🪖</span><span class="tb-num">'+t.u.i+'</span>';
       tower.appendChild(b);
     }
-    // TNK badge
     if(t.u.t>0){
       var b2=document.createElement('div');b2.className='tb-badge tnk';
-      b2.innerHTML='<span class="tb-icon">&#9881;</span><span class="tb-num">'+t.u.t+'</span>';
+      b2.innerHTML='<span class="tb-icon">🚜</span><span class="tb-num">'+t.u.t+'</span>';
       tower.appendChild(b2);
     }
-    // ART badge
     if(t.u.a>0){
       var b3=document.createElement('div');b3.className='tb-badge art';
-      b3.innerHTML='<span class="tb-icon">&#127776;</span><span class="tb-num">'+t.u.a+'</span>';
+      b3.innerHTML='<span class="tb-icon">✈️</span><span class="tb-num">'+t.u.a+'</span>';
       tower.appendChild(b3);
     }
     ov.appendChild(tower);
@@ -1517,7 +1593,6 @@ function applyTrans(){
   if(vp){
     var vpW=vp.clientWidth,vpH=vp.clientHeight;
     var mW=mi.offsetWidth||1,mH=mi.offsetHeight||1;
-    // Bounds clamp: prevent map from leaving screen entirely
     var margin=60;
     var minX=-(mW*_camZ-margin),maxX=vpW-margin;
     var minY=-(mH*_camZ-margin),maxY=vpH-margin;
@@ -1525,8 +1600,16 @@ function applyTrans(){
     _camY=Math.min(maxY,Math.max(minY,_camY));
   }
   mi.style.transform='translate('+_camX+'px,'+_camY+'px) scale('+_camZ+')';
+  // Towers are INSIDE #mi now, so they move with the map automatically.
+  // We only need to re-scale the badge sizes (RAF throttled).
   if(_tlRAF)cancelAnimationFrame(_tlRAF);
-  _tlRAF=requestAnimationFrame(updTroopLabels);
+  _tlRAF=requestAnimationFrame(function(){
+    var towers=document.querySelectorAll('.troop-tower');
+    var bs=Math.max(0.6,Math.min(1.6,1/_camZ));
+    for(var i=0;i<towers.length;i++){
+      towers[i].style.transform='translate(-50%,-50%) scale('+bs+')';
+    }
+  });
 }
 // ── Input / Controls ──
 function setupCtrl(){
