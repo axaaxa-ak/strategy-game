@@ -218,17 +218,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #mob-log{display:none;border-top:1px solid var(--b1);background:rgba(0,0,0,.35);
   flex-shrink:0;padding:5px 10px 6px;height:96px;flex-direction:column}
 .mob-lhdr{font-size:6px;color:var(--dm);letter-spacing:2px;margin-bottom:3px;flex-shrink:0}
-#mob-llist{flex:1;max-height:100px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;
+#mob-llist{flex:1;max-height:72px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;
   scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
 @media(max-width:768px){
-  #mob-log{display:flex;flex-direction:column}
+  #mob-log{display:flex}
   #sp{flex-direction:column}
-  #pb{flex:1 1 auto;min-height:0;overflow-y:auto}
-  #sp.open #pb{max-height:calc(42vh - 42px - 96px)}
+  #pb{flex:1 1 auto;min-height:0;overflow-y:auto;max-height:calc(42vh - 42px - 96px)}
 }
 @media(max-width:400px){
-  #sp{height:45vh;max-height:45vh}
-  #sp.open #pb{max-height:calc(45vh - 42px - 96px)}
+  #sp{height:48vh;max-height:48vh}
+  #pb{max-height:calc(48vh - 42px - 96px)}
   .fgrid{grid-template-columns:1fr 1fr;gap:5px}
   .fh-t{font-size:13px;letter-spacing:2px}
 }
@@ -691,7 +690,16 @@ function incOf(f){
 }
 function cntOf(f){var c=0;for(var id in S)if(S[id].own===f)c++;return c}
 function adjOf(id){return ADJ[id]?Object.keys(ADJ[id]):[]}
-function fcol(f){return(FAC[f]&&FAC[f].c)||'#3c5c28'}
+function hashColor(s){
+  var h=0;for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}
+  var hue=Math.abs(h)%360;
+  return 'hsl('+hue+',34%,30%)';
+}
+function fcol(f){
+  if(FAC[f]&&FAC[f].c)return FAC[f].c;
+  if(typeof f==='string'&&f.indexOf('nt_')===0)return hashColor(f.substring(3));
+  return '#3c5c28';
+}
 function checkMobile(){return window.innerWidth<=768}
 function ecoFor(id,own){
   if(ECO_BASE[id])return ECO_BASE[id];
@@ -809,7 +817,11 @@ function startGame(fid){
   loadSVG();
 }
 // ── SVG Loading with cache-busting ──
-var SKIP_RE=/^(pattern|diagonal|vertical|horizontal|crosshatch|checkers|texture|circles|raindrops|subtlepatch|wrapper|svg-|map-|legend|credit)/i;
+var SKIP_RE=/^(pattern|diagonal|vertical|horizontal|crosshatch|checkers|texture|circles|raindrops|subtlepatch|wrapper|svg-|map-|legend|credit|sea|ocean|water|background|backdrop|frame|border|graticule|grid|outline|label|base|bg[-_]|clip|defs|gradient|layer|group|world|worldmap|mapoutline|text|title|desc|metadata|style|symbol|sphere|outline[-_]|land|coastline|lakes|rivers|grid[-_]|degrees|parallels|meridians)$/i;
+// Also reject pure-numeric IDs (MapChart internal clip/defs)
+var SKIP_PREFIX_RE=/^(clip|defs|gradient|pattern|filter|mask|symbol|use|g[-_]|layer[-_]|group[-_])/i;
+// Only allow path/polygon shapes — never <rect>,<g>,<circle>,<ellipse>,<line>,<text> etc.
+var ALLOWED_TAGS={path:1,polygon:1};
 function loadSVG(){
   ldp(12,'SVGマップを取得中...');
   var bust='?v='+Date.now();
@@ -878,19 +890,38 @@ function processSVG(txt){
   _camY=(vpH-naturalH*_camZ)/2;
 
   S={};
-  var allEls=svgEl.querySelectorAll('[id]');var count=0;
+  var allEls=svgEl.querySelectorAll('[id]');var count=0;var skipped=0;
   for(var i=0;i<allEls.length;i++){
     var el=allEls[i];var id=el.getAttribute('id');
-    if(!id||SKIP_RE.test(id))continue;
+    // ── STRICT VALIDATION: only real territory shapes survive ──
+    if(!id){skipped++;continue;}
+    var tag=el.tagName?el.tagName.toLowerCase():'';
+    // 1) Must be a path/polygon — never a <rect>,<g>,<clipPath>,<defs> etc.
+    if(!ALLOWED_TAGS[tag]){skipped++;continue;}
+    // 2) Reject pure-numeric IDs (MapChart internal elements like "1273","4435")
+    if(/^\d+$/.test(id)){skipped++;continue;}
+    // 3) Reject by exact blacklist match (sea/ocean/background/etc.)
+    if(SKIP_RE.test(id)){skipped++;continue;}
+    // 4) Reject by prefix (clip0, defs1, gradient2, layer-1, group_3...)
+    if(SKIP_PREFIX_RE.test(id)){skipped++;continue;}
+    // 4) (getBBox check removed — runs before render, returns 0 for everything)
+    // 5) Reject elements explicitly marked non-territory via data attribute
+    if(el.getAttribute('data-skip')==='1'){skipped++;continue;}
+
     var own=TF[id]||('nt_'+id);
     el.setAttribute('fill',fcol(own));
     el.setAttribute('stroke-width','0.5');
+    el.style.pointerEvents='visiblePainted';
+    el.style.cursor='pointer';
     el.classList.add('tl2');
-    (function(tid){el.addEventListener('click',function(e){e.stopPropagation();onClick(tid);});}(id));
+    (function(tid){
+      el.addEventListener('click',function(e){e.stopPropagation();onClick(tid);});
+    }(id));
     S[id]={el:el,name:id.replace(/_/g,' '),own:own,eco:ecoFor(id,own),u:mkU(own)};
     count++;
   }
-  if(count<10){showErr('地域データ不足 ('+count+'個)');return;}
+  console.log('[WARCMD] territories registered:',count,'| skipped (non-territory):',skipped);
+  if(count<10){showErr('地域データ不足 ('+count+'個) — SVG構造を確認してください');return;}
   ldp(55,'レイアウト待機中...');
   // Apply initial transform BEFORE buildAdj so getBoundingClientRect is correct
   applyTrans();
@@ -1618,27 +1649,46 @@ function setupCtrl(){
   // Apply initial transform (already set in processSVG)
   applyTrans();
 
-  // Touch: pan + pinch zoom
+  // ── Touch: pan + pinch zoom + MANUAL TAP DETECTION ──────────────
+  // CRITICAL FIX: calling preventDefault() on touchstart/touchend
+  // suppresses the browser's synthetic 'click' event, which means
+  // the click listeners bound to each <path> NEVER fire on mobile.
+  // We therefore detect taps manually (small movement, short time)
+  // and invoke onClick() directly using the ORIGINAL touched element.
+  var _tapStartX=0,_tapStartY=0,_tapStartT=0,_tapTarget=null,_tapMoved=false;
+  var TAP_MOVE_THRESH=10;   // px — beyond this, it's a drag not a tap
+  var TAP_TIME_THRESH=600;  // ms — beyond this, it's a long-press not a tap
+
   vp.addEventListener('touchstart',function(e){
     if(e.touches.length===1){
-      _drag=true;
-      _dragSX=e.touches[0].clientX-_camX;
-      _dragSY=e.touches[0].clientY-_camY;
+      var t0=e.touches[0];
+      _drag=true;_tapMoved=false;
+      _dragSX=t0.clientX-_camX;_dragSY=t0.clientY-_camY;
+      _tapStartX=t0.clientX;_tapStartY=t0.clientY;_tapStartT=Date.now();
+      // Capture the actual element under the finger AT TOUCH START —
+      // this is the most reliable way to know what was tapped, since
+      // touchend's target can differ after any movement/transform.
+      _tapTarget=document.elementFromPoint(t0.clientX,t0.clientY);
       vp.classList.add('drag');
     }else if(e.touches.length===2){
-      _drag=false;
+      _drag=false;_tapTarget=null;
       var dx=e.touches[0].clientX-e.touches[1].clientX;
       var dy=e.touches[0].clientY-e.touches[1].clientY;
       _pinchD=Math.sqrt(dx*dx+dy*dy);
     }
     e.preventDefault();
   },{passive:false});
+
   vp.addEventListener('touchmove',function(e){
     if(e.touches.length===1&&_drag){
-      _camX=e.touches[0].clientX-_dragSX;
-      _camY=e.touches[0].clientY-_dragSY;
+      var t0=e.touches[0];
+      var dmx=t0.clientX-_tapStartX,dmy=t0.clientY-_tapStartY;
+      if(Math.sqrt(dmx*dmx+dmy*dmy)>TAP_MOVE_THRESH)_tapMoved=true;
+      _camX=t0.clientX-_dragSX;
+      _camY=t0.clientY-_dragSY;
       applyTrans();
     }else if(e.touches.length===2&&_pinchD>0){
+      _tapMoved=true; // pinch is never a tap
       var dx=e.touches[0].clientX-e.touches[1].clientX;
       var dy=e.touches[0].clientY-e.touches[1].clientY;
       var nd=Math.sqrt(dx*dx+dy*dy);
@@ -1652,8 +1702,23 @@ function setupCtrl(){
     }
     e.preventDefault();
   },{passive:false});
+
   vp.addEventListener('touchend',function(e){
-    if(e.touches.length===0){_drag=false;vp.classList.remove('drag');}
+    var elapsed=Date.now()-_tapStartT;
+    var wasSingleTouch=(e.touches.length===0);
+    if(wasSingleTouch&&!_tapMoved&&elapsed<TAP_TIME_THRESH&&_tapTarget){
+      // ── This is a genuine TAP: resolve which territory was touched ──
+      var node=_tapTarget;
+      var tid=null;
+      // Walk up from the touched node to find an element registered in S{}
+      while(node&&node!==vp){
+        var nid=node.getAttribute&&node.getAttribute('id');
+        if(nid&&S[nid]){tid=nid;break;}
+        node=node.parentElement;
+      }
+      if(tid){onClick(tid);}
+    }
+    if(e.touches.length===0){_drag=false;_tapTarget=null;vp.classList.remove('drag');}
     e.preventDefault();
   },{passive:false});
   // Mouse: pan
