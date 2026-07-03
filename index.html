@@ -103,7 +103,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #svgh{display:block;line-height:0;font-size:0}
 /* SVG element: preserve aspect ratio, never stretch */
 #svgh svg{display:block;width:100%;height:auto;max-width:none;
-  /* preserveAspectRatio set via JS setAttribute in processSVG */}
+  /* CRITICAL: force correct aspect-ratio behaviour */
+  preserveAspectRatio:xMidYMid meet}
 .tl2{cursor:pointer;transition:filter .1s}
 .tl2:hover{filter:brightness(1.45) drop-shadow(0 0 4px rgba(200,162,72,.4))!important}
 .sel{stroke:#c8a248!important;stroke-width:2.5!important;filter:drop-shadow(0 0 9px rgba(200,162,72,.85)) brightness(1.2)!important;vector-effect:non-scaling-stroke!important}
@@ -114,9 +115,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes enct{from{filter:none}to{filter:drop-shadow(0 0 8px #ff0020)}}
 .fh2{filter:grayscale(90%) brightness(.22)!important}
 .fs2{filter:grayscale(20%) brightness(.58)!important}
-/* TROOP TOWER - inside #mi, so transforms with map */
-#troop-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:500;overflow:visible}
-.troop-tower{position:absolute;display:flex;flex-direction:column;gap:1px;align-items:center;pointer-events:none;user-select:none;transform-origin:center center}
+/* TROOP TOWER (HOI4-style division badges) */
+#troop-overlay{position:absolute;top:0;left:0;pointer-events:none;z-index:500}
+.troop-tower{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:1px;align-items:center;pointer-events:none;user-select:none}
 .tb-badge{display:flex;align-items:center;gap:2px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.18);padding:1px 3px;border-radius:2px;white-space:nowrap;line-height:1}
 .tb-badge.inf{border-color:rgba(100,220,120,.5)}
 .tb-badge.tnk{border-color:rgba(240,180,60,.5)}
@@ -214,22 +215,83 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .mbtns{gap:5px;margin-top:8px}.sr{gap:4px}.sl2{min-width:54px;font-size:7px}
   .tb-badge{padding:1px 2px}.tb-num{font-size:6px}.tb-icon{font-size:7px}
 }
-/* MOB LOG - shown inside bottom sheet on mobile */
-#mob-log{display:none;border-top:1px solid var(--b1);background:rgba(0,0,0,.35);
-  flex-shrink:0;padding:5px 10px 6px;height:96px;flex-direction:column}
+@media(max-width:400px){
+  #sp{height:45vh;max-height:45vh}
+  .fgrid{grid-template-columns:1fr 1fr;gap:5px}
+  .fh-t{font-size:13px;letter-spacing:2px}
+}
+
+/* ═══ MAIN MENU ═══════════════════════════════════════════════ */
+#menu{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#menu.off{display:none}
+.menu-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(18,40,80,.9),#02080e 70%)}
+.menu-bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(200,162,72,.06) 1px,transparent 1px);background-size:32px 32px;animation:gridmove 8s linear infinite}
+.menu-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(2,8,14,.95))}
+@keyframes gridmove{from{background-position:0 0}to{background-position:32px 32px}}
+.menu-content{position:relative;z-index:1;text-align:center;padding:20px;width:100%;max-width:480px}
+.menu-title{font-family:var(--hd);font-size:clamp(26px,6vw,52px);color:var(--ac);letter-spacing:6px;text-shadow:0 0 30px rgba(200,162,72,.5);line-height:1}
+.menu-year{font-family:var(--hd);font-size:clamp(12px,3vw,20px);color:#c0d8f0;letter-spacing:12px;margin:6px 0 4px;opacity:.8}
+.menu-sub{font-family:var(--hd);font-size:clamp(9px,2vw,13px);color:var(--dm);letter-spacing:4px;margin-bottom:14px}
+.menu-line{width:min(280px,70vw);height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);margin:0 auto 22px}
+.menu-btns{display:flex;flex-direction:column;gap:10px;align-items:center}
+.menu-btn{display:flex;align-items:center;gap:14px;width:min(300px,80vw);background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--tx);padding:13px 18px;cursor:pointer;font-family:var(--fn);font-size:12px;letter-spacing:1px;transition:.2s;text-align:left}
+.menu-btn:hover,.menu-btn:active{background:var(--a2);border-color:var(--ac);color:#fff;transform:translateX(4px)}
+.menu-btn.primary{border-color:var(--a3);background:var(--a2);color:var(--ac)}
+.menu-btn.primary:hover,.menu-btn.primary:active{background:rgba(200,162,72,.22);border-color:var(--ac)}
+.menu-btn-icon{font-size:20px;flex-shrink:0;width:26px;text-align:center}
+.menu-btn small{font-size:8px;color:var(--dm);letter-spacing:2px;display:block;margin-top:2px}
+.menu-footer{margin-top:22px;font-size:7px;color:var(--dm);letter-spacing:3px}
+/* ═══ SCENARIO SELECT ═══════════════════════════════════════════ */
+#scensel{position:fixed;inset:0;z-index:8500;display:none;flex-direction:column;align-items:center;background:rgba(2,8,14,.98);overflow-y:auto}
+#scensel.on{display:flex}
+.scen-head{padding:18px 16px 10px;text-align:center;flex-shrink:0;width:100%;max-width:720px}
+.scen-title{font-family:var(--hd);font-size:16px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
+.scen-sub{font-size:8px;color:var(--dm);letter-spacing:2px;margin-bottom:14px}
+.scen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:0 14px 16px;width:100%;max-width:720px}
+.scen-card{background:rgba(255,255,255,.03);border:1px solid var(--b2);padding:13px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.scen-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--scc,var(--ac))}
+.scen-card:hover,.scen-card:active{border-color:var(--scc,var(--ac));background:rgba(255,255,255,.06)}
+.scen-year{font-family:var(--hd);font-size:20px;color:var(--ac);margin-bottom:2px}
+.scen-name{font-family:var(--hd);font-size:10px;color:#ddeeff;letter-spacing:1px;margin-bottom:6px;line-height:1.3}
+.scen-desc{font-size:7px;color:var(--dm);line-height:1.7}
+.scen-back{display:block;margin:10px auto 18px;background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--dm);padding:8px 24px;font-family:var(--fn);font-size:8px;letter-spacing:2px;cursor:pointer}
+.scen-back:hover,.scen-back:active{border-color:var(--ac);color:var(--ac)}
+/* ═══ EVENT MODAL ═══════════════════════════════════════════════ */
+#evmodal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;align-items:center;justify-content:center}
+#evmodal.open{display:flex}
+.evbox{background:#06101a;border:2px solid var(--ac);max-width:460px;width:90vw;padding:22px;box-shadow:0 0 40px rgba(200,162,72,.3)}
+.ev-badge{font-size:7px;color:var(--ac);letter-spacing:3px;border:1px solid var(--a3);display:inline-block;padding:2px 8px;margin-bottom:10px}
+.ev-title{font-family:var(--hd);font-size:15px;color:#f0e0a0;margin-bottom:5px;letter-spacing:2px}
+.ev-date{font-size:8px;color:var(--dm);letter-spacing:2px;margin-bottom:10px}
+.ev-body{font-size:8px;color:#b0c8e0;line-height:2;border-top:1px solid var(--b1);padding-top:9px}
+.ev-effects{margin-top:9px;padding:7px;background:rgba(200,162,72,.06);border:1px solid var(--a3)}
+.ev-effect{font-size:8px;color:var(--ac);padding:2px 0}
+.ev-btn{margin-top:12px;width:100%;background:var(--a2);border:1px solid var(--a3);color:var(--ac);padding:9px;font-family:var(--fn);font-size:9px;letter-spacing:2px;cursor:pointer;transition:.15s}
+.ev-btn:hover,.ev-btn:active{background:rgba(200,162,72,.22);border-color:var(--ac)}
+/* ═══ STATS ═════════════════════════════════════════════════════ */
+.stats-nation{border:1px solid var(--b1);margin:5px 0;padding:8px;background:rgba(255,255,255,.02)}
+.stats-nation-n{font-family:var(--hd);font-size:9px;color:#ddeeff;margin-bottom:4px}
+.stats-row{display:flex;justify-content:space-between;font-size:7.5px;color:var(--dm);padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.stats-row span:last-child{color:var(--ac);font-family:var(--hd);font-size:9px}
+/* ═══ SAVE BUTTON ════════════════════════════════════════════════ */
+#save-btn{position:fixed;right:14px;bottom:132px;background:rgba(24,72,176,.15);border:1px solid rgba(24,72,176,.4);color:#68a8e8;padding:7px 14px;font-family:var(--hd);font-size:7px;letter-spacing:2px;cursor:pointer;z-index:999;transition:.2s}
+#save-btn:hover,#save-btn:active{background:rgba(24,72,176,.28);border-color:#4878d0;color:#a0c8ff}
+/* ═══ MOB LOG ════════════════════════════════════════════════════ */
+#mob-log{display:none;border-top:1px solid var(--b1);background:rgba(0,0,0,.35);flex-shrink:0;padding:5px 10px 6px;height:96px;flex-direction:column}
 .mob-lhdr{font-size:6px;color:var(--dm);letter-spacing:2px;margin-bottom:3px;flex-shrink:0}
-#mob-llist{flex:1;max-height:72px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;
-  scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+#mob-llist{flex:1;max-height:72px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
 @media(max-width:768px){
   #mob-log{display:flex}
   #sp{flex-direction:column}
   #pb{flex:1 1 auto;min-height:0;overflow-y:auto;max-height:calc(42vh - 42px - 96px)}
+  #save-btn{right:8px;bottom:auto;top:90px;padding:5px 10px;font-size:7px}
+  .scen-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:400px){
+  .menu-title{font-size:22px}
+  .scen-grid{grid-template-columns:1fr}
   #sp{height:48vh;max-height:48vh}
   #pb{max-height:calc(48vh - 42px - 96px)}
-  .fgrid{grid-template-columns:1fr 1fr;gap:5px}
-  .fh-t{font-size:13px;letter-spacing:2px}
 }
 </style>
 </head>
@@ -239,6 +301,55 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="ld-b"><div class="ld-f" id="ldf"></div></div>
   <div class="ld-s" id="lds">読み込み中...</div>
   <div id="ld-err"></div>
+</div>
+<!-- MAIN MENU -->
+<div id="menu">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <div class="menu-title">WORLD COMMAND</div>
+    <div class="menu-year">1936</div>
+    <div class="menu-sub">世界大戦略</div>
+    <div class="menu-line"></div>
+    <div class="menu-btns">
+      <button class="menu-btn primary" onclick="showScenSel()">
+        <span class="menu-btn-icon">&#9876;</span>
+        <span>START GAME<br><small>ゲーム開始</small></span>
+      </button>
+      <button class="menu-btn" id="menu-load" style="display:none" onclick="loadGame()">
+        <span class="menu-btn-icon">&#128190;</span>
+        <span>LOAD GAME<br><small>続きから再開</small></span>
+      </button>
+      <button class="menu-btn" onclick="showStats()">
+        <span class="menu-btn-icon">&#128202;</span>
+        <span>STATS<br><small>プレイ統計</small></span>
+      </button>
+      <button class="menu-btn" onclick="showHowTo()">
+        <span class="menu-btn-icon">&#128214;</span>
+        <span>HOW TO PLAY<br><small>遊び方</small></span>
+      </button>
+    </div>
+    <div class="menu-footer">GLOBAL STRATEGY SIMULATION &middot; WORLD COMMAND</div>
+  </div>
+</div>
+<!-- SCENARIO SELECT -->
+<div id="scensel">
+  <div class="scen-head">
+    <div class="scen-title">SCENARIO SELECT</div>
+    <div class="scen-sub">&mdash; シナリオを選択してください &mdash;</div>
+  </div>
+  <div class="scen-grid" id="scengrid"></div>
+  <button class="scen-back" onclick="showMenu()">&#9664; BACK TO MENU</button>
+</div>
+<!-- HISTORICAL EVENT MODAL -->
+<div id="evmodal">
+  <div class="evbox">
+    <div class="ev-badge">&#9888; HISTORICAL EVENT</div>
+    <div class="ev-title" id="ev-title">---</div>
+    <div class="ev-date" id="ev-date">---</div>
+    <div class="ev-body" id="ev-body"></div>
+    <div class="ev-effects" id="ev-effects"></div>
+    <button class="ev-btn" onclick="closeEvModal()">ACKNOWLEDGE &#9654;</button>
+  </div>
 </div>
 <div id="fsel">
   <div class="fh">
@@ -262,21 +373,19 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="pn" id="ph-n">地域を選択してください</div>
     <div class="ptg" id="ph-t"></div>
   </div>
+  <div id="mob-log"><div class="mob-lhdr">&#128225; OPERATIONS LOG</div><div id="mob-llist"></div></div>
   <div id="pb"><div id="pc" style="color:var(--dm);font-size:8px;text-align:center;padding:20px 10px;line-height:2.4">CLICK TERRITORY<br><span style="font-size:7px">OWN=RECRUIT/ATTACK<br>ENEMY=DIPLOMACY</span></div></div>
-  <div id="mob-log">
-    <div class="mob-lhdr">📡 OPERATIONS LOG</div>
-    <div id="mob-llist"></div>
-  </div>
 </div>
 <div id="vp">
   <div id="mi">
     <div id="svgh"></div>
-    <div id="troop-overlay"></div>
   </div>
+  <div id="troop-overlay"></div>
 </div>
 <button id="sp-tog" onclick="G.togglePanel()">▲ PANEL</button>
 <div id="mind">TARGET SELECTION MODE</div>
 <button id="nxt" onclick="G.nextTurn()">NEXT TURN &#9654;</button>
+<button id="save-btn" onclick="G._save()">&#128190; SAVE</button>
 <div id="log"><div id="lhdr">OPERATIONS LOG</div><div id="llist"></div></div>
 <div id="modal"><div id="mbox">
   <div class="mt" id="m-t">DIPLOMACY</div>
@@ -661,6 +770,368 @@ var ECO_SU_LOW={
 // ================================================================
 //  GAME OBJECT
 // ================================================================
+
+// ================================================================
+//  SCENARIOS
+// ================================================================
+var SCENARIOS=[
+  {id:'1936',yr:1936,mo:1,color:'#c8a248',name:'第二次大戦前夜',nameEn:'EVE OF WW2 1936',
+   desc:'1936年1月。日独伊の枢軸とイギリス・フランス・ソ連の対立が深まる。歴史の歯車を動かせ。',
+   overrides:{},
+   relations:[['it','et','war'],['mk','cn','war'],['mg','cn','war'],
+     ['uk','fr','allied'],['uk','au','allied'],['uk','ca','allied'],
+     ['su','mo','allied'],['su','cc','allied'],
+     ['jp','mk','allied'],['jp','mg','allied'],['de','it','allied']]},
+  {id:'1914',yr:1914,mo:8,color:'#8a5c2e',name:'第一次世界大戦',nameEn:'THE GREAT WAR 1914',
+   desc:'1914年8月。オーストリア皇太子暗殺が引き金。独墺対英仏露の総力戦が始まる。',
+   overrides:{
+     Alsace_Lorraine:'de',Ostmark:'at',Bohemia:'at',Moravia:'at',
+     North_Sudetenland:'at',South_Sudetenland:'at',
+     Croatia:'at',North_Slovenia:'at',Bosnia:'at',Herzegovina:'at',
+     Syria:'tr',Lebanon:'tr',Palestine:'tr',Jordan:'tr',
+     Baghdad:'tr',Mosul:'tr',Al_Basrah:'tr',Al_Anbar:'tr',
+     Warszawa:'su',Lodz:'su',Lublin:'su',Kielce:'su',Katowice:'de',
+   },
+   relations:[['de','fr','war'],['de','uk','war'],['de','su','war'],
+     ['at','su','war'],['at','fr','war'],['at','uk','war'],
+     ['tr','uk','war'],['tr','fr','war'],['tr','su','war'],
+     ['jp','uk','allied'],['jp','fr','allied'],
+     ['it','at','war'],['it','de','war']]},
+  {id:'1939',yr:1939,mo:9,color:'#525252',name:'電撃戦の幕開け',nameEn:'BLITZKRIEG 1939',
+   desc:'1939年9月。ドイツがポーランドに侵攻、英仏は宣戦。欧州に嵐が吹き荒れる。',
+   overrides:{
+     North_Sudetenland:'de',South_Sudetenland:'de',
+     Ostmark:'de',Tyrol:'de',Vorarlberg:'de',Burgenland:'de',
+     Bohemia:'de',Moravia:'de',Albania:'it',Bessarabia:'su',
+   },
+   relations:[['de','pl','war'],['de','uk','war'],['de','fr','war'],
+     ['de','it','allied'],['jp','mk','allied'],['jp','mg','allied'],
+     ['su','fi','war'],['su','mo','allied'],['su','cc','allied'],
+     ['uk','fr','allied'],['uk','au','allied'],['uk','ca','allied']]},
+  {id:'1944',yr:1944,mo:6,color:'#7c0a02',name:'神々の黄昏',nameEn:'TWILIGHT OF GODS 1944',
+   desc:'1944年6月。Dデイ上陸。日独は防衛の限界。ソ連・米英が怒涛の攻勢を仕掛ける。',
+   overrides:{
+     Sicilia:'uk',Sardegna:'uk',Campania:'uk',Lazio:'uk',Toscana:'uk',
+     Normandy:'uk',Brittany:'uk',Loire:'uk',Aquitaine:'uk',
+     Marshall_Islands:'us',Saipan:'us',
+   },
+   relations:[['de','uk','war'],['de','fr','war'],['de','su','war'],
+     ['jp','us','war'],['jp','uk','war'],['jp','au','war'],
+     ['it','uk','allied'],['it','us','allied'],
+     ['uk','fr','allied'],['uk','us','allied'],['uk','au','allied'],
+     ['uk','ca','allied'],['us','au','allied'],['us','ca','allied'],
+     ['su','uk','allied'],['su','us','allied'],
+     ['su','mo','allied'],['su','cc','allied'],['jp','mk','allied']]},
+  {id:'2000',yr:2000,mo:1,color:'#0284c7',name:'ミレニアム・モダン',nameEn:'MILLENNIUM MODERN 2000',
+   desc:'2000年1月。アメリカ一強の世界。台頭する中国、復権を模索するロシア。',
+   overrides:{
+     Kyiv:'nt_ua',Zhytomyr:'nt_ua',Vinnytsia:'nt_ua',Poltava:'nt_ua',
+     Kharkov:'nt_ua',Stalino:'nt_ua',Dnipropetrovsk:'nt_ua',
+     Zaporozhe:'nt_ua',Kherson:'nt_ua',Mykolaiv:'nt_ua',Odessa:'nt_ua',
+     Sumy:'nt_ua',Cherkasy:'nt_ua',Chernigov:'nt_ua',Crimea:'nt_ua',
+     Minsk:'nt_by',Bobruysk:'nt_by',Gomel:'nt_by',Vitebsk:'nt_by',
+     Georgia:'nt_ka',Azerbaijan:'nt_az',Armenia:'nt_am',Abkhazia:'nt_ka',
+     Serbia:'nt_rs',Croatia:'nt_hr',North_Slovenia:'nt_si',
+     Bosnia:'nt_ba',Herzegovina:'nt_ba',Montenegro:'nt_me',
+     Macedonia:'nt_mk2',Kosovo:'nt_xk',
+     North_Sudetenland:'nt_cz',South_Sudetenland:'nt_cz',
+     Ostmark:'nt_at2',Bohemia:'nt_cz',Moravia:'nt_cz',
+   },
+   relations:[['us','uk','allied'],['us','fr','allied'],['us','de','allied'],
+     ['us','jp','allied'],['us','ca','allied'],['us','au','allied'],
+     ['cn','su','allied']]},
+  {id:'1453',yr:1453,mo:5,color:'#854d0e',name:'東ローマ帝国の終焉',nameEn:'FALL OF BYZANTIUM 1453',
+   desc:'1453年5月。コンスタンティノープル陥落。オスマン帝国の台頭と中世欧州の群雄割拠。',
+   overrides:{
+     Istanbul:'tr',Ankara:'tr',Bursa:'tr',Izmir:'tr',Edirne:'tr',Izmit:'tr',
+     Serbia:'tr',Sofia:'tr',Plovdiv:'tr',Burgas:'tr',Moesia:'tr',Varna:'tr',
+     Macedonia:'tr',Kosovo:'tr',Attica:'tr',Peloponnese:'tr',
+     Syria:'tr',Lebanon:'tr',Palestine:'tr',
+     Lazio:'nt_papacy',Lombardia:'nt_milan',Veneto:'nt_venice',Toscana:'nt_florence',
+     North_Sudetenland:'nt_bohemia',South_Sudetenland:'nt_bohemia',
+     Bohemia:'nt_bohemia',Moravia:'nt_bohemia',Ostmark:'nt_hab1453',
+     Moscow:'nt_muscovy',Novgorod:'nt_novgorod',Tver:'nt_muscovy',Ryazan:'nt_muscovy',
+   },
+   relations:[['tr','gr','war'],['fr','uk','war'],['uk','fr','hostile'],['tr','uk','hostile']]}
+];
+var currentScenario='1936';
+
+// ================================================================
+//  HISTORICAL EVENTS
+// ================================================================
+var HIST_EVENTS=[
+  {yr:1936,mo:3,id:'rhineland',sc:'1936',title:'ラインラント進駐',date:'1936年3月',
+   body:'ヒトラーはヴェルサイユ条約を破棄し、ラインラントに軍を進駐させた。英仏は抗議のみで行動せず。',
+   effects:[{desc:'ドイツ: 資金+400 歩兵全地域+1'}],
+   apply:function(){for(var id in S)if(S[id].own==='de')S[id].u.i++;if(player==='de')money+=400;}},
+  {yr:1936,mo:7,id:'spain_civil',sc:'1936',title:'スペイン内戦勃発',date:'1936年7月',
+   body:'フランコ将軍率いるナショナリスト派が蜂起。独伊がファシスト勢力を、ソ連が共和国側を支援。',
+   effects:[{desc:'独伊ソ: 義勇軍派遣 歩兵+1/地域'}],
+   apply:function(){for(var id in S){var t=S[id];if(t.own==='de'||t.own==='it'||t.own==='su')t.u.i++;}}},
+  {yr:1936,mo:10,id:'rome_berlin',sc:'1936',title:'ローマ・ベルリン枢軸',date:'1936年10月',
+   body:'ムッソリーニとヒトラーが枢軸協定を締結。ファシズムと国家社会主義が結託した。',
+   effects:[{desc:'独伊: 正式同盟・資金+200'}],
+   apply:function(){rel[rk('de','it')]='allied';if(player==='de'||player==='it')money+=200;}},
+  {yr:1936,mo:11,id:'anti_comintern',sc:'1936',title:'日独防共協定',date:'1936年11月',
+   body:'日本とドイツが防共協定を締結。ソ連は東西から圧力を受ける。',
+   effects:[{desc:'日独: 情報共有 歩兵+1/地域'}],
+   apply:function(){rel[rk('de','jp')]='allied';for(var id in S)if(S[id].own==='jp'||S[id].own==='de')S[id].u.i++;}},
+  {yr:1937,mo:7,id:'marco_polo',sc:'1936',title:'盧溝橋事件・日中戦争勃発',date:'1937年7月',
+   body:'北京郊外の盧溝橋で日中両軍が衝突。全面的な日中戦争が始まった。',
+   effects:[{desc:'日本: 総動員 歩兵+2/地域'},{desc:'中国: 国共合作 歩兵+1/地域'}],
+   apply:function(){rel[rk('jp','cn')]='war';for(var id in S){if(S[id].own==='jp')S[id].u.i+=2;if(S[id].own==='cn')S[id].u.i++;}}},
+  {yr:1937,mo:12,id:'nanking',sc:'1936',title:'南京陥落',date:'1937年12月',
+   body:'日本軍が中華民国の首都・南京を攻略。国民政府は重慶へ移転。',
+   effects:[{desc:'日本: 占領ボーナス 資金+300'}],
+   apply:function(){if(player==='jp')money+=300;}},
+  {yr:1938,mo:3,id:'anschluss',sc:'1936',title:'オーストリア併合（アンシュルス）',date:'1938年3月',
+   body:'ドイツがオーストリアを併合。ドイツの人口・工業力が大幅に増強された。',
+   effects:[{desc:'ドイツ: オーストリア吸収 資金+500 歩兵+2/地域'}],
+   apply:function(){for(var id in S)if(S[id].own==='at'){S[id].own='de';S[id].el&&S[id].el.setAttribute('fill',fcol('de'));}if(player==='de')money+=500;}},
+  {yr:1938,mo:9,id:'munich',sc:'1936',title:'ミュンヘン会談・ズデーテン割譲',date:'1938年9月',
+   body:'英仏がズデーテン地方のドイツへの割譲を承認。宥和政策の失敗として歴史に刻まれる。',
+   effects:[{desc:'ドイツ: ズデーテン獲得 資金+600'}],
+   apply:function(){for(var id in S)if(S[id].own==='cz'&&id.indexOf('Sudetenland')>=0){S[id].own='de';S[id].el&&S[id].el.setAttribute('fill',fcol('de'));}if(player==='de')money+=600;}},
+  {yr:1939,mo:9,id:'ww2_start',sc:'1936',title:'第二次世界大戦勃発',date:'1939年9月1日',
+   body:'ドイツがポーランドに侵攻！英仏がドイツに宣戦布告。6年にわたる世界大戦が始まった。',
+   effects:[{desc:'独: 総動員 歩兵+3/地域'},{desc:'英仏: 戦争動員 歩兵+2/地域'}],
+   apply:function(){rel[rk('de','pl')]='war';rel[rk('de','uk')]='war';rel[rk('de','fr')]='war';for(var id in S){if(S[id].own==='de')S[id].u.i+=3;if(S[id].own==='uk'||S[id].own==='fr')S[id].u.i+=2;}}},
+  {yr:1941,mo:6,id:'barbarossa',sc:'1936',title:'バルバロッサ作戦（独ソ開戦）',date:'1941年6月22日',
+   body:'ドイツがソ連に電撃侵攻！史上最大の地上戦が東部戦線で始まる。',
+   effects:[{desc:'独: 電撃戦 歩兵+3/地域'},{desc:'ソ連: 総動員令 歩兵+2/地域'}],
+   apply:function(){rel[rk('de','su')]='war';for(var id in S){if(S[id].own==='de')S[id].u.i+=3;if(S[id].own==='su')S[id].u.i+=2;}}},
+  {yr:1941,mo:12,id:'pearl_harbor',sc:'1936',title:'真珠湾攻撃・太平洋戦争勃発',date:'1941年12月8日',
+   body:'日本海軍機動部隊がハワイを奇襲！アメリカが参戦し太平洋戦争が始まった。',
+   effects:[{desc:'日本: 開戦動員 歩兵+2/地域'},{desc:'米国: 工業総動員 歩兵+3/地域'}],
+   apply:function(){rel[rk('jp','us')]='war';for(var id in S){if(S[id].own==='jp')S[id].u.i+=2;if(S[id].own==='us')S[id].u.i+=3;}}},
+  {yr:1940,mo:5,id:'fall_france',sc:'1939',title:'フランス陥落',date:'1940年5月',
+   body:'ドイツの電撃戦によりフランスが電光石火で陥落。西欧制覇が現実となる。',
+   effects:[{desc:'ドイツ: 西欧制圧 資金+800'}],
+   apply:function(){if(player==='de')money+=800;}},
+  {yr:1914,mo:9,id:'marne1914',sc:'1914',title:'マルヌ会戦',date:'1914年9月',
+   body:'フランス軍がパリ手前でドイツ軍を撃退。西部戦線は膠着状態となる。',
+   effects:[{desc:'仏: 防衛成功 資金+300 歩兵+2/地域'}],
+   apply:function(){if(player==='fr')money+=300;for(var id in S)if(S[id].own==='fr')S[id].u.i+=2;}},
+  {yr:2001,mo:9,id:'sept11',sc:'2000',title:'9.11同時多発テロ',date:'2001年9月11日',
+   body:'アメリカ同時多発テロ。テロとの戦争を宣言し、世界の安全保障が一変する。',
+   effects:[{desc:'米国: 軍事予算拡大 歩兵+3/地域 資金+1000'}],
+   apply:function(){if(player==='us'){money+=1000;for(var id in S)if(S[id].own==='us')S[id].u.i+=3;}}}
+];
+var _firedEvents={};
+function checkHistEvents(){
+  for(var i=0;i<HIST_EVENTS.length;i++){
+    var ev=HIST_EVENTS[i];
+    if(ev.sc&&ev.sc!==currentScenario)continue;
+    if(ev.yr===yr&&ev.mo===mo&&!_firedEvents[ev.id]){
+      _firedEvents[ev.id]=1;_fireEvent(ev);return;
+    }
+  }
+}
+function _fireEvent(ev){
+  try{ev.apply();}catch(e){console.warn('Event apply:',e);}
+  applyFoW();updTB();setTimeout(function(){updTroopLabels();},400);
+  addLog('[歴史イベント] '+ev.title,'lt');
+  var em=document.getElementById('evmodal');if(!em)return;
+  var et=document.getElementById('ev-title');if(et)et.textContent=ev.title;
+  var ed=document.getElementById('ev-date');if(ed)ed.textContent=ev.date;
+  var eb=document.getElementById('ev-body');if(eb)eb.textContent=ev.body;
+  var ef=document.getElementById('ev-effects');
+  if(ef){ef.innerHTML='';(ev.effects||[]).forEach(function(e){var d=document.createElement('div');d.className='ev-effect';d.textContent='\u25b6 '+e.desc;ef.appendChild(d);});}
+  em.classList.add('open');
+}
+function closeEvModal(){var em=document.getElementById('evmodal');if(em)em.classList.remove('open');}
+
+// ================================================================
+//  SAVE / LOAD
+// ================================================================
+var _SKEY='warcmd_v3';
+function _save(){
+  var d={player:player,money:money,turn:turn,yr:yr,mo:mo,scen:currentScenario,rel:rel,wCaps:wCaps,fired:_firedEvents,terr:{}};
+  for(var id in S)d.terr[id]={own:S[id].own,eco:S[id].eco,u:{i:S[id].u.i,t:S[id].u.t,a:S[id].u.a}};
+  try{localStorage.setItem(_SKEY,JSON.stringify(d));
+    addLog('\u30bb\u30fc\u30d6\u5b8c\u4e86\uff08\u30bf\u30fc\u30f3'+turn+'\uff09','lt');
+    var sb=document.getElementById('save-btn');
+    if(sb){sb.textContent='\u2713 SAVED';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.textContent='\u{1F4BE} SAVE';},1500);}
+  }catch(e){addLog('\u30bb\u30fc\u30d6\u5931\u6557: '+e.message,'lw');}
+}
+function hasSave(){try{return!!localStorage.getItem(_SKEY);}catch(e){return false;}}
+var _pendingLoad=null;
+function loadGame(){
+  try{
+    var raw=localStorage.getItem(_SKEY);if(!raw)return;
+    var d=JSON.parse(raw);currentScenario=d.scen||'1936';_pendingLoad=d;startGame(d.player);
+  }catch(e){addLog('\u30ed\u30fc\u30c9\u5931\u6557: '+e.message,'lw');}
+}
+function _applyLoad(d){
+  money=d.money;turn=d.turn;yr=d.yr;mo=d.mo;
+  rel=d.rel||{};wCaps=d.wCaps||{};_firedEvents=d.fired||{};
+  for(var id in d.terr){
+    if(!S[id])continue;
+    var td=d.terr[id];S[id].own=td.own;S[id].eco=td.eco||S[id].eco;
+    S[id].u.i=td.u.i;S[id].u.t=td.u.t;S[id].u.a=td.u.a;
+    S[id].el&&S[id].el.setAttribute('fill',fcol(S[id].own));
+  }
+  _pendingLoad=null;addLog('\u30bf\u30fc\u30f3'+turn+'\u304b\u3089\u30ed\u30fc\u30c9\u3057\u307e\u3057\u305f\u3002','lt');
+}
+
+// ================================================================
+//  STATS
+// ================================================================
+var _STKEY='warcmd_stats_v2';
+function _gStats(){try{return JSON.parse(localStorage.getItem(_STKEY)||'{}');}catch(e){return{};}}
+function _saveStats(fid,delta){
+  var all=_gStats();var s=all[fid]||{games:0,majors:0,terr:0,maxIC:0,maxTroops:0,unify:0};
+  for(var k in delta){if(k==='games'||k==='majors'||k==='terr'||k==='unify')s[k]=(s[k]||0)+delta[k];else s[k]=Math.max(s[k]||0,delta[k]);}
+  all[fid]=s;try{localStorage.setItem(_STKEY,JSON.stringify(all));}catch(e){}
+}
+function _trackStats(){
+  if(!player)return;
+  var ic=0,tr2=0,tot=Object.keys(S).length,own=0;
+  for(var id in S){var t=S[id];if(t.own!==player)continue;ic+=t.eco;tr2+=(t.u.i||0)+(t.u.t||0)+(t.u.a||0);own++;}
+  _saveStats(player,{maxIC:ic,maxTroops:tr2});
+  if(own>=tot*0.95)_saveStats(player,{unify:1});
+}
+function showStats(){
+  var all=_gStats();var fids=Object.keys(all);
+  var LABELS={games:'\u30d7\u30ec\u30a4\u56de\u6570',majors:'\u4e3b\u8981\u56fd\u964d\u4f0f\u56de\u6570',terr:'\u7d2f\u8a08\u5360\u9818\u9818\u571f',maxIC:'\u6700\u9ad8\u5de5\u696d\u529bIC',maxTroops:'\u6700\u9ad8\u8ecd\u968a\u6570',unify:'\u4e16\u754c\u7d71\u4e00\u56de\u6570'};
+  var html='';
+  if(!fids.length){html='<div style="color:var(--dm);font-size:8px;padding:16px;text-align:center">\u307e\u3060\u30c7\u30fc\u30bf\u304c\u3042\u308a\u307e\u305b\u3093\u3002\u30b2\u30fc\u30e0\u3092\u59cb\u3081\u3066\u304f\u3060\u3055\u3044\u3002</div>';}
+  else{fids.forEach(function(fid){var f=FAC[fid];if(!f)return;var st=all[fid];
+    html+='<div class="stats-nation"><div class="stats-nation-n" style="color:'+f.c+'">'+f.sn+' '+f.n+'</div>';
+    Object.keys(LABELS).forEach(function(k){html+='<div class="stats-row"><span>'+LABELS[k]+'</span><span>'+(st[k]||0)+'</span></div>';});
+    html+='</div>';});}
+  var t=document.getElementById('m-t'),s2=document.getElementById('m-s'),b=document.getElementById('m-b');
+  if(!t||!s2||!b)return;
+  t.textContent='PLAYER STATS \u2014 \u30d7\u30ec\u30a4\u7d71\u8a08';
+  s2.textContent='\u56fd\u5bb6\u5225\u7d2f\u8a08\u8a18\u9332\uff08\u30d6\u30e9\u30a6\u30b6\u306b\u6c38\u7d9a\u4fdd\u5b58\uff09';
+  b.innerHTML='<div style="max-height:58vh;overflow-y:auto;scrollbar-width:thin">'+html+'</div>';
+  var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';
+  document.getElementById('m-r').style.display='none';
+  var mo2=document.getElementById('modal');if(mo2)mo2.classList.add('open');
+}
+
+// ================================================================
+//  TERRITORY RESOLVER
+// ================================================================
+var _IPFX={'po_':'pl','pl_':'pl','polska_':'pl',
+  'de_':'de','deu_':'de','ger_':'de',
+  'fr_':'fr','fra_':'fr',
+  'gb_':'uk','uk_':'uk','gbr_':'uk','eng_':'uk',
+  'ru_':'su','ussr_':'su','sov_':'su',
+  'us_':'us','usa_':'us',
+  'jp_':'jp','jpn_':'jp',
+  'it_':'it','ita_':'it',
+  'es_':'es','spa_':'es',
+  'cn_':'cn','chi_':'cn',
+  'ar_':'ar','arg_':'ar',
+  'br_':'br','bra_':'br',
+  'au_':'au','aus_':'au',
+  'ca_':'ca','can_':'ca',
+  'tr_':'tr','tur_':'tr',
+  'mx_':'mx','mex_':'mx',
+  'za_':'za','saf_':'za',
+  'eg_':'eg','egy_':'eg',
+  'et_':'et','eth_':'et',
+  'nl_':'nl','ned_':'nl',
+  'be_':'be','bel_':'be',
+  'pt_':'pt','por_':'pt',
+  'se_':'se','swe_':'se',
+  'no_':'no','nor_':'no',
+  'dk_':'dk','den_':'dk',
+  'fi_':'fi','fin_':'fi',
+  'ro_':'ro','rum_':'ro',
+  'yu_':'yu','yug_':'yu',
+  'gr_':'gr','gre_':'gr',
+  'at_':'at',
+  'hu_':'hu','hun_':'hu',
+  'cz_':'cz','czs_':'cz',
+  'bg_':'bg','bul_':'bg',
+  'ch_':'ch','swi_':'ch',
+  'th_':'th','sia_':'th',
+  'ir_':'ir','per_':'ir',
+  'iq_':'iq',
+  'sa_':'sa','sau_':'sa',
+  'mk_':'mk','man_':'mk',
+  'su_':'su'
+};
+var _ISUB={
+  'poznan':'pl','gdansk':'pl','warsaw':'pl','krakow':'pl',
+  'danzig':'de','konigsberg':'de','koenigsberg':'de',
+  'alsace':'fr','normandy':'fr',
+  'sicily_it':'it','sardinia_it':'it',
+  'ukraine':'su','byelorussia':'su','belorussia':'su',
+  'manchuria':'mk','outer_mongolia':'mo','mongolia_outer':'mo',
+  'tibet_r':'ti','sinkiang':'xj','xinjiang_r':'xj',
+  'siam_r':'th','persia_r':'ir','inner_mongol':'mg'
+};
+function resolveOwner(id){
+  if(TF[id])return TF[id];
+  var sc=SCENARIOS.filter(function(s){return s.id===currentScenario;})[0];
+  if(sc&&sc.overrides&&sc.overrides[id])return sc.overrides[id];
+  var lid=id.toLowerCase();
+  var ks=Object.keys(_IPFX);
+  for(var k=0;k<ks.length;k++)if(lid.indexOf(ks[k])===0)return _IPFX[ks[k]];
+  var ss=Object.keys(_ISUB);
+  for(var j=0;j<ss.length;j++)if(lid.indexOf(ss[j])>=0)return _ISUB[ss[j]];
+  return 'nt_'+id;
+}
+
+// ================================================================
+//  MENU / NAV
+// ================================================================
+function showMenu(){
+  var m=document.getElementById('menu');if(m)m.classList.remove('off');
+  var sc=document.getElementById('scensel');if(sc)sc.classList.remove('on');
+  var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');
+  var lb=document.getElementById('menu-load');if(lb)lb.style.display=hasSave()?'flex':'none';
+}
+function showScenSel(){
+  document.getElementById('menu').classList.add('off');
+  document.getElementById('scensel').classList.add('on');
+  buildScenGrid();
+}
+function buildScenGrid(){
+  var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';
+  SCENARIOS.forEach(function(sc){
+    var c=document.createElement('div');c.className='scen-card';
+    c.style.setProperty('--scc',sc.color);
+    c.innerHTML='<div class="scen-year">'+sc.yr+'</div>'+
+      '<div class="scen-name">'+sc.name+'</div>'+
+      '<div class="scen-desc">'+sc.desc+'</div>';
+    c.addEventListener('click',function(){
+      currentScenario=sc.id;_firedEvents={};yr=sc.yr;mo=sc.mo;
+      document.getElementById('scensel').classList.remove('on');
+      var fs=document.getElementById('fsel');if(fs)fs.classList.remove('off');
+      var ft=document.querySelector('.fh-t');if(ft)ft.textContent=sc.nameEn;
+      buildFsel();
+    });
+    g.appendChild(c);
+  });
+}
+function showHowTo(){
+  var t=document.getElementById('m-t'),s2=document.getElementById('m-s'),b=document.getElementById('m-b');
+  if(!t||!s2||!b)return;
+  t.textContent='HOW TO PLAY \u2014 \u9059\u3073\u65b9';
+  s2.textContent='\u4e16\u754c\u5927\u6226\u7565 | Operations Manual';
+  b.innerHTML='<div class="mi" style="font-size:8px;line-height:2.2">'+
+    '\ud83c\udf0d \u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u9078\u629e\u2192\u56fd\u5bb6\u9078\u629e\u3067\u30b2\u30fc\u30e0\u958b\u59cb<br>'+
+    '\ud83d\uddfa\ufe0f \u9818\u571f\u3092\u30af\u30ea\u30c3\u30af/\u30bf\u30c3\u30d7\u3057\u3066\u9078\u629e<br>'+
+    '\u2694 \u81ea\u56fd\u9818\u571f\u2192[ASSAULT][TANK RUSH][BOMBARD]\u2192\u653b\u6483\u76ee\u6a19\u3092\u9078\u629e<br>'+
+    '\ud83d\udc63 \u81ea\u56fd\u9818\u571f\u2192[MOVE]\u2192\u9232\u63a5\u81ea\u56fd\u9818\u571f\u3078\u5175\u529b\u79fb\u52d5<br>'+
+    '\ud83e\ude96 \u81ea\u56fd\u9818\u571f\u2192[+\u90e8\u968a\u3092\u751f\u7523]\u3067\u5175\u529b\u589e\u5f37\uff08\u8cc7\u91d1\u6d88\u8cbb\uff09<br>'+
+    '\ud83e\udd1d \u4ed6\u56fd\u9818\u571f\u2192[DIPL]\u3067\u5916\u4ea4\u3001[WORLD]\u3067\u4e16\u754c\u60c5\u52e2<br>'+
+    '\ud83c\udff3 \u6226\u4e89\u4e2d\u2192[PEACE]\u3067\u8b1b\u548c\u4f1a\u8b70\uff08\u8907\u6570\u9818\u571f\u5272\u8b72\u53ef\uff09<br>'+
+    '\ud83d\udd01 [NEXT TURN]\u30dc\u30bf\u30f3\u3067\uff11\u30f6\u6708\u9032\u884c<br>'+
+    '\ud83d\udcbe [SAVE]\u30dc\u30bf\u30f3\u3067\u5373\u6642\u4fdd\u5b58\u3001\u30e1\u30cb\u30e5\u30fc[LOAD]\u3067\u518d\u958b<br>'+
+    '\ud83d\udce1 \u5e2b\u56e3\u30bf\u30ef\u30fc: \u5404\u5730\u57df\u306b\ud83e\ude96\ud83d\ude9c\u2708\ufe0f\u30d0\u30c3\u30b8\u304c\u5e38\u6642\u8868\u793a<br>'+
+    '\ud83c\udf0a \u65e5\u672c\u30fb\u30ab\u30e0\u30c1\u30e3\u30c3\u30ab\u2192\u30a2\u30e9\u30b9\u30ab\u3078\u76f4\u63a5\u9032\u8ecd\u53ef\u80fd<br>'+
+    '\ud83d\udcc5 \u30bf\u30fc\u30f3\u304c\u9032\u3080\u3068\u53f2\u5b9f\u30a4\u30d9\u30f3\u30c8\u304c\u767a\u751f'+
+    '</div>';
+  var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';
+  document.getElementById('m-r').style.display='none';
+  var mo2=document.getElementById('modal');if(mo2)mo2.classList.add('open');
+}
+
 var G=(function(){
 'use strict';
 var player=null,money=0,turn=0,yr=1936,mo=1;
@@ -690,16 +1161,7 @@ function incOf(f){
 }
 function cntOf(f){var c=0;for(var id in S)if(S[id].own===f)c++;return c}
 function adjOf(id){return ADJ[id]?Object.keys(ADJ[id]):[]}
-function hashColor(s){
-  var h=0;for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}
-  var hue=Math.abs(h)%360;
-  return 'hsl('+hue+',34%,30%)';
-}
-function fcol(f){
-  if(FAC[f]&&FAC[f].c)return FAC[f].c;
-  if(typeof f==='string'&&f.indexOf('nt_')===0)return hashColor(f.substring(3));
-  return '#3c5c28';
-}
+function fcol(f){return(FAC[f]&&FAC[f].c)||'#3c5c28'}
 function checkMobile(){return window.innerWidth<=768}
 function ecoFor(id,own){
   if(ECO_BASE[id])return ECO_BASE[id];
@@ -754,24 +1216,10 @@ function showErr(msg){
 }
 // ── Log ──
 function addLog(msg,cls){
-  // Main log (#log, desktop) — newest entry at TOP (no scroll needed)
   var ll=document.getElementById('llist');
-  if(ll){
-    var d=document.createElement('div');
-    d.className='le '+(cls||'');d.textContent=msg;
-    ll.insertBefore(d,ll.firstChild);
-    while(ll.children.length>12)ll.removeChild(ll.lastChild);
-  }
-  // Mobile log (bottom sheet) — chronological, newest at BOTTOM, auto-scroll down
+  if(ll){var d=document.createElement('div');d.className='le '+(cls||'');d.textContent=msg;ll.insertBefore(d,ll.firstChild);while(ll.children.length>12)ll.removeChild(ll.lastChild);}
   var ml=document.getElementById('mob-llist');
-  if(ml){
-    var d2=document.createElement('div');
-    d2.className='le '+(cls||'');d2.textContent=msg;
-    ml.appendChild(d2);
-    while(ml.children.length>30)ml.removeChild(ml.firstChild);
-    // Auto-scroll to bottom so newest message is always visible
-    requestAnimationFrame(function(){ml.scrollTop=ml.scrollHeight;});
-  }
+  if(ml){var d2=document.createElement('div');d2.className='le '+(cls||'');d2.textContent=msg;ml.appendChild(d2);while(ml.children.length>30)ml.removeChild(ml.firstChild);requestAnimationFrame(function(){ml.scrollTop=ml.scrollHeight;});}
 }
 // ── Faction Select ──
 function buildFsel(){
@@ -810,18 +1258,18 @@ function startGame(fid){
   var fsel=document.getElementById('fsel');if(fsel)fsel.classList.add('off');
   var ld=document.getElementById('ld');if(ld)ld.classList.add('on');
   ldp(5,'国家設定中...');
-  player=fid;money=FAC[fid].m;rel={};
-  for(var i=0;i<RELS_1936.length;i++){var r=RELS_1936[i];rel[rk(r[0],r[1])]=r[2];}
+  var scData=SCENARIOS.filter(function(s){return s.id===currentScenario;})[0]||SCENARIOS[0];
+  player=fid;money=FAC[fid].m;rel={};_firedEvents={};
+  yr=scData.yr;mo=scData.mo;
+  var scenRels=scData.relations||RELS_1936;
+  for(var i=0;i<scenRels.length;i++){var r=scenRels[i];rel[rk(r[0],r[1])]=r[2];}
   var tn=document.getElementById('tb-n');
   if(tn){tn.textContent=FAC[fid].n;tn.style.color=FAC[fid].c;}
+  _saveStats(fid,{games:1});
   loadSVG();
 }
 // ── SVG Loading with cache-busting ──
-var SKIP_RE=/^(pattern|diagonal|vertical|horizontal|crosshatch|checkers|texture|circles|raindrops|subtlepatch|wrapper|svg-|map-|legend|credit|sea|ocean|water|background|backdrop|frame|border|graticule|grid|outline|label|base|bg[-_]|clip|defs|gradient|layer|group|world|worldmap|mapoutline|text|title|desc|metadata|style|symbol|sphere|outline[-_]|land|coastline|lakes|rivers|grid[-_]|degrees|parallels|meridians)$/i;
-// Also reject pure-numeric IDs (MapChart internal clip/defs)
-var SKIP_PREFIX_RE=/^(clip|defs|gradient|pattern|filter|mask|symbol|use|g[-_]|layer[-_]|group[-_])/i;
-// Only allow path/polygon shapes — never <rect>,<g>,<circle>,<ellipse>,<line>,<text> etc.
-var ALLOWED_TAGS={path:1,polygon:1};
+var SKIP_RE=/^(pattern|diagonal|vertical|horizontal|crosshatch|checkers|texture|circles|raindrops|subtlepatch|wrapper|svg-|map-|legend|credit)/i;
 function loadSVG(){
   ldp(12,'SVGマップを取得中...');
   var bust='?v='+Date.now();
@@ -890,38 +1338,25 @@ function processSVG(txt){
   _camY=(vpH-naturalH*_camZ)/2;
 
   S={};
-  var allEls=svgEl.querySelectorAll('[id]');var count=0;var skipped=0;
+  var allEls=svgEl.querySelectorAll('[id]');var count=0;
   for(var i=0;i<allEls.length;i++){
     var el=allEls[i];var id=el.getAttribute('id');
-    // ── STRICT VALIDATION: only real territory shapes survive ──
-    if(!id){skipped++;continue;}
-    var tag=el.tagName?el.tagName.toLowerCase():'';
-    // 1) Must be a path/polygon — never a <rect>,<g>,<clipPath>,<defs> etc.
-    if(!ALLOWED_TAGS[tag]){skipped++;continue;}
-    // 2) Reject pure-numeric IDs (MapChart internal elements like "1273","4435")
-    if(/^\d+$/.test(id)){skipped++;continue;}
-    // 3) Reject by exact blacklist match (sea/ocean/background/etc.)
-    if(SKIP_RE.test(id)){skipped++;continue;}
-    // 4) Reject by prefix (clip0, defs1, gradient2, layer-1, group_3...)
-    if(SKIP_PREFIX_RE.test(id)){skipped++;continue;}
-    // 4) (getBBox check removed — runs before render, returns 0 for everything)
-    // 5) Reject elements explicitly marked non-territory via data attribute
-    if(el.getAttribute('data-skip')==='1'){skipped++;continue;}
-
-    var own=TF[id]||('nt_'+id);
+    if(!id)continue;
+    // Only path/polygon — exclude <rect>,<g>,<clipPath>,<circle>, etc.
+    var _tag=el.tagName?el.tagName.toLowerCase():'';
+    if(_tag!=='path'&&_tag!=='polygon')continue;
+    // Reject numeric-only IDs (MapChart internal elements)
+    if(/^\d+$/.test(id))continue;
+    if(SKIP_RE.test(id))continue;
+    var own=resolveOwner(id);
     el.setAttribute('fill',fcol(own));
     el.setAttribute('stroke-width','0.5');
-    el.style.pointerEvents='visiblePainted';
-    el.style.cursor='pointer';
     el.classList.add('tl2');
-    (function(tid){
-      el.addEventListener('click',function(e){e.stopPropagation();onClick(tid);});
-    }(id));
+    (function(tid){el.addEventListener('click',function(e){e.stopPropagation();onClick(tid);});}(id));
     S[id]={el:el,name:id.replace(/_/g,' '),own:own,eco:ecoFor(id,own),u:mkU(own)};
     count++;
   }
-  console.log('[WARCMD] territories registered:',count,'| skipped (non-territory):',skipped);
-  if(count<10){showErr('地域データ不足 ('+count+'個) — SVG構造を確認してください');return;}
+  if(count<10){showErr('地域データ不足 ('+count+'個)');return;}
   ldp(55,'レイアウト待機中...');
   // Apply initial transform BEFORE buildAdj so getBoundingClientRect is correct
   applyTrans();
@@ -934,7 +1369,9 @@ function processSVG(txt){
         ldp(95,'初期化完了...');
         updTB();updPanel(null);setupCtrl();
         var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
-        addLog('1936年1月 — '+FAC[player].n+'として世界大戦略を開始。','lt');
+        if(_pendingLoad){_applyLoad(_pendingLoad);applyFoW();updTB();if(sel)updPanel(sel);updTroopLabels();}
+  var scD=SCENARIOS.filter(function(s){return s.id===currentScenario;})[0]||SCENARIOS[0];
+  addLog(scD.yr+'年'+scD.mo+'月 — '+FAC[player].n+'として世界大戦略を開始。','lt');
         addLog('自国領土クリック→攻勢命令→赤域クリックで攻撃','li');
         addLog('包囲(ENCIRCLED)状態の敵は防御力-50%。','li');
         updTroopLabels();
@@ -971,41 +1408,25 @@ function buildAdjChunked(ids,onDone){
     ldp(60+Math.round((row/ids.length)*25),'隣接計算中... ('+row+'/'+ids.length+')');
     if(row<ids.length)setTimeout(processChunk,0);
     else{
-      // ── Pacific Wrap: connect East Asia ↔ North America ──────────────
+      // Pacific wrap links (East Asia ↔ North America)
       var PLINKS=[
-        // Kamchatka/Chukotka ↔ Alaska
-        ['Kamchatka','Alaska'],['Chukotka','Alaska'],
-        ['Chukchi_Peninsula','Alaska'],
-        // Japan ↔ Aleutians/Alaska
-        ['Hokkaido','Alaska'],['Kuril_Islands','Alaska'],
-        // Pacific island chains
+        ['Kamchatka','Alaska'],['Chukotka','Alaska'],['Chukchi_Peninsula','Alaska'],
+        ['Hokkaido','Alaska'],['Kuril_Islands','Alaska'],['Kuril_Islands','Hokkaido'],
         ['Hawaii','Midway_Island'],['Midway_Island','Wake_Island'],
-        ['Wake_Island','Guam'],['Guam','Saipan'],
-        ['Saipan','Wake_Island'],
-        ['Marshall_Islands','Hawaii'],
-        ['Caroline_Islands','Guam'],['Caroline_Islands','Saipan'],
-        ['Palau','Caroline_Islands'],
-        // Marcus → Saipan/Japan
-        ['Marcus_Island','Saipan'],
-        // Kuril → Hokkaido (already may exist from BBox but force it)
-        ['Kuril_Islands','Hokkaido'],
-        // Iwo Jima chain
-        ['Iwo_Jima','Saipan'],['Iwo_Jima','Marcus_Island'],
-        // Attu (westernmost Aleutian) ↔ Japan/Kamchatka
-        ['Attu_Island','Kamchatka'],['Attu_Island','Hokkaido'],
-        // Canada Pacific ↔ Japan via Aleutians
-        ['Upper_British_Columbia','Alaska'],
-        ['Alaska','Hokkaido'],['Alaska','Kamchatka']
+        ['Wake_Island','Guam'],['Guam','Saipan'],['Saipan','Wake_Island'],
+        ['Marshall_Islands','Hawaii'],['Caroline_Islands','Guam'],
+        ['Caroline_Islands','Saipan'],['Palau','Caroline_Islands'],
+        ['Marcus_Island','Saipan'],['Iwo_Jima','Saipan'],
+        ['Attu_Island','Kamchatka'],['Alaska','Hokkaido']
       ];
-      PLINKS.forEach(function(p){
-        var a=p[0],b=p[1];
+      PLINKS.forEach(function(pair){
+        var a=pair[0],b=pair[1];
         if(!S[a]||!S[b])return;
         if(!ADJ[a])ADJ[a]={};if(!ADJ[b])ADJ[b]={};
         ADJ[a][b]=1;ADJ[b][a]=1;
       });
       var edges=0;for(var id in ADJ)edges+=Object.keys(ADJ[id]).length;
-      console.log('[WARCMD] adj edges (incl Pacific wrap):',edges/2);
-      onDone();
+      console.log('[WARCMD] adj edges (incl Pacific):',edges/2);onDone();
     }
   }
   processChunk();
@@ -1497,56 +1918,45 @@ function showDiplomStatus(){
   document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()" style="flex:1">CLOSE</button>';
   document.getElementById('modal').classList.add('open');
 }
-// ── Troop Tower (HOI4-style) ─────────────────────────────────────
-// Overlay is INSIDE #mi so towers follow pan/zoom automatically.
-// We use getBBox() in SVG-space coordinates (not screen coords).
+// ── Troop Tower (HOI4-style division badges) ──
 function updTroopLabels(){
+  var _svgEl=document.querySelector('#svgh svg');
+  if(!_svgEl)return;
+  // getBBox() returns coords in SVG userspace (matches #mi transform space)
   var ov=document.getElementById('troop-overlay');if(!ov)return;
   ov.innerHTML='';
-  var svgEl=document.querySelector('#svgh svg');if(!svgEl)return;
-  // Get the viewBox dimensions to map SVG-space → pixel-space
-  var vbAttr=svgEl.getAttribute('viewBox')||'0 0 960 500';
-  var vbParts=vbAttr.split(/[\s,]+/);
-  var svgW=parseFloat(vbParts[2])||960;
-  var svgH=parseFloat(vbParts[3])||500;
-  // #svgh svg has fixed pixel size (set in processSVG): svgW x svgH
-  // So SVG-space coords = pixel coords inside #mi directly
+  var vp=document.getElementById('vp');if(!vp)return;
+  var vpRect=vp.getBoundingClientRect();
   var vis=getVis();
-  var isMob=checkMobile();
   for(var id in S){
     var t=S[id];if(!t.el)continue;
     if(t.own!==player&&!vis[id])continue;
     var hasAny=(t.u.i||0)+(t.u.t||0)+(t.u.a||0);
     if(!hasAny)continue;
-    // Use getBBox() to get center in SVG coordinate space
-    var bbox;
-    try{bbox=t.el.getBBox();}catch(e){continue;}
-    if(!bbox||bbox.width<1)continue;
-    var cx=bbox.x+bbox.width/2;
-    var cy=bbox.y+bbox.height/2;
-    // Clamp to SVG bounds
-    if(cx<0||cy<0||cx>svgW||cy>svgH)continue;
+    var r=t.el.getBoundingClientRect();
+    if(r.width<4||r.height<4)continue;
+    var cx=r.left+r.width/2-vpRect.left;
+    var cy=r.top+r.height/2-vpRect.top;
+    if(cx<-20||cy<-20||cx>vpRect.width+20||cy>vpRect.height+20)continue;
     var tower=document.createElement('div');
     tower.className='troop-tower';
-    // Position in SVG pixel coords (inside #mi which IS the SVG space)
-    tower.style.left=cx+'px';
-    tower.style.top=cy+'px';
-    // Scale badge slightly based on zoom for readability
-    var bs=Math.max(0.7,Math.min(1.4,1/_camZ));
-    tower.style.transform='translate(-50%,-50%) scale('+bs+')';
+    tower.style.left=cx+'px';tower.style.top=cy+'px';
+    // INF badge
     if(t.u.i>0){
       var b=document.createElement('div');b.className='tb-badge inf';
-      b.innerHTML='<span class="tb-icon">🪖</span><span class="tb-num">'+t.u.i+'</span>';
+      b.innerHTML='<span class="tb-icon">&#128100;</span><span class="tb-num">'+t.u.i+'</span>';
       tower.appendChild(b);
     }
+    // TNK badge
     if(t.u.t>0){
       var b2=document.createElement('div');b2.className='tb-badge tnk';
-      b2.innerHTML='<span class="tb-icon">🚜</span><span class="tb-num">'+t.u.t+'</span>';
+      b2.innerHTML='<span class="tb-icon">&#9881;</span><span class="tb-num">'+t.u.t+'</span>';
       tower.appendChild(b2);
     }
+    // ART badge
     if(t.u.a>0){
       var b3=document.createElement('div');b3.className='tb-badge art';
-      b3.innerHTML='<span class="tb-icon">✈️</span><span class="tb-num">'+t.u.a+'</span>';
+      b3.innerHTML='<span class="tb-icon">&#127776;</span><span class="tb-num">'+t.u.a+'</span>';
       tower.appendChild(b3);
     }
     ov.appendChild(tower);
@@ -1562,7 +1972,9 @@ function nextTurn(){
     var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;
   }
   addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
+  checkHistEvents();
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
+  _trackStats();
 }
 // ── AI Turn ──
 function aiTurn(){
@@ -1624,6 +2036,7 @@ function applyTrans(){
   if(vp){
     var vpW=vp.clientWidth,vpH=vp.clientHeight;
     var mW=mi.offsetWidth||1,mH=mi.offsetHeight||1;
+    // Bounds clamp: prevent map from leaving screen entirely
     var margin=60;
     var minX=-(mW*_camZ-margin),maxX=vpW-margin;
     var minY=-(mH*_camZ-margin),maxY=vpH-margin;
@@ -1631,16 +2044,8 @@ function applyTrans(){
     _camY=Math.min(maxY,Math.max(minY,_camY));
   }
   mi.style.transform='translate('+_camX+'px,'+_camY+'px) scale('+_camZ+')';
-  // Towers are INSIDE #mi now, so they move with the map automatically.
-  // We only need to re-scale the badge sizes (RAF throttled).
   if(_tlRAF)cancelAnimationFrame(_tlRAF);
-  _tlRAF=requestAnimationFrame(function(){
-    var towers=document.querySelectorAll('.troop-tower');
-    var bs=Math.max(0.6,Math.min(1.6,1/_camZ));
-    for(var i=0;i<towers.length;i++){
-      towers[i].style.transform='translate(-50%,-50%) scale('+bs+')';
-    }
-  });
+  _tlRAF=requestAnimationFrame(updTroopLabels);
 }
 // ── Input / Controls ──
 function setupCtrl(){
@@ -1649,46 +2054,35 @@ function setupCtrl(){
   // Apply initial transform (already set in processSVG)
   applyTrans();
 
-  // ── Touch: pan + pinch zoom + MANUAL TAP DETECTION ──────────────
-  // CRITICAL FIX: calling preventDefault() on touchstart/touchend
-  // suppresses the browser's synthetic 'click' event, which means
-  // the click listeners bound to each <path> NEVER fire on mobile.
-  // We therefore detect taps manually (small movement, short time)
-  // and invoke onClick() directly using the ORIGINAL touched element.
-  var _tapStartX=0,_tapStartY=0,_tapStartT=0,_tapTarget=null,_tapMoved=false;
-  var TAP_MOVE_THRESH=10;   // px — beyond this, it's a drag not a tap
-  var TAP_TIME_THRESH=600;  // ms — beyond this, it's a long-press not a tap
+  // Touch: pan + pinch zoom
+  // Manual tap detection (preventDefault blocks synthetic click on mobile)
+  var _tapSX=0,_tapSY=0,_tapT=0,_tapEl=null,_tapMoved=false;
+  var TAP_MOVE_THRESH=10,TAP_TIME=600;
 
   vp.addEventListener('touchstart',function(e){
     if(e.touches.length===1){
       var t0=e.touches[0];
       _drag=true;_tapMoved=false;
       _dragSX=t0.clientX-_camX;_dragSY=t0.clientY-_camY;
-      _tapStartX=t0.clientX;_tapStartY=t0.clientY;_tapStartT=Date.now();
-      // Capture the actual element under the finger AT TOUCH START —
-      // this is the most reliable way to know what was tapped, since
-      // touchend's target can differ after any movement/transform.
-      _tapTarget=document.elementFromPoint(t0.clientX,t0.clientY);
+      _tapSX=t0.clientX;_tapSY=t0.clientY;_tapT=Date.now();
+      _tapEl=document.elementFromPoint(t0.clientX,t0.clientY);
       vp.classList.add('drag');
     }else if(e.touches.length===2){
-      _drag=false;_tapTarget=null;
+      _drag=false;
       var dx=e.touches[0].clientX-e.touches[1].clientX;
       var dy=e.touches[0].clientY-e.touches[1].clientY;
       _pinchD=Math.sqrt(dx*dx+dy*dy);
     }
     e.preventDefault();
   },{passive:false});
-
   vp.addEventListener('touchmove',function(e){
     if(e.touches.length===1&&_drag){
-      var t0=e.touches[0];
-      var dmx=t0.clientX-_tapStartX,dmy=t0.clientY-_tapStartY;
-      if(Math.sqrt(dmx*dmx+dmy*dmy)>TAP_MOVE_THRESH)_tapMoved=true;
-      _camX=t0.clientX-_dragSX;
-      _camY=t0.clientY-_dragSY;
+      var _dx=e.touches[0].clientX-_tapSX,_dy=e.touches[0].clientY-_tapSY;
+      if(Math.sqrt(_dx*_dx+_dy*_dy)>TAP_MOVE_THRESH)_tapMoved=true;
+      _camX=e.touches[0].clientX-_dragSX;
+      _camY=e.touches[0].clientY-_dragSY;
       applyTrans();
     }else if(e.touches.length===2&&_pinchD>0){
-      _tapMoved=true; // pinch is never a tap
       var dx=e.touches[0].clientX-e.touches[1].clientX;
       var dy=e.touches[0].clientY-e.touches[1].clientY;
       var nd=Math.sqrt(dx*dx+dy*dy);
@@ -1702,23 +2096,17 @@ function setupCtrl(){
     }
     e.preventDefault();
   },{passive:false});
-
   vp.addEventListener('touchend',function(e){
-    var elapsed=Date.now()-_tapStartT;
-    var wasSingleTouch=(e.touches.length===0);
-    if(wasSingleTouch&&!_tapMoved&&elapsed<TAP_TIME_THRESH&&_tapTarget){
-      // ── This is a genuine TAP: resolve which territory was touched ──
-      var node=_tapTarget;
-      var tid=null;
-      // Walk up from the touched node to find an element registered in S{}
-      while(node&&node!==vp){
-        var nid=node.getAttribute&&node.getAttribute('id');
-        if(nid&&S[nid]){tid=nid;break;}
-        node=node.parentElement;
+    // Manual tap: small movement + short time + single finger
+    if(e.touches.length===0&&!_tapMoved&&(Date.now()-_tapT)<TAP_TIME&&_tapEl){
+      var _node=_tapEl;
+      while(_node&&_node!==vp){
+        var _nid=_node.getAttribute&&_node.getAttribute('id');
+        if(_nid&&S[_nid]){onClick(_nid);break;}
+        _node=_node.parentElement;
       }
-      if(tid){onClick(tid);}
     }
-    if(e.touches.length===0){_drag=false;_tapTarget=null;vp.classList.remove('drag');}
+    if(e.touches.length===0){_drag=false;vp.classList.remove('drag');}
     e.preventDefault();
   },{passive:false});
   // Mouse: pan
@@ -1781,10 +2169,8 @@ function setupCtrl(){
 // FIXED: DOMContentLoaded now ONLY shows faction select UI.
 // SVG loading happens AFTER user picks a faction (in startGame → loadSVG).
 document.addEventListener('DOMContentLoaded',function(){
-  // Hide loading screen initially
   var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
-  // Build faction select UI immediately
-  buildFsel();
+  showMenu();
 });
 
 // ── Public API ──
@@ -1798,7 +2184,8 @@ return{
   nextTurn:nextTurn,closeModal:closeModal,
   togglePanel:togglePanel,
   showWorldStatus:showWorldStatus,
-  showDiplomStatus:showDiplomStatus
+  showDiplomStatus:showDiplomStatus,
+  _save:_save
 };
 }());
 </script>
