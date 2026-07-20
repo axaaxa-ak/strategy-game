@@ -220,78 +220,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .fgrid{grid-template-columns:1fr 1fr;gap:5px}
   .fh-t{font-size:13px;letter-spacing:2px}
 }
-/* MENU */
-#menu{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;overflow:hidden}
-#menu.off{display:none}
-.menu-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(18,40,80,.9),#02080e 70%)}
-.menu-bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(200,162,72,.06) 1px,transparent 1px);background-size:32px 32px;animation:gridmove 8s linear infinite}
-.menu-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(2,8,14,.95))}
-@keyframes gridmove{from{background-position:0 0}to{background-position:32px 32px}}
-.menu-content{position:relative;z-index:1;text-align:center;padding:20px;width:100%;max-width:480px}
-.menu-title{font-family:var(--hd);font-size:clamp(26px,6vw,52px);color:var(--ac);letter-spacing:6px;text-shadow:0 0 30px rgba(200,162,72,.5);line-height:1}
-.menu-year{font-family:var(--hd);font-size:clamp(12px,3vw,20px);color:#c0d8f0;letter-spacing:12px;margin:6px 0 4px;opacity:.8}
-.menu-sub{font-family:var(--hd);font-size:clamp(9px,2vw,13px);color:var(--dm);letter-spacing:4px;margin-bottom:14px}
-.menu-line{width:min(280px,70vw);height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);margin:0 auto 22px}
-.menu-btns{display:flex;flex-direction:column;gap:10px;align-items:center}
-.menu-btn{display:flex;align-items:center;gap:14px;width:min(300px,80vw);background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--tx);padding:13px 18px;cursor:pointer;font-family:var(--fn);font-size:12px;letter-spacing:1px;transition:.2s;text-align:left}
-.menu-btn:hover,.menu-btn:active{background:var(--a2);border-color:var(--ac);color:#fff;transform:translateX(4px)}
-.menu-btn.primary{border-color:var(--a3);background:var(--a2);color:var(--ac)}
-.menu-btn.primary:hover,.menu-btn.primary:active{background:rgba(200,162,72,.22);border-color:var(--ac)}
-.menu-btn-icon{font-size:20px;flex-shrink:0;width:26px;text-align:center}
-.menu-btn small{font-size:8px;color:var(--dm);letter-spacing:2px;display:block;margin-top:2px}
-.menu-footer{margin-top:22px;font-size:7px;color:var(--dm);letter-spacing:3px}
-/* SCENARIO */
-#scensel{position:fixed;inset:0;z-index:8500;display:none;flex-direction:column;align-items:center;background:rgba(2,8,14,.98);overflow-y:auto}
-#scensel.on{display:flex}
-.scen-head{padding:18px 16px 10px;text-align:center;flex-shrink:0;width:100%;max-width:720px}
-.scen-title{font-family:var(--hd);font-size:16px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
-.scen-sub{font-size:8px;color:var(--dm);letter-spacing:2px;margin-bottom:14px}
-.scen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:0 14px 16px;width:100%;max-width:720px}
-.scen-card{background:rgba(255,255,255,.03);border:1px solid var(--b2);padding:13px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
-.scen-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--scc,var(--ac))}
-.scen-card:hover,.scen-card:active{border-color:var(--scc,var(--ac));background:rgba(255,255,255,.06)}
-.scen-year{font-family:var(--hd);font-size:20px;color:var(--ac);margin-bottom:2px}
-.scen-name{font-family:var(--hd);font-size:10px;color:#ddeeff;letter-spacing:1px;margin-bottom:6px;line-height:1.3}
-.scen-desc{font-size:7px;color:var(--dm);line-height:1.7}
-.scen-back{display:block;margin:10px auto 18px;background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--dm);padding:8px 24px;font-family:var(--fn);font-size:8px;letter-spacing:2px;cursor:pointer}
-.scen-back:hover,.scen-back:active{border-color:var(--ac);color:var(--ac)}
-/* EVENT MODAL */
-#evmodal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;align-items:center;justify-content:center}
-#evmodal.open{display:flex}
-.evbox{background:#06101a;border:2px solid var(--ac);max-width:460px;width:90vw;padding:22px;box-shadow:0 0 40px rgba(200,162,72,.3)}
-.ev-badge{font-size:7px;color:var(--ac);letter-spacing:3px;border:1px solid var(--a3);display:inline-block;padding:2px 8px;margin-bottom:10px}
-.ev-title{font-family:var(--hd);font-size:15px;color:#f0e0a0;margin-bottom:5px;letter-spacing:2px}
-.ev-date{font-size:8px;color:var(--dm);letter-spacing:2px;margin-bottom:10px}
-.ev-body{font-size:8px;color:#b0c8e0;line-height:2;border-top:1px solid var(--b1);padding-top:9px}
-.ev-effects{margin-top:9px;padding:7px;background:rgba(200,162,72,.06);border:1px solid var(--a3)}
-.ev-effect{font-size:8px;color:var(--ac);padding:2px 0}
-.ev-btn{margin-top:12px;width:100%;background:var(--a2);border:1px solid var(--a3);color:var(--ac);padding:9px;font-family:var(--fn);font-size:9px;letter-spacing:2px;cursor:pointer;transition:.15s}
-.ev-btn:hover,.ev-btn:active{background:rgba(200,162,72,.22);border-color:var(--ac)}
-/* STATS */
-.stats-nation{border:1px solid var(--b1);margin:5px 0;padding:8px;background:rgba(255,255,255,.02)}
-.stats-nation-n{font-family:var(--hd);font-size:9px;color:#ddeeff;margin-bottom:4px}
-.stats-row{display:flex;justify-content:space-between;font-size:7.5px;color:var(--dm);padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.stats-row span:last-child{color:var(--ac);font-family:var(--hd);font-size:9px}
-/* SAVE */
-#save-btn{position:fixed;right:14px;bottom:132px;background:rgba(24,72,176,.15);border:1px solid rgba(24,72,176,.4);color:#68a8e8;padding:7px 14px;font-family:var(--hd);font-size:7px;letter-spacing:2px;cursor:pointer;z-index:999;transition:.2s}
-#save-btn:hover,#save-btn:active{background:rgba(24,72,176,.28);border-color:#4878d0;color:#a0c8ff}
-/* MOB LOG */
-#mob-log{display:none;border-top:1px solid var(--b1);background:rgba(0,0,0,.35);flex-shrink:0;padding:5px 10px 6px;height:96px;flex-direction:column}
-.mob-lhdr{font-size:6px;color:var(--dm);letter-spacing:2px;margin-bottom:3px;flex-shrink:0}
-#mob-llist{flex:1;max-height:72px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
-@media(max-width:768px){
-  #mob-log{display:flex}
-  #sp{flex-direction:column}
-  #pb{flex:1 1 auto;min-height:0;overflow-y:auto;max-height:calc(42vh - 42px - 96px)}
-  #save-btn{right:8px;bottom:auto;top:90px;padding:5px 10px;font-size:7px}
-  .scen-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:400px){
-  .menu-title{font-size:22px}
-  .scen-grid{grid-template-columns:1fr}
-  #sp{height:48vh;max-height:48vh}
-  #pb{max-height:calc(48vh - 42px - 96px)}
-}
+.dipl-tbl{width:100%;border-collapse:collapse;font-size:7.5px}.dipl-tbl th,.dipl-tbl td{padding:3px 5px;border-bottom:1px solid var(--b1);text-align:left;font-size:7px;font-weight:normal}
 </style>
 </head>
 <body>
@@ -300,55 +229,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="ld-b"><div class="ld-f" id="ldf"></div></div>
   <div class="ld-s" id="lds">読み込み中...</div>
   <div id="ld-err"></div>
-</div>
-<!-- MENU -->
-<div id="menu">
-  <div class="menu-bg"></div>
-  <div class="menu-content">
-    <div class="menu-title">WORLD COMMAND</div>
-    <div class="menu-year">1936</div>
-    <div class="menu-sub">世界大戦略</div>
-    <div class="menu-line"></div>
-    <div class="menu-btns">
-      <button class="menu-btn primary" onclick="G.showScenSel()">
-        <span class="menu-btn-icon">&#9876;</span>
-        <span>START GAME<br><small>ゲーム開始</small></span>
-      </button>
-      <button class="menu-btn" id="menu-load" style="display:none" onclick="G.loadGame()">
-        <span class="menu-btn-icon">&#128190;</span>
-        <span>LOAD GAME<br><small>続きから再開</small></span>
-      </button>
-      <button class="menu-btn" onclick="G.showStats()">
-        <span class="menu-btn-icon">&#128202;</span>
-        <span>STATS<br><small>プレイ統計</small></span>
-      </button>
-      <button class="menu-btn" onclick="G.showHowTo()">
-        <span class="menu-btn-icon">&#128214;</span>
-        <span>HOW TO PLAY<br><small>遙び方</small></span>
-      </button>
-    </div>
-    <div class="menu-footer">GLOBAL STRATEGY SIMULATION</div>
-  </div>
-</div>
-<!-- SCENARIO SELECT -->
-<div id="scensel">
-  <div class="scen-head">
-    <div class="scen-title">SCENARIO SELECT</div>
-    <div class="scen-sub">&mdash; シナリオを選択してください &mdash;</div>
-  </div>
-  <div class="scen-grid" id="scengrid"></div>
-  <button class="scen-back" onclick="G.showMenu()">&#9664; BACK</button>
-</div>
-<!-- EVENT MODAL -->
-<div id="evmodal">
-  <div class="evbox">
-    <div class="ev-badge">&#9888; HISTORICAL EVENT</div>
-    <div class="ev-title" id="ev-title">---</div>
-    <div class="ev-date" id="ev-date">---</div>
-    <div class="ev-body" id="ev-body"></div>
-    <div class="ev-effects" id="ev-effects"></div>
-    <button class="ev-btn" onclick="G.closeEvModal()">ACKNOWLEDGE &#9654;</button>
-  </div>
 </div>
 <div id="fsel">
   <div class="fh">
@@ -372,7 +252,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="pn" id="ph-n">地域を選択してください</div>
     <div class="ptg" id="ph-t"></div>
   </div>
-  <div id="mob-log"><div class="mob-lhdr">&#128225; OPERATIONS LOG</div><div id="mob-llist"></div></div>
   <div id="pb"><div id="pc" style="color:var(--dm);font-size:8px;text-align:center;padding:20px 10px;line-height:2.4">CLICK TERRITORY<br><span style="font-size:7px">OWN=RECRUIT/ATTACK<br>ENEMY=DIPLOMACY</span></div></div>
 </div>
 <div id="vp">
@@ -384,7 +263,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <button id="sp-tog" onclick="G.togglePanel()">▲ PANEL</button>
 <div id="mind">TARGET SELECTION MODE</div>
 <button id="nxt" onclick="G.nextTurn()">NEXT TURN &#9654;</button>
-<button id="save-btn" onclick="G._save()">&#128190; SAVE</button>
 <div id="log"><div id="lhdr">OPERATIONS LOG</div><div id="llist"></div></div>
 <div id="modal"><div id="mbox">
   <div class="mt" id="m-t">DIPLOMACY</div>
@@ -853,10 +731,11 @@ function showErr(msg){
 }
 // ── Log ──
 function addLog(msg,cls){
-  var ll=document.getElementById('llist');
-  if(ll){var d=document.createElement('div');d.className='le '+(cls||'');d.textContent=msg;ll.insertBefore(d,ll.firstChild);while(ll.children.length>12)ll.removeChild(ll.lastChild);}
-  var ml=document.getElementById('mob-llist');
-  if(ml){var d2=document.createElement('div');d2.className='le '+(cls||'');d2.textContent=msg;ml.appendChild(d2);while(ml.children.length>30)ml.removeChild(ml.firstChild);requestAnimationFrame(function(){ml.scrollTop=ml.scrollHeight;});}
+  var ll=document.getElementById('llist');if(!ll)return;
+  var d=document.createElement('div');
+  d.className='le '+(cls||'');d.textContent=msg;
+  ll.insertBefore(d,ll.firstChild);
+  if(ll.children.length>8)ll.removeChild(ll.lastChild);
 }
 // ── Faction Select ──
 function buildFsel(){
@@ -895,15 +774,10 @@ function startGame(fid){
   var fsel=document.getElementById('fsel');if(fsel)fsel.classList.add('off');
   var ld=document.getElementById('ld');if(ld)ld.classList.add('on');
   ldp(5,'国家設定中...');
-  var scData=null;for(var si=0;si<SCENARIOS.length;si++)if(SCENARIOS[si].id===currentScenario){scData=SCENARIOS[si];break;}
-  if(!scData)scData=SCENARIOS[0];
-  player=fid;money=FAC[fid].m;rel={};_firedEvents={};
-  yr=scData.yr;mo=scData.mo;
-  var scenRels=scData.relations||RELS_1936;
-  for(var i=0;i<scenRels.length;i++){var r=scenRels[i];rel[rk(r[0],r[1])]=r[2];}
+  player=fid;money=FAC[fid].m;rel={};
+  for(var i=0;i<RELS_1936.length;i++){var r=RELS_1936[i];rel[rk(r[0],r[1])]=r[2];}
   var tn=document.getElementById('tb-n');
   if(tn){tn.textContent=FAC[fid].n;tn.style.color=FAC[fid].c;}
-  _saveStats(fid,{games:1});
   loadSVG();
 }
 // ── SVG Loading with cache-busting ──
@@ -979,12 +853,8 @@ function processSVG(txt){
   var allEls=svgEl.querySelectorAll('[id]');var count=0;
   for(var i=0;i<allEls.length;i++){
     var el=allEls[i];var id=el.getAttribute('id');
-    if(!id)continue;
-    var _tag=el.tagName?el.tagName.toLowerCase():'';
-    if(_tag!=='path'&&_tag!=='polygon')continue;
-    if(/^[0-9]+$/.test(id))continue;
-    if(SKIP_RE.test(id))continue;
-    var own=resolveOwner(id);
+    if(!id||SKIP_RE.test(id))continue;
+    var own=TF[id]||('nt_'+id);
     el.setAttribute('fill',fcol(own));
     el.setAttribute('stroke-width','0.5');
     el.classList.add('tl2');
@@ -1005,9 +875,7 @@ function processSVG(txt){
         ldp(95,'初期化完了...');
         updTB();updPanel(null);setupCtrl();
         var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
-        if(_pendingLoad){_applyLoad(_pendingLoad);applyFoW();updTB();if(sel)updPanel(sel);updTroopLabels();}
-  var _scD=null;for(var _si=0;_si<SCENARIOS.length;_si++)if(SCENARIOS[_si].id===currentScenario){_scD=SCENARIOS[_si];break;}
-  addLog((_scD?_scD.yr+'年'+_scD.mo+'月':'1936年1月')+' — '+FAC[player].n+'として世界大戦略を開始。','lt');
+        addLog('1936年1月 — '+FAC[player].n+'として世界大戦略を開始。','lt');
         addLog('自国領土クリック→攻勢命令→赤域クリックで攻撃','li');
         addLog('包囲(ENCIRCLED)状態の敵は防御力-50%。','li');
         updTroopLabels();
@@ -1044,23 +912,8 @@ function buildAdjChunked(ids,onDone){
     ldp(60+Math.round((row/ids.length)*25),'隣接計算中... ('+row+'/'+ids.length+')');
     if(row<ids.length)setTimeout(processChunk,0);
     else{
-      var PLINKS=[
-        ['Kamchatka','Alaska'],['Chukotka','Alaska'],['Chukchi_Peninsula','Alaska'],
-        ['Hokkaido','Alaska'],['Kuril_Islands','Alaska'],['Kuril_Islands','Hokkaido'],
-        ['Hawaii','Midway_Island'],['Midway_Island','Wake_Island'],
-        ['Wake_Island','Guam'],['Guam','Saipan'],['Saipan','Wake_Island'],
-        ['Marshall_Islands','Hawaii'],['Caroline_Islands','Guam'],
-        ['Palau','Caroline_Islands'],['Marcus_Island','Saipan'],
-        ['Attu_Island','Kamchatka'],['Alaska','Hokkaido']
-      ];
-      PLINKS.forEach(function(pair){
-        var a=pair[0],b=pair[1];
-        if(!S[a]||!S[b])return;
-        if(!ADJ[a])ADJ[a]={};if(!ADJ[b])ADJ[b]={};
-        ADJ[a][b]=1;ADJ[b][a]=1;
-      });
       var edges=0;for(var id in ADJ)edges+=Object.keys(ADJ[id]).length;
-      console.log('[WARCMD] adj edges (incl Pacific):',edges/2);onDone();
+      console.log('[WARCMD] adj edges:',edges/2);onDone();
     }
   }
   processChunk();
@@ -1088,7 +941,7 @@ function isEnc(id){
   for(var i=0;i<nbrs.length;i++){
     var a=S[nbrs[i]];
     if(!a)continue;
-    if(a.own===t.own||isAlly(t.own,a.own))return false;
+    if(a.own===t.own||isAlly(t.own,a.own)||getRel(t.own,a.own)==='puppet')return false;
   }
   return true;
 }
@@ -1149,7 +1002,7 @@ function onClick(id){
     if(S[id]&&S[id].own===player){cancelAtk();selTerr(id);return;}
     if(hl[id]){
       if(atkMode==='bombard')execBomb(atkFrom,id);
-      else if(atkMode==='move')execMove(atkFrom,id);
+      else if(atkMode==='move'||atkMode==='move_i'||atkMode==='move_t'||atkMode==='move_a')execMove(atkFrom,id);
       else showAM(atkFrom,id,atkMode);
       return;
     }
@@ -1207,7 +1060,7 @@ function updPanel(id){
       '<div class="sd">ORDERS / 命令</div>'+
       '<button class="ab r'+(atkMode==='assault'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'assault\',\''+id+'\')">[ASSAULT] 歩兵突撃 Rng:2</button>'+
       '<button class="ab r'+(atkMode==='tankrush'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'tankrush\',\''+id+'\')">[TANK RUSH] 機甲突破 Rng:3</button>'+
-      '<button class="ab r'+(atkMode==='bombard'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'bombard\',\''+id+'\')">[BOMBARD] 砲兵遠撃 Rng:1</button>'+
+      '<button class="ab r'+(atkMode==='airstrike'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'bombard\',\''+id+'\')">[AIR SUPPORT] 航空支援 Rng:1</button>'+
       '<button class="ab'+(atkMode==='move'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'move\',\''+id+'\')">[MOVE] 部隊移動 Rng:2</button>'+
       (atkMode?'<button class="ab" onclick="G.cancelAtk()">[CANCEL] キャンセル</button>':'');
   }else{
@@ -1254,8 +1107,9 @@ function setAtk(mode,id){
   atkMode=mode;atkFrom=fid;
   var atkSet,movSet;
   if(mode==='bombard'){atkSet=bombTgts(fid);movSet={};}
-  else if(mode==='move'){
-    var res=reach(fid,2);atkSet={};movSet={};
+  else if(mode==='move'||mode==='move_i'||mode==='move_t'||mode==='move_a'){
+    var mR=mode==='move_t'?6:mode==='move_a'?5:4;
+    var res=reach(fid,mR);atkSet={};movSet={};
     for(var mid in res.mov)if(mid!==fid)movSet[mid]=1;
   }else{
     var res2=reach(fid,mode==='tankrush'?3:2);
@@ -1274,11 +1128,11 @@ function cancelAtk(){
 // ── Move ──
 function execMove(fid,tid){
   var at=S[fid],dt=S[tid];if(!at||!dt)return;
-  if(dt.own!==player&&!isAlly(player,dt.own)){addLog('自軍か同盟国のみ移動可','lw');return;}
-  var p=sendPct/100;
-  var si=Math.max(0,Math.floor((at.u.i||0)*p));
-  var st=Math.max(0,Math.floor((at.u.t||0)*p));
-  var sa=Math.max(0,Math.floor((at.u.a||0)*p));
+  if(dt.own!==player&&getRel(player,dt.own)!=='allied'&&getRel(player,dt.own)!=='puppet'){addLog('自軍か同盟国のみ移動可','lw');return;}
+  var pp2=sendPct/100;var si=0,st=0,sa=0;
+  if(atkMode==='move_i'||atkMode==='move')si=Math.max(0,Math.floor((at.u.i||0)*pp2));
+  else if(atkMode==='move_t')st=Math.max(0,Math.floor((at.u.t||0)*pp2));
+  else if(atkMode==='move_a')sa=Math.max(0,Math.floor((at.u.a||0)*pp2));
   at.u.i=Math.max(0,(at.u.i||0)-si);at.u.t=Math.max(0,(at.u.t||0)-st);at.u.a=Math.max(0,(at.u.a||0)-sa);
   dt.u.i=(dt.u.i||0)+si;dt.u.t=(dt.u.t||0)+st;dt.u.a=(dt.u.a||0)+sa;
   addLog('[移動] '+at.name+' → '+dt.name+' [I]'+si+' [T]'+st+' [A]'+sa,'lt');
@@ -1347,7 +1201,7 @@ function execAtk(fid,tid,mode){
     var wk=rk(player,prev);(wCaps[wk]=wCaps[wk]||[]).push({id:tid,prev:prev});
     addLog('[占領] '+df.name+'を占領！ ATK:'+Math.round(ap)+' vs DEF:'+Math.round(dp),'lk');
     var rem=0;for(var id in S)if(S[id].own===prev)rem++;
-    if(rem===0)addLog('[降伏] '+((FAC[prev]&&FAC[prev].n)||prev.replace('nt_',''))+'が降伏！','lk');
+    if(rem===0){addLog('[降伏] '+((FAC[prev]&&FAC[prev].n)||prev.replace('nt_',''))+'が降伏！','lk');(function(p2){setTimeout(function(){var _t2=null;for(var _x in S)if(S[_x].own===p2){_t2=_x;break;}if(!_t2){rel[rk(player,p2)]='peace';addLog('[講和] '+((FAC[p2]&&FAC[p2].n)||p2)+'と自動講和','li');}else opPeace(_t2);},600);})(prev);}
   }else{
     df.u.i=Math.max(0,(df.u.i||0)-Math.floor((df.u.i||0)*0.13));
     addLog('[失敗] '+df.name+'への攻撃失敗 ATK:'+Math.round(ap)+' vs DEF:'+Math.round(dp),'lw');
@@ -1603,9 +1457,7 @@ function nextTurn(){
     var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;
   }
   addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
-  checkHistEvents();
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
-  _trackStats();
 }
 // ── AI Turn ──
 function aiTurn(){
@@ -1686,15 +1538,11 @@ function setupCtrl(){
   applyTrans();
 
   // Touch: pan + pinch zoom
-  var _tapSX=0,_tapSY=0,_tapT=0,_tapEl=null,_tapMoved=false;
-  var TAP_THRESH=12,TAP_MS=600;
   vp.addEventListener('touchstart',function(e){
     if(e.touches.length===1){
-      var _t0=e.touches[0];
-      _drag=true;_tapMoved=false;
-      _dragSX=_t0.clientX-_camX;_dragSY=_t0.clientY-_camY;
-      _tapSX=_t0.clientX;_tapSY=_t0.clientY;_tapT=Date.now();
-      _tapEl=document.elementFromPoint(_t0.clientX,_t0.clientY);
+      _drag=true;
+      _dragSX=e.touches[0].clientX-_camX;
+      _dragSY=e.touches[0].clientY-_camY;
       vp.classList.add('drag');
     }else if(e.touches.length===2){
       _drag=false;
@@ -1706,8 +1554,6 @@ function setupCtrl(){
   },{passive:false});
   vp.addEventListener('touchmove',function(e){
     if(e.touches.length===1&&_drag){
-      var _tdx=e.touches[0].clientX-_tapSX,_tdy=e.touches[0].clientY-_tapSY;
-      if(Math.sqrt(_tdx*_tdx+_tdy*_tdy)>TAP_THRESH)_tapMoved=true;
       _camX=e.touches[0].clientX-_dragSX;
       _camY=e.touches[0].clientY-_dragSY;
       applyTrans();
@@ -1726,10 +1572,6 @@ function setupCtrl(){
     e.preventDefault();
   },{passive:false});
   vp.addEventListener('touchend',function(e){
-    if(e.touches.length===0&&!_tapMoved&&(Date.now()-_tapT)<TAP_MS&&_tapEl){
-      var _nd=_tapEl;
-      while(_nd&&_nd!==vp){var _nid=_nd.getAttribute&&_nd.getAttribute('id');if(_nid&&S[_nid]){onClick(_nid);break;}_nd=_nd.parentElement;}
-    }
     if(e.touches.length===0){_drag=false;vp.classList.remove('drag');}
     e.preventDefault();
   },{passive:false});
@@ -1793,312 +1635,20 @@ function setupCtrl(){
 // FIXED: DOMContentLoaded now ONLY shows faction select UI.
 // SVG loading happens AFTER user picks a faction (in startGame → loadSVG).
 document.addEventListener('DOMContentLoaded',function(){
+  // Hide loading screen initially
   var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
-  G.showMenu();
+  // Build faction select UI immediately
+  buildFsel();
 });
 
 // ── Public API ──
-// ================================================================
-//  SCENARIOS, EVENTS, SAVE/LOAD, STATS, MENU  (inside G closure)
-// ================================================================
-var SCENARIOS=[
-  {id:'1936',yr:1936,mo:1,color:'#c8a248',name:'第二次大戦前夜',nameEn:'EVE OF WW2 1936',
-   desc:'1936年1月。日独伊の枢軸とイギリス・フランス・ソ連の対立が深まる。',
-   overrides:{},
-   relations:[['it','et','war'],['mk','cn','war'],['mg','cn','war'],
-     ['uk','fr','allied'],['uk','au','allied'],['uk','ca','allied'],
-     ['su','mo','allied'],['su','cc','allied'],
-     ['jp','mk','allied'],['jp','mg','allied'],['de','it','allied']]},
-  {id:'1914',yr:1914,mo:8,color:'#8a5c2e',name:'第一次世界大戦',nameEn:'THE GREAT WAR 1914',
-   desc:'1914年8月。オーストリア皇太子暴死が引き金。独墢対英付露の総力戦が始まる。',
-   overrides:{Alsace_Lorraine:'de',Ostmark:'at',Bohemia:'at',Moravia:'at',
-     North_Sudetenland:'at',South_Sudetenland:'at',Croatia:'at',North_Slovenia:'at',
-     Bosnia:'at',Herzegovina:'at',Syria:'tr',Lebanon:'tr',Palestine:'tr',Jordan:'tr',
-     Baghdad:'tr',Mosul:'tr',Al_Basrah:'tr',Al_Anbar:'tr',
-     Warszawa:'su',Lodz:'su',Lublin:'su',Kielce:'su',Katowice:'de'},
-   relations:[['de','fr','war'],['de','uk','war'],['de','su','war'],
-     ['at','su','war'],['at','fr','war'],['at','uk','war'],
-     ['tr','uk','war'],['tr','fr','war'],['tr','su','war'],
-     ['jp','uk','allied'],['jp','fr','allied'],['it','at','war'],['it','de','war']]},
-  {id:'1939',yr:1939,mo:9,color:'#525252',name:'電撃戦の幕開け',nameEn:'BLITZKRIEG 1939',
-   desc:'1939年9月。ドイツがポーランドに侵攻、英仸は宣戦。欧州に岐風が吹き荷れる。',
-   overrides:{North_Sudetenland:'de',South_Sudetenland:'de',Ostmark:'de',Tyrol:'de',
-     Vorarlberg:'de',Burgenland:'de',Bohemia:'de',Moravia:'de',Albania:'it',Bessarabia:'su'},
-   relations:[['de','pl','war'],['de','uk','war'],['de','fr','war'],
-     ['de','it','allied'],['jp','mk','allied'],['jp','mg','allied'],
-     ['su','fi','war'],['su','mo','allied'],['su','cc','allied'],
-     ['uk','fr','allied'],['uk','au','allied'],['uk','ca','allied']]},
-  {id:'1944',yr:1944,mo:6,color:'#7c0a02',name:'神々の黄昏',nameEn:'TWILIGHT OF GODS 1944',
-   desc:'1944年6月。Dデイ上陸。日独は防衛の限界。ソ連・米英が怒涛の攻勢。',
-   overrides:{Sicilia:'uk',Sardegna:'uk',Campania:'uk',Lazio:'uk',Toscana:'uk',
-     Normandy:'uk',Brittany:'uk',Loire:'uk',Aquitaine:'uk',
-     Marshall_Islands:'us',Saipan:'us'},
-   relations:[['de','uk','war'],['de','fr','war'],['de','su','war'],
-     ['jp','us','war'],['jp','uk','war'],['jp','au','war'],
-     ['it','uk','allied'],['it','us','allied'],
-     ['uk','fr','allied'],['uk','us','allied'],['uk','au','allied'],
-     ['uk','ca','allied'],['us','au','allied'],['us','ca','allied'],
-     ['su','uk','allied'],['su','us','allied'],
-     ['su','mo','allied'],['su','cc','allied'],['jp','mk','allied']]},
-  {id:'2000',yr:2000,mo:1,color:'#0284c7',name:'ミレニアム・モダン',nameEn:'MILLENNIUM MODERN 2000',
-   desc:'2000年1月。アメリカ一強の世界。台頭する中国、復権を模索するロシア。',
-   overrides:{Kyiv:'nt_ua',Zhytomyr:'nt_ua',Vinnytsia:'nt_ua',Poltava:'nt_ua',
-     Kharkov:'nt_ua',Stalino:'nt_ua',Dnipropetrovsk:'nt_ua',Zaporozhe:'nt_ua',
-     Kherson:'nt_ua',Mykolaiv:'nt_ua',Odessa:'nt_ua',Sumy:'nt_ua',
-     Cherkasy:'nt_ua',Chernigov:'nt_ua',Crimea:'nt_ua',
-     Minsk:'nt_by',Bobruysk:'nt_by',Gomel:'nt_by',Vitebsk:'nt_by',
-     Georgia:'nt_ka',Azerbaijan:'nt_az',Armenia:'nt_am',Abkhazia:'nt_ka',
-     Serbia:'nt_rs',Croatia:'nt_hr',North_Slovenia:'nt_si',
-     Bosnia:'nt_ba',Herzegovina:'nt_ba',Montenegro:'nt_me',
-     Macedonia:'nt_mk2',Kosovo:'nt_xk',
-     North_Sudetenland:'nt_cz',South_Sudetenland:'nt_cz',
-     Ostmark:'nt_at2',Bohemia:'nt_cz',Moravia:'nt_cz'},
-   relations:[['us','uk','allied'],['us','fr','allied'],['us','de','allied'],
-     ['us','jp','allied'],['us','ca','allied'],['us','au','allied'],
-     ['cn','su','allied']]},
-  {id:'1453',yr:1453,mo:5,color:'#854d0e',name:'東ローマ帝国の終焎',nameEn:'FALL OF BYZANTIUM 1453',
-   desc:'1453年5月。コンスタンティノープル降落。オスマン帝国の台頭と中世欧州の群雅割拠。',
-   overrides:{Istanbul:'tr',Ankara:'tr',Bursa:'tr',Izmir:'tr',Edirne:'tr',Izmit:'tr',
-     Serbia:'tr',Sofia:'tr',Plovdiv:'tr',Burgas:'tr',Moesia:'tr',Varna:'tr',
-     Macedonia:'tr',Kosovo:'tr',Attica:'tr',Peloponnese:'tr',
-     Syria:'tr',Lebanon:'tr',Palestine:'tr',
-     Lazio:'nt_papacy',Lombardia:'nt_milan',Veneto:'nt_venice',Toscana:'nt_florence',
-     North_Sudetenland:'nt_bohemia',South_Sudetenland:'nt_bohemia',
-     Bohemia:'nt_bohemia',Moravia:'nt_bohemia',Ostmark:'nt_hab',
-     Moscow:'nt_muscovy',Novgorod:'nt_novgorod',Tver:'nt_muscovy',Ryazan:'nt_muscovy'},
-   relations:[['tr','gr','war'],['fr','uk','war'],['uk','fr','hostile'],['tr','uk','hostile']]}
-];
-var currentScenario='1936';
-var _firedEvents={};
-var _pendingLoad=null;
-var _SKEY='warcmd_v4';
-var _STKEY='warcmd_stats_v2';
-var _IPFX={'po_':'pl','pl_':'pl','de_':'de','deu_':'de','ger_':'de','fr_':'fr','fra_':'fr',
-  'gb_':'uk','uk_':'uk','gbr_':'uk','eng_':'uk','ru_':'su','ussr_':'su','sov_':'su',
-  'us_':'us','usa_':'us','jp_':'jp','jpn_':'jp','it_':'it','ita_':'it','es_':'es','spa_':'es',
-  'cn_':'cn','chi_':'cn','ar_':'ar','arg_':'ar','br_':'br','bra_':'br','au_':'au','aus_':'au',
-  'ca_':'ca','can_':'ca','tr_':'tr','tur_':'tr','mx_':'mx','mex_':'mx','za_':'za','saf_':'za',
-  'eg_':'eg','egy_':'eg','et_':'et','eth_':'et','nl_':'nl','ned_':'nl','be_':'be','bel_':'be',
-  'pt_':'pt','por_':'pt','se_':'se','swe_':'se','no_':'no','nor_':'no','dk_':'dk','den_':'dk',
-  'fi_':'fi','fin_':'fi','ro_':'ro','rum_':'ro','yu_':'yu','yug_':'yu','gr_':'gr','gre_':'gr',
-  'at_':'at','hu_':'hu','hun_':'hu','cz_':'cz','czs_':'cz','bg_':'bg','bul_':'bg',
-  'ch_':'ch','swi_':'ch','th_':'th','sia_':'th','ir_':'ir','per_':'ir','iq_':'iq',
-  'sa_':'sa','sau_':'sa','mk_':'mk','man_':'mk','su_':'su'};
-var _ISUB={'poznan':'pl','gdansk':'pl','warsaw':'pl','krakow':'pl',
-  'danzig':'de','konigsberg':'de','koenigsberg':'de',
-  'ukraine':'su','byelorussia':'su','belorussia':'su',
-  'manchuria':'mk','outer_mongolia':'mo','mongolia_outer':'mo',
-  'tibet_r':'ti','sinkiang':'xj','xinjiang_r':'xj',
-  'siam_r':'th','persia_r':'ir','inner_mongol':'mg'};
-
-function resolveOwner(id){
-  if(TF[id])return TF[id];
-  var sc=null;for(var si=0;si<SCENARIOS.length;si++)if(SCENARIOS[si].id===currentScenario){sc=SCENARIOS[si];break;}
-  if(sc&&sc.overrides&&sc.overrides[id])return sc.overrides[id];
-  var lid=id.toLowerCase();
-  var ks=Object.keys(_IPFX);for(var k=0;k<ks.length;k++)if(lid.indexOf(ks[k])===0)return _IPFX[ks[k]];
-  var ss=Object.keys(_ISUB);for(var j=0;j<ss.length;j++)if(lid.indexOf(ss[j])>=0)return _ISUB[ss[j]];
-  return 'nt_'+id;
-}
-
-var HIST_EVENTS=[
-  {yr:1936,mo:3,id:'rhineland',sc:'1936',
-   title:'ラインラント進駐',date:'1936年3月',
-   body:'ヒトラーはヴェルサイユ条約を破棄し、ラインラントに軍を進駐させた。英仸は抗議のみ。',
-   effects:[{desc:'ドイツ: 資金+400 歩兵全地域+1'}],
-   apply:function(){for(var id in S)if(S[id].own==='de')S[id].u.i++;if(player==='de')money+=400;}},
-  {yr:1936,mo:7,id:'spain_civil',sc:'1936',
-   title:'スペイン内戦勃発',date:'1936年7月',
-   body:'フランコ将軍率いるナショナリスト派が蜂起。独伊がファシスト、ソ連が共和国側を支援。',
-   effects:[{desc:'独伊ソ: 工作派遣 歩兵+1/地域'}],
-   apply:function(){for(var id in S){var t=S[id];if(t.own==='de'||t.own==='it'||t.own==='su')t.u.i++;}}},
-  {yr:1936,mo:10,id:'rome_berlin',sc:'1936',
-   title:'ローマ・ベルリン枢軸',date:'1936年10月',
-   body:'ムッソリーニとヒトラーが枢軸協定を締結。',
-   effects:[{desc:'独伊: 正式同盟 資金+200'}],
-   apply:function(){rel[rk('de','it')]='allied';if(player==='de'||player==='it')money+=200;}},
-  {yr:1936,mo:11,id:'anti_comintern',sc:'1936',
-   title:'日独防共協定',date:'1936年11月',
-   body:'日本とドイツが防共協定を締結。ソ連は東西から圧力を受ける。',
-   effects:[{desc:'日独: 情報共有 歩兵+1/地域'}],
-   apply:function(){rel[rk('de','jp')]='allied';for(var id in S)if(S[id].own==='jp'||S[id].own==='de')S[id].u.i++;}},
-  {yr:1937,mo:7,id:'marco_polo',sc:'1936',
-   title:'盧溝橋事件・日中戦争勃発',date:'1937年7月',
-   body:'北京郊外の盧溝橋で日中両軍が衝突。全面的な日中戦争が始まった。',
-   effects:[{desc:'日本: 総動員 歩兵+2/地域'},{desc:'中国: 国共合作 歩兵+1/地域'}],
-   apply:function(){rel[rk('jp','cn')]='war';for(var id in S){if(S[id].own==='jp')S[id].u.i+=2;if(S[id].own==='cn')S[id].u.i++;}}},
-  {yr:1937,mo:12,id:'nanking',sc:'1936',
-   title:'南京陥落',date:'1937年12月',
-   body:'日本軍が中華民国の首都・南京を攻略。国民政府は重庆へ移転。',
-   effects:[{desc:'日本: 占領ボーナス 資金+300'}],
-   apply:function(){if(player==='jp')money+=300;}},
-  {yr:1938,mo:3,id:'anschluss',sc:'1936',
-   title:'オーストリア併合（アンシュルス）',date:'1938年3月',
-   body:'ドイツがオーストリアを併合。ドイツの人口・工業力が大幅に増強された。',
-   effects:[{desc:'ドイツ: オーストリア吸収 資金+500'}],
-   apply:function(){for(var id in S)if(S[id].own==='at'){S[id].own='de';S[id].el&&S[id].el.setAttribute('fill',fcol('de'));}if(player==='de')money+=500;}},
-  {yr:1938,mo:9,id:'munich',sc:'1936',
-   title:'ミュンヘン会談・ズデーテン割譲',date:'1938年9月',
-   body:'英仸がズデーテン地方のドイツへの割譲を承認。嬥和政策の失敗として歴史に刻まれる。',
-   effects:[{desc:'ドイツ: ズデーテン獲得 資金+600'}],
-   apply:function(){for(var id in S)if(S[id].own==='cz'&&id.indexOf('Sudetenland')>=0){S[id].own='de';S[id].el&&S[id].el.setAttribute('fill',fcol('de'));}if(player==='de')money+=600;}},
-  {yr:1939,mo:9,id:'ww2_start',sc:'1936',
-   title:'第二次世界大戦勃発',date:'1939年9月1日',
-   body:'ドイツがポーランドに侵攻！英仸がドイツに宣戦布告。',
-   effects:[{desc:'独: 総動員 歩兵+3/地域'},{desc:'英仸: 戦争動員 歩兵+2/地域'}],
-   apply:function(){rel[rk('de','pl')]='war';rel[rk('de','uk')]='war';rel[rk('de','fr')]='war';for(var id in S){if(S[id].own==='de')S[id].u.i+=3;if(S[id].own==='uk'||S[id].own==='fr')S[id].u.i+=2;}}},
-  {yr:1941,mo:6,id:'barbarossa',sc:'1936',
-   title:'バルバロッサ作戦（独ソ開戦）',date:'1941年6月22日',
-   body:'ドイツがソ連に電撃侵攻！史上最大の地上戦が始まる。',
-   effects:[{desc:'独: 電撃戦 歩兵+3/地域'},{desc:'ソ連: 総動員令 歩兵+2/地域'}],
-   apply:function(){rel[rk('de','su')]='war';for(var id in S){if(S[id].own==='de')S[id].u.i+=3;if(S[id].own==='su')S[id].u.i+=2;}}},
-  {yr:1941,mo:12,id:'pearl_harbor',sc:'1936',
-   title:'真珠湾攻撃・太平洋戦争勃発',date:'1941年12月8日',
-   body:'日本海軍機動部隊がハワイを奇襲！アメリカが参戦し太平洋戦争が始まった。',
-   effects:[{desc:'日本: 開戦動員 歩兵+2/地域'},{desc:'米国: 工業総動員 歩兵+3/地域'}],
-   apply:function(){rel[rk('jp','us')]='war';for(var id in S){if(S[id].own==='jp')S[id].u.i+=2;if(S[id].own==='us')S[id].u.i+=3;}}},
-  {yr:1940,mo:5,id:'fall_france',sc:'1939',
-   title:'フランス降伏',date:'1940年5月',
-   body:'ドイツの電撃戦によりフランスが降伏。西欧制霸が現実となる。',
-   effects:[{desc:'ドイツ: 西欧制圧 資金+800'}],
-   apply:function(){if(player==='de')money+=800;}},
-  {yr:1914,mo:9,id:'marne1914',sc:'1914',
-   title:'マルヌ会戦',date:'1914年9月',
-   body:'フランス軍がパリ手前でドイツ軍を撃退。西部戦線は膏着状態となる。',
-   effects:[{desc:'仸: 防衛成功 資金+300 歩兵+2/地域'}],
-   apply:function(){if(player==='fr')money+=300;for(var id in S)if(S[id].own==='fr')S[id].u.i+=2;}},
-  {yr:2001,mo:9,id:'sept11',sc:'2000',
-   title:'9.11同時多発テロ',date:'2001年9月11日',
-   body:'アメリカ同時多発テロ。テロとの戦争を宣言。世界の安全保障が一変する。',
-   effects:[{desc:'米国: 軍事予算拡大 歩兵+3/地域 資金+1000'}],
-   apply:function(){if(player==='us'){money+=1000;for(var id in S)if(S[id].own==='us')S[id].u.i+=3;}}}
-];
-function checkHistEvents(){
-  for(var i=0;i<HIST_EVENTS.length;i++){
-    var ev=HIST_EVENTS[i];
-    if(ev.sc&&ev.sc!==currentScenario)continue;
-    if(ev.yr===yr&&ev.mo===mo&&!_firedEvents[ev.id]){_firedEvents[ev.id]=1;_fireEvent(ev);return;}
-  }
-}
-function _fireEvent(ev){
-  try{ev.apply();}catch(e){console.warn('Event:',e);}
-  applyFoW();updTB();setTimeout(function(){updTroopLabels();},400);
-  addLog('[歴史イベント] '+ev.title,'lt');
-  var em=document.getElementById('evmodal');if(!em)return;
-  var et=document.getElementById('ev-title');if(et)et.textContent=ev.title;
-  var ed=document.getElementById('ev-date');if(ed)ed.textContent=ev.date;
-  var eb=document.getElementById('ev-body');if(eb)eb.textContent=ev.body;
-  var ef=document.getElementById('ev-effects');
-  if(ef){ef.innerHTML='';(ev.effects||[]).forEach(function(e){var d=document.createElement('div');d.className='ev-effect';d.textContent='▶ '+e.desc;ef.appendChild(d);});}
-  em.classList.add('open');
-}
-function closeEvModal(){var em=document.getElementById('evmodal');if(em)em.classList.remove('open');}
-function _save(){
-  var d={player:player,money:money,turn:turn,yr:yr,mo:mo,scen:currentScenario,rel:rel,wCaps:wCaps,fired:_firedEvents,terr:{}};
-  for(var id in S)d.terr[id]={own:S[id].own,eco:S[id].eco,u:{i:S[id].u.i,t:S[id].u.t,a:S[id].u.a}};
-  try{localStorage.setItem(_SKEY,JSON.stringify(d));
-    addLog('セーブ完了 (Turn '+turn+')','lt');
-    var sb=document.getElementById('save-btn');
-    if(sb){sb.textContent='✓ SAVED';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.innerHTML='&#128190; SAVE';},1500);}
-  }catch(e){addLog('セーブ失敗','lw');}
-}
-function hasSave(){try{return!!localStorage.getItem(_SKEY);}catch(e){return false;}}
-function loadGame(){
-  try{var raw=localStorage.getItem(_SKEY);if(!raw)return;
-    var d=JSON.parse(raw);currentScenario=d.scen||'1936';_pendingLoad=d;startGame(d.player);
-  }catch(e){addLog('ロード失敗','lw');}
-}
-function _applyLoad(d){
-  money=d.money;turn=d.turn;yr=d.yr;mo=d.mo;
-  rel=d.rel||{};wCaps=d.wCaps||{};_firedEvents=d.fired||{};
-  for(var id in d.terr){if(!S[id])continue;
-    var td=d.terr[id];S[id].own=td.own;S[id].eco=td.eco||S[id].eco;
-    S[id].u.i=td.u.i;S[id].u.t=td.u.t;S[id].u.a=td.u.a;
-    S[id].el&&S[id].el.setAttribute('fill',fcol(S[id].own));
-  }
-  _pendingLoad=null;addLog('Turn '+turn+'からロードしました。','lt');
-}
-function _gStats(){try{return JSON.parse(localStorage.getItem(_STKEY)||'{}');}catch(e){return{};}}
-function _saveStats(fid,delta){
-  var all=_gStats();var s=all[fid]||{games:0,majors:0,terr:0,maxIC:0,maxTroops:0,unify:0};
-  for(var k in delta){if(k==='games'||k==='majors'||k==='terr'||k==='unify')s[k]=(s[k]||0)+delta[k];else s[k]=Math.max(s[k]||0,delta[k]);}
-  all[fid]=s;try{localStorage.setItem(_STKEY,JSON.stringify(all));}catch(e){}
-}
-function _trackStats(){
-  if(!player)return;
-  var ic=0,tr2=0,tot=Object.keys(S).length,own=0;
-  for(var id in S){var t=S[id];if(t.own!==player)continue;ic+=t.eco;tr2+=(t.u.i||0)+(t.u.t||0)+(t.u.a||0);own++;}
-  _saveStats(player,{maxIC:ic,maxTroops:tr2});
-  if(own>=tot*0.95)_saveStats(player,{unify:1});
-}
-function showStats(){
-  var all=_gStats();var fids=Object.keys(all);
-  var LABELS={games:'プレイ回数',majors:'主要国降伏回数',terr:'累計占領領土',maxIC:'最高IC',maxTroops:'最高軍隊数',unify:'世界統一回数'};
-  var html='';
-  if(!fids.length)html='<div style="color:var(--dm);font-size:8px;padding:16px;text-align:center">まだデータがありません。</div>';
-  else fids.forEach(function(fid){var f=FAC[fid];if(!f)return;var st=all[fid];
-    html+='<div class="stats-nation"><div class="stats-nation-n" style="color:'+f.c+'">'+f.sn+' '+f.n+'</div>';
-    Object.keys(LABELS).forEach(function(k){html+='<div class="stats-row"><span>'+LABELS[k]+'</span><span>'+(st[k]||0)+'</span></div>';});
-    html+='</div>';});
-  var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');
-  if(!t||!ms||!b)return;
-  t.textContent='PLAYER STATS';ms.textContent='国家別累計記録';
-  b.innerHTML='<div style="max-height:58vh;overflow-y:auto;scrollbar-width:thin">'+html+'</div>';
-  var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';
-  document.getElementById('m-r').style.display='none';
-  var mo2=document.getElementById('modal');if(mo2)mo2.classList.add('open');
-}
-function showMenu(){
-  var m=document.getElementById('menu');if(m)m.classList.remove('off');
-  var sc=document.getElementById('scensel');if(sc)sc.classList.remove('on');
-  var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');
-  var lb=document.getElementById('menu-load');if(lb)lb.style.display=hasSave()?'flex':'none';
-}
-function showScenSel(){
-  document.getElementById('menu').classList.add('off');
-  document.getElementById('scensel').classList.add('on');
-  buildScenGrid();
-}
-function buildScenGrid(){
-  var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';
-  SCENARIOS.forEach(function(sc){
-    var c=document.createElement('div');c.className='scen-card';
-    c.style.setProperty('--scc',sc.color);
-    c.innerHTML='<div class="scen-year">'+sc.yr+'</div>'+
-      '<div class="scen-name">'+sc.name+'</div>'+
-      '<div class="scen-desc">'+sc.desc+'</div>';
-    c.addEventListener('click',function(){
-      currentScenario=sc.id;_firedEvents={};yr=sc.yr;mo=sc.mo;
-      document.getElementById('scensel').classList.remove('on');
-      var fs=document.getElementById('fsel');if(fs)fs.classList.remove('off');
-      var ft=document.querySelector('.fh-t');if(ft)ft.textContent=sc.nameEn;
-      buildFsel();
-    });
-    g.appendChild(c);
-  });
-}
-function showHowTo(){
-  var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');
-  if(!t||!ms||!b)return;
-  t.textContent='HOW TO PLAY';ms.textContent='世界大戦略 | Operations Manual';
-  b.innerHTML='<div class="mi" style="font-size:8px;line-height:2.2">'+
-    'メニュー→シナリオ選択→国家選択<br>'+
-    '領土をタップ/クリックして選択<br>'+
-    '自国領土→[ASSAULT/TANK RUSH/BOMBARD]→目標を選択<br>'+
-    '自国領土→[MOVE]→鈲接地へ兵力移動<br>'+
-    '自国領土→[+部隊を生産]で兵力增強<br>'+
-    '他国領土→[DIPL]外交 [WORLD]世界情勢<br>'+
-    '戦争中→[PEACE]講和会議（複数領土割譲可）<br>'+
-    '[NEXT TURN]ボタンで１ヶ月進行<br>'+
-    '[SAVE]ボタンで即時保存、メニュー[LOAD]で再開<br>'+
-    '師団タワー：各地域に歩兵/戦車/航空バッジが常時表示<br>'+
-    '日本・カムチャッカ→アラスカへ直接進軍可能<br>'+
-    'ターンが進むと史実イベントが自動発生'+
-    '</div>';
-  var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';
-  document.getElementById('m-r').style.display='none';
-  var mo2=document.getElementById('modal');if(mo2)mo2.classList.add('open');
-}
+var _usedAir={},_fac={},_approval={},_puppets={},_jwar={};
+function buildFactory(id){if(!id||!S[id]||S[id].own!==player)return;if(money<200){addLog('工場建設 Y200不足','lw');return;}money-=200;_fac[id]=(_fac[id]||0)+1;addLog('[工場建設] '+S[id].name+' '+_fac[id]+'基','lt');updTB();if(sel)updPanel(sel);}
+function buildFactoryAll(){var cnt=0;for(var id in S){if(S[id].own!==player||money<200)continue;money-=200;_fac[id]=(_fac[id]||0)+1;cnt++;}addLog('[一括工場] '+cnt+'箇所','lt');updTB();}
+function recruitAll(ut){var c={i:100,t:500,a:300}[ut]||100,a={i:10,t:2,a:3}[ut]||10,cnt=0;for(var id in S){if(S[id].own!==player||money<c)continue;var nb=adjOf(id);var b=false;for(var ni=0;ni<nb.length;ni++)if(S[nb[ni]]&&S[nb[ni]].own!==player){b=true;break;}if(!b)continue;money-=c;S[id].u[ut]=(S[id].u[ut]||0)+a;cnt++;}if(cnt)addLog('[一括徴兵] '+ut.toUpperCase()+'x'+a+'x'+cnt,'lk');else addLog('一括徴兵不可','lw');updTB();if(sel)updPanel(sel);updTroopLabels();}
+function opPuppetCreate(tid){if(!tid||!S[tid]||S[tid].own!==player)return;var pv='pv_'+tid.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5);var pn=S[tid].name+'独立国';S[tid].own=pv;if(!FAC[pv])FAC[pv]={n:pn,en:pn,sn:pv.toUpperCase().slice(0,4),c:'#3c8050',r:'EUROPE',d:'傀儡',cap:[700,150],m:300};S[tid].el.setAttribute('fill',fcol(pv));rel[rk(player,pv)]='puppet';if(!_puppets[player])_puppets[player]=[];_puppets[player].push(pv);addLog('[傀儡国] '+pn,'lt');applyFoW();updTB();if(sel)updPanel(sel);}
+function requestAllyWar(ef){var al=[];for(var pr in rel)if(rel[pr]==='allied'){var pp=pr.split('-');if(pp[0]===player)al.push(pp[1]);else if(pp[1]===player)al.push(pp[0]);}if(!al.length){addLog('同盟国なし','lw');return;}var j=[];al.forEach(function(a){var wk=rk(a,ef);if(!_jwar[wk]&&Math.random()<0.65){rel[wk]='war';_jwar[wk]=1;j.push((FAC[a]&&FAC[a].sn)||a);}});if(j.length)addLog('[参戦要請] '+j.join(',')+'が参戦！','lk');else addLog('[参戦要請失敗]','lw');}
+function showDiplomScreen(){var rows='';Object.keys(FAC).forEach(function(fid){if(fid===player)return;var f=FAC[fid];var r=getRel(player,fid);var cnt=0;for(var id in S)if(S[id].own===fid)cnt++;if(cnt===0&&r==='peace')return;var rl={war:'戦争',allied:'同盟',puppet:'傀儡',peace:'中立',hostile:'敵対'}[r]||r;var apv=(_approval[fid]||0);rows+='<tr style="color:'+f.c+'"><td>'+f.sn+'</td><td>'+rl+'</td><td style="color:'+(apv>=0?'#4cd870':'#e05060')+'">'+apv+'</td></tr>';});var mt=document.getElementById('m-t'),ms=document.getElementById('m-s'),mb=document.getElementById('m-b');if(!mt||!ms||!mb)return;mt.textContent='外交状況';ms.textContent='各国好感度';mb.innerHTML='<table class="dipl-tbl"><tr><th>国家</th><th>関係</th><th>好感度</th></tr>'+rows+'</table>';var mbt=document.getElementById('m-btns');if(mbt)mbt.innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');}
 
 return{
   setU:setU,recruit:recruit,
@@ -2110,11 +1660,10 @@ return{
   nextTurn:nextTurn,closeModal:closeModal,
   togglePanel:togglePanel,
   showWorldStatus:showWorldStatus,
-  showDiplomStatus:showDiplomStatus,
-  _save:_save,loadGame:loadGame,
-  showMenu:showMenu,showScenSel:showScenSel,
-  showStats:showStats,showHowTo:showHowTo,
-  closeEvModal:closeEvModal
+  showDiplomStatus:showDiplomScreen,
+  buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,
+  recruitAll:recruitAll,opPuppetCreate:opPuppetCreate,
+  requestAllyWar:requestAllyWar,showDiplomScreen:showDiplomScreen
 };
 }());
 </script>
