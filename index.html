@@ -221,6 +221,47 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .fh-t{font-size:13px;letter-spacing:2px}
 }
 .dipl-tbl{width:100%;border-collapse:collapse;font-size:7.5px}.dipl-tbl th,.dipl-tbl td{padding:3px 5px;border-bottom:1px solid var(--b1);text-align:left;font-size:7px;font-weight:normal}
+
+#menu{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#menu.off{display:none}
+.menu-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(18,40,80,.9),#02080e 70%)}
+.menu-bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(200,162,72,.06) 1px,transparent 1px);background-size:32px 32px;animation:gridmove 8s linear infinite}
+@keyframes gridmove{from{background-position:0 0}to{background-position:32px 32px}}
+.menu-content{position:relative;z-index:1;text-align:center;padding:20px;width:100%;max-width:480px}
+.menu-title{font-family:var(--hd);font-size:clamp(26px,6vw,52px);color:var(--ac);letter-spacing:6px;text-shadow:0 0 30px rgba(200,162,72,.5);line-height:1}
+.menu-sub{font-family:var(--hd);font-size:clamp(9px,2vw,13px);color:var(--dm);letter-spacing:4px;margin-bottom:14px}
+.menu-line{width:min(280px,70vw);height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);margin:0 auto 22px}
+.menu-btns{display:flex;flex-direction:column;gap:10px;align-items:center}
+.menu-btn{display:flex;align-items:center;gap:14px;width:min(300px,80vw);background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--tx);padding:13px 18px;cursor:pointer;font-family:var(--fn);font-size:12px;letter-spacing:1px;transition:.2s;text-align:left}
+.menu-btn:hover,.menu-btn:active{background:var(--a2);border-color:var(--ac);color:#fff;transform:translateX(4px)}
+.menu-btn.primary{border-color:var(--a3);background:var(--a2);color:var(--ac)}
+.menu-btn-icon{font-size:20px;flex-shrink:0;width:26px;text-align:center}
+.menu-btn small{font-size:8px;color:var(--dm);letter-spacing:2px;display:block;margin-top:2px}
+#scensel{position:fixed;inset:0;z-index:8500;display:none;flex-direction:column;align-items:center;background:rgba(2,8,14,.98);overflow-y:auto}
+#scensel.on{display:flex}
+.scen-head{padding:18px 16px 10px;text-align:center;flex-shrink:0;width:100%;max-width:720px}
+.scen-title{font-family:var(--hd);font-size:16px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
+.scen-sub{font-size:8px;color:var(--dm);letter-spacing:2px;margin-bottom:14px}
+.scen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:0 14px 16px;width:100%;max-width:720px}
+.scen-card{background:rgba(255,255,255,.03);border:1px solid var(--b2);padding:13px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.scen-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--scc,var(--ac))}
+.scen-card:hover,.scen-card:active{border-color:var(--scc,var(--ac));background:rgba(255,255,255,.06)}
+.scen-year{font-family:var(--hd);font-size:20px;color:var(--ac);margin-bottom:2px}
+.scen-name{font-family:var(--hd);font-size:10px;color:#ddeeff;letter-spacing:1px;margin-bottom:6px;line-height:1.3}
+.scen-desc{font-size:7px;color:var(--dm);line-height:1.7}
+.scen-back{display:block;margin:10px auto 18px;background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--dm);padding:8px 24px;font-family:var(--fn);font-size:8px;letter-spacing:2px;cursor:pointer}
+.scen-back:hover{border-color:var(--ac);color:var(--ac)}
+#evmodal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;align-items:center;justify-content:center}
+#evmodal.open{display:flex}
+.evbox{background:#06101a;border:2px solid var(--ac);max-width:460px;width:90vw;padding:22px;box-shadow:0 0 40px rgba(200,162,72,.3)}
+.ev-badge{font-size:7px;color:var(--ac);letter-spacing:3px;border:1px solid var(--a3);display:inline-block;padding:2px 8px;margin-bottom:10px}
+.ev-title{font-family:var(--hd);font-size:15px;color:#f0e0a0;margin-bottom:5px;letter-spacing:2px}
+.ev-date{font-size:8px;color:var(--dm);letter-spacing:2px;margin-bottom:10px}
+.ev-body{font-size:8px;color:#b0c8e0;line-height:2;border-top:1px solid var(--b1);padding-top:9px}
+.ev-effects{margin-top:9px;padding:7px;background:rgba(200,162,72,.06);border:1px solid var(--a3)}
+.ev-effect{font-size:8px;color:var(--ac);padding:2px 0}
+.ev-btn{margin-top:12px;width:100%;background:var(--a2);border:1px solid var(--a3);color:var(--ac);padding:9px;font-family:var(--fn);font-size:9px;letter-spacing:2px;cursor:pointer;transition:.15s}
+.ev-btn:hover,.ev-btn:active{background:rgba(200,162,72,.22);border-color:var(--ac)}
 </style>
 </head>
 <body>
@@ -229,6 +270,46 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="ld-b"><div class="ld-f" id="ldf"></div></div>
   <div class="ld-s" id="lds">読み込み中...</div>
   <div id="ld-err"></div>
+</div>
+<!-- MAIN MENU -->
+<div id="menu">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <div class="menu-title">WORLD COMMAND</div>
+    <div class="menu-sub">&#19990;&#30028;&#22823;&#25136;&#30059;</div>
+    <div class="menu-line"></div>
+    <div class="menu-btns">
+      <button class="menu-btn primary" onclick="G.showScenSel()">
+        <span class="menu-btn-icon">&#9876;</span>
+        <span>START GAME<br><small>&#12466;&#12540;&#12512;&#38283;&#22987;</small></span>
+      </button>
+      <button class="menu-btn" onclick="G.showHowTo()">
+        <span class="menu-btn-icon">&#128214;</span>
+        <span>HOW TO PLAY<br><small>&#36939;&#12403;&#26041;</small></span>
+      </button>
+    </div>
+    <div style="margin-top:22px;font-size:7px;color:var(--dm);letter-spacing:3px">GLOBAL STRATEGY SIMULATION</div>
+  </div>
+</div>
+<!-- SCENARIO SELECT -->
+<div id="scensel">
+  <div class="scen-head">
+    <div class="scen-title">SCENARIO SELECT</div>
+    <div class="scen-sub">&#12471;&#12490;&#12522;&#12458;&#12434;&#36024;&#25246;&#12375;&#12390;&#12367;&#12384;&#12373;&#12356;</div>
+  </div>
+  <div class="scen-grid" id="scengrid"></div>
+  <button class="scen-back" onclick="G.showMenu()">&#9664; BACK</button>
+</div>
+<!-- EVENT MODAL -->
+<div id="evmodal">
+  <div class="evbox">
+    <div class="ev-badge">&#9888; HISTORICAL EVENT</div>
+    <div class="ev-title" id="ev-title">---</div>
+    <div class="ev-date" id="ev-date">---</div>
+    <div class="ev-body" id="ev-body"></div>
+    <div class="ev-effects" id="ev-effects"></div>
+    <button class="ev-btn" onclick="G.closeEvModal()">ACKNOWLEDGE &#9654;</button>
+  </div>
 </div>
 <div id="fsel">
   <div class="fh">
@@ -774,8 +855,10 @@ function startGame(fid){
   var fsel=document.getElementById('fsel');if(fsel)fsel.classList.add('off');
   var ld=document.getElementById('ld');if(ld)ld.classList.add('on');
   ldp(5,'国家設定中...');
-  player=fid;money=FAC[fid].m;rel={};
-  for(var i=0;i<RELS_1936.length;i++){var r=RELS_1936[i];rel[rk(r[0],r[1])]=r[2];}
+  player=fid;money=FAC[fid].m;rel={};_firedEvents={};
+  var sc2=null;for(var si2=0;si2<SCENARIOS.length;si2++)if(SCENARIOS[si2].id===currentScenario){sc2=SCENARIOS[si2];break;}
+  if(sc2){yr=sc2.yr;mo=sc2.mo;var sr=sc2.relations||RELS_1936;for(var sri=0;sri<sr.length;sri++){var r2=sr[sri];rel[rk(r2[0],r2[1])]=r2[2];}
+  }else{for(var i=0;i<RELS_1936.length;i++){var r=RELS_1936[i];rel[rk(r[0],r[1])]=r[2];}}
   var tn=document.getElementById('tb-n');
   if(tn){tn.textContent=FAC[fid].n;tn.style.color=FAC[fid].c;}
   loadSVG();
@@ -1456,6 +1539,8 @@ function nextTurn(){
     var t=S[id];if(t.own!==player)continue;
     var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;
   }
+  checkHistEvents();
+  _puppetIncome();
   addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
 }
@@ -1649,6 +1734,175 @@ function recruitAll(ut){var c={i:100,t:500,a:300}[ut]||100,a={i:10,t:2,a:3}[ut]|
 function opPuppetCreate(tid){if(!tid||!S[tid]||S[tid].own!==player)return;var pv='pv_'+tid.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5);var pn=S[tid].name+'独立国';S[tid].own=pv;if(!FAC[pv])FAC[pv]={n:pn,en:pn,sn:pv.toUpperCase().slice(0,4),c:'#3c8050',r:'EUROPE',d:'傀儡',cap:[700,150],m:300};S[tid].el.setAttribute('fill',fcol(pv));rel[rk(player,pv)]='puppet';if(!_puppets[player])_puppets[player]=[];_puppets[player].push(pv);addLog('[傀儡国] '+pn,'lt');applyFoW();updTB();if(sel)updPanel(sel);}
 function requestAllyWar(ef){var al=[];for(var pr in rel)if(rel[pr]==='allied'){var pp=pr.split('-');if(pp[0]===player)al.push(pp[1]);else if(pp[1]===player)al.push(pp[0]);}if(!al.length){addLog('同盟国なし','lw');return;}var j=[];al.forEach(function(a){var wk=rk(a,ef);if(!_jwar[wk]&&Math.random()<0.65){rel[wk]='war';_jwar[wk]=1;j.push((FAC[a]&&FAC[a].sn)||a);}});if(j.length)addLog('[参戦要請] '+j.join(',')+'が参戦！','lk');else addLog('[参戦要請失敗]','lw');}
 function showDiplomScreen(){var rows='';Object.keys(FAC).forEach(function(fid){if(fid===player)return;var f=FAC[fid];var r=getRel(player,fid);var cnt=0;for(var id in S)if(S[id].own===fid)cnt++;if(cnt===0&&r==='peace')return;var rl={war:'戦争',allied:'同盟',puppet:'傀儡',peace:'中立',hostile:'敵対'}[r]||r;var apv=(_approval[fid]||0);rows+='<tr style="color:'+f.c+'"><td>'+f.sn+'</td><td>'+rl+'</td><td style="color:'+(apv>=0?'#4cd870':'#e05060')+'">'+apv+'</td></tr>';});var mt=document.getElementById('m-t'),ms=document.getElementById('m-s'),mb=document.getElementById('m-b');if(!mt||!ms||!mb)return;mt.textContent='外交状況';ms.textContent='各国好感度';mb.innerHTML='<table class="dipl-tbl"><tr><th>国家</th><th>関係</th><th>好感度</th></tr>'+rows+'</table>';var mbt=document.getElementById('m-btns');if(mbt)mbt.innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');}
+
+// ── Scenario & Event System ─────────────────────────────────────
+var currentScenario='1936';
+var _firedEvents={};
+
+var SCENARIOS=[
+  {id:'1936',yr:1936,mo:1,color:'#c8a248',name:'\u7b2c\u4e8c\u6b21\u5927\u6226\u524d\u591c',nameEn:'EVE OF WW2 1936',
+   desc:'1936\u5e741\u6708\u3002\u65e5\u72ec\u4f0a\u306e\u67a2\u8ef8\u3068\u82f1\u4ed8\u30bd\u9023\u306e\u5bfe\u7acb\u304c\u6df1\u307e\u308b\u3002\u6b74\u53f2\u306e\u6b6f\u8eca\u3092\u52d5\u304b\u305b\u3002',
+   overrides:{},
+   relations:[['it','et','war'],['mk','cn','war'],['mg','cn','war'],['uk','fr','allied'],['uk','au','allied'],['uk','ca','allied'],['su','mo','allied'],['su','cc','allied'],['jp','mk','allied'],['jp','mg','allied'],['de','it','allied']]},
+  {id:'1939',yr:1939,mo:9,color:'#525252',name:'\u96fb\u6483\u6226\u306e\u5e55\u958b\u3051',nameEn:'BLITZKRIEG 1939',
+   desc:'1939\u5e749\u6708\u3002\u30c9\u30a4\u30c4\u304c\u30dd\u30fc\u30e9\u30f3\u30c9\u306b\u4fb5\u653b\u3001\u82f1\u4ef8\u306f\u5ba3\u6226\u3002\u6b27\u5dde\u306b\u5c90\u98a8\u304c\u5439\u304d\u8377\u308c\u308b\u3002',
+   overrides:{North_Sudetenland:'de',South_Sudetenland:'de',Ostmark:'de',Bohemia:'de',Moravia:'de',Albania:'it'},
+   relations:[['de','pl','war'],['de','uk','war'],['de','fr','war'],['de','it','allied'],['jp','mk','allied'],['su','fi','war'],['uk','fr','allied'],['uk','au','allied'],['uk','ca','allied']]},
+  {id:'1944',yr:1944,mo:6,color:'#7c0a02',name:'\u795e\u3005\u306e\u9ec4\u660f',nameEn:'TWILIGHT OF GODS 1944',
+   desc:'1944\u5e746\u6708\u3002D\u30c7\u30a4\u4e0a\u9678\u3002\u65e5\u72ec\u306f\u9632\u885b\u306e\u9650\u754c\u3002\u30bd\u9023\u30fb\u7c73\u82f1\u304c\u6012\u6d9b\u306e\u653b\u52e2\u3002',
+   overrides:{Sicilia:'uk',Sardegna:'uk',Campania:'uk',Normandy:'uk',Brittany:'uk',Marshall_Islands:'us',Saipan:'us'},
+   relations:[['de','uk','war'],['de','fr','war'],['de','su','war'],['jp','us','war'],['jp','uk','war'],['uk','fr','allied'],['uk','us','allied'],['uk','au','allied'],['uk','ca','allied'],['su','uk','allied'],['su','us','allied'],['jp','mk','allied']]},
+  {id:'1914',yr:1914,mo:8,color:'#8a5c2e',name:'\u7b2c\u4e00\u6b21\u4e16\u754c\u5927\u6226',nameEn:'THE GREAT WAR 1914',
+   desc:'1914\u5e748\u6708\u3002\u30aa\u30fc\u30b9\u30c8\u30ea\u30a2\u7687\u592a\u5b50\u6697\u6bba\u304c\u5f15\u304d\u91d1\u3002\u72ec\u58a2\u5bfe\u82f1\u4ed8\u9732\u306e\u7dcf\u529b\u6226\u3002',
+   overrides:{Alsace_Lorraine:'de',Ostmark:'at',Bohemia:'at',Moravia:'at',Serbia:'nt_srb',Bosnia:'at',Herzegovina:'at',Syria:'tr',Lebanon:'tr',Palestine:'tr'},
+   relations:[['de','fr','war'],['de','uk','war'],['de','su','war'],['at','su','war'],['at','fr','war'],['at','uk','war'],['tr','uk','war'],['tr','su','war'],['jp','uk','allied']]},
+  {id:'2000',yr:2000,mo:1,color:'#0284c7',name:'\u30df\u30ec\u30cb\u30a2\u30e0\u30fb\u30e2\u30c0\u30f3',nameEn:'MILLENNIUM MODERN 2000',
+   desc:'2000\u5e741\u6708\u3002\u30a2\u30e1\u30ea\u30ab\u4e00\u5f37\u306e\u4e16\u754c\u3002\u53f0\u982d\u3059\u308b\u4e2d\u56fd\u3001\u5fa9\u6a29\u3092\u6a21\u7d22\u3059\u308b\u30ed\u30b7\u30a2\u3002',
+   overrides:{Kyiv:'nt_ua',Odessa:'nt_ua',Kharkov:'nt_ua',Minsk:'nt_by',Serbia:'nt_rs',Croatia:'nt_hr',Bosnia:'nt_ba',Slovenia:'nt_si',Bohemia:'nt_cz',Moravia:'nt_cz'},
+   relations:[['us','uk','allied'],['us','fr','allied'],['us','de','allied'],['us','jp','allied'],['us','ca','allied'],['us','au','allied']]},
+  {id:'1453',yr:1453,mo:5,color:'#854d0e',name:'\u6771\u30ed\u30fc\u30de\u5e1d\u56fd\u306e\u7d42\u710e',nameEn:'FALL OF BYZANTIUM 1453',
+   desc:'1453\u5e745\u6708\u3002\u30b3\u30f3\u30b9\u30bf\u30f3\u30c6\u30a3\u30ce\u30fc\u30d7\u30eb\u964d\u843d\u3002\u30aa\u30b9\u30de\u30f3\u5e1d\u56fd\u306e\u53f0\u982d\u3068\u4e2d\u4e16\u6b27\u5dde\u306e\u7fa4\u96c5\u5272\u62e0\u3002',
+   overrides:{Istanbul:'tr',Ankara:'tr',Bursa:'tr',Edirne:'tr',Serbia:'tr',Sofia:'tr',Plovdiv:'tr',Moesia:'tr',Varna:'tr',Macedonia:'tr',Attica:'tr',Peloponnese:'tr',Syria:'tr',Lebanon:'tr',Palestine:'tr',Lazio:'nt_pp',Lombardia:'nt_ml',Veneto:'nt_vn',Toscana:'nt_fl',Moscow:'nt_mu',Novgorod:'nt_nv'},
+   relations:[['tr','gr','war'],['fr','uk','hostile']]}
+];
+
+var HIST_EVENTS=[
+  {yr:1936,mo:3,id:'rhineland',sc:'1936',
+   title:'\u30e9\u30a4\u30f3\u30e9\u30f3\u30c8\u9032\u99d0',date:'1936\u5e743\u6708',
+   body:'\u30d2\u30c8\u30e9\u30fc\u306f\u30f4\u30a7\u30eb\u30b5\u30a4\u30e6\u6761\u7d04\u3092\u7834\u68c4\u3057\u30e9\u30a4\u30f3\u30e9\u30f3\u30c8\u306b\u9032\u99d0\u3002\u82f1\u4ef8\u306f\u6297\u8b70\u306e\u307f\u3002',
+   effects:['\u30c9\u30a4\u30c4: \u8cc7\u91d1+400 \u6b69\u5175\u5168\u5730\u57df+1'],
+   apply:function(){for(var id in S)if(S[id].own==='de')S[id].u.i++;if(player==='de')money+=400;}},
+  {yr:1936,mo:10,id:'rome_berlin',sc:'1936',
+   title:'\u30ed\u30fc\u30de\u30fb\u30d9\u30eb\u30ea\u30f3\u67a2\u8ef8',date:'1936\u5e7410\u6708',
+   body:'\u30e0\u30c3\u30bd\u30ea\u30fc\u30cb\u3068\u30d2\u30c8\u30e9\u30fc\u304c\u67a2\u8ef8\u5354\u5b9a\u3092\u7de0\u7d50\u3002\u30d5\u30a1\u30b7\u30ba\u30e0\u3068\u56fd\u5bb6\u793e\u4f1a\u4e3b\u7fa9\u304c\u7d50\u6e96\u3002',
+   effects:['\u72ec\u4f0a: \u6b63\u5f0f\u540c\u76df \u8cc7\u91d1+200'],
+   apply:function(){rel[rk('de','it')]='allied';if(player==='de'||player==='it')money+=200;}},
+  {yr:1936,mo:11,id:'anti_comintern',sc:'1936',
+   title:'\u65e5\u72ec\u9632\u5171\u5354\u5b9a',date:'1936\u5e7411\u6708',
+   body:'\u65e5\u672c\u3068\u30c9\u30a4\u30c4\u304c\u9632\u5171\u5354\u5b9a\u3092\u7de0\u7d50\u3002\u30bd\u9023\u306f\u6771\u897f\u304b\u3089\u5727\u529b\u3092\u53d7\u3051\u308b\u3002',
+   effects:['\u65e5\u72ec: \u60c5\u5831\u5171\u6709 \u6b69\u5175+1/\u5730\u57df'],
+   apply:function(){rel[rk('de','jp')]='allied';for(var id in S)if(S[id].own==='jp'||S[id].own==='de')S[id].u.i++;}},
+  {yr:1937,mo:7,id:'marco_polo',sc:'1936',
+   title:'\u76e7\u6e9d\u6a4b\u4e8b\u4ef6\u30fb\u65e5\u4e2d\u6226\u4e89\u52c3\u767a',date:'1937\u5e747\u6708',
+   body:'\u5317\u4eac\u90ca\u5916\u306e\u76e7\u6e9d\u6a4b\u3067\u65e5\u4e2d\u4e21\u8ecd\u304c\u885d\u7a81\u3002\u5168\u9762\u7684\u306a\u65e5\u4e2d\u6226\u4e89\u304c\u59cb\u307e\u3063\u305f\u3002',
+   effects:['\u65e5\u672c: \u7dcf\u52d5\u54e1 \u6b69\u5175+2/\u5730\u57df','\u4e2d\u56fd: \u56fd\u5171\u5408\u4f5c \u6b69\u5175+1/\u5730\u57df'],
+   apply:function(){rel[rk('jp','cn')]='war';for(var id in S){if(S[id].own==='jp')S[id].u.i+=2;if(S[id].own==='cn')S[id].u.i++;}}},
+  {yr:1938,mo:3,id:'anschluss',sc:'1936',
+   title:'\u30aa\u30fc\u30b9\u30c8\u30ea\u30a2\u4f75\u5408',date:'1938\u5e743\u6708',
+   body:'\u30c9\u30a4\u30c4\u304c\u30aa\u30fc\u30b9\u30c8\u30ea\u30a2\u3092\u4f75\u5408\u3002\u4eba\u53e3\u30fb\u5de5\u696d\u529b\u304c\u5927\u5e45\u5897\u5f37\u3002',
+   effects:['\u30c9\u30a4\u30c4: \u8cc7\u91d1+500'],
+   apply:function(){for(var id in S)if(S[id].own==='at'){S[id].own='de';S[id].el&&S[id].el.setAttribute('fill',fcol('de'));}if(player==='de')money+=500;}},
+  {yr:1939,mo:9,id:'ww2_start',sc:'1936',
+   title:'\u7b2c\u4e8c\u6b21\u4e16\u754c\u5927\u6226\u52c3\u767a',date:'1939\u5e749\u67081\u65e5',
+   body:'\u30c9\u30a4\u30c4\u304c\u30dd\u30fc\u30e9\u30f3\u30c9\u306b\u4fb5\u653b\uff01\u82f1\u4ef8\u304c\u30c9\u30a4\u30c4\u306b\u5ba3\u6226\u5e03\u544a\u3002',
+   effects:['\u72ec: \u7dcf\u52d5\u54e1 \u6b69\u5175+3/\u5730\u57df','\u82f1\u4ef8: \u6226\u4e89\u52d5\u54e1 \u6b69\u5175+2/\u5730\u57df'],
+   apply:function(){rel[rk('de','pl')]='war';rel[rk('de','uk')]='war';rel[rk('de','fr')]='war';for(var id in S){if(S[id].own==='de')S[id].u.i+=3;if(S[id].own==='uk'||S[id].own==='fr')S[id].u.i+=2;}}},
+  {yr:1941,mo:6,id:'barbarossa',sc:'1936',
+   title:'\u30d0\u30eb\u30d0\u30ed\u30c3\u30b5\u4f5c\u6226',date:'1941\u5e746\u670822\u65e5',
+   body:'\u30c9\u30a4\u30c4\u304c\u30bd\u9023\u306b\u96fb\u6483\u4fb5\u653b\uff01\u53f2\u4e0a\u6700\u5927\u306e\u5730\u4e0a\u6226\u304c\u59cb\u307e\u308b\u3002',
+   effects:['\u72ec: \u96fb\u6483\u6226 \u6b69\u5175+3/\u5730\u57df','\u30bd\u9023: \u7dcf\u52d5\u54e1\u4ee4 \u6b69\u5175+2/\u5730\u57df'],
+   apply:function(){rel[rk('de','su')]='war';for(var id in S){if(S[id].own==='de')S[id].u.i+=3;if(S[id].own==='su')S[id].u.i+=2;}}},
+  {yr:1941,mo:12,id:'pearl_harbor',sc:'1936',
+   title:'\u771f\u73e0\u6e7e\u653b\u6483\u30fb\u592a\u5e73\u6d0b\u6226\u4e89\u52c3\u767a',date:'1941\u5e7412\u67088\u65e5',
+   body:'\u65e5\u672c\u6d77\u8ecd\u304c\u30cf\u30ef\u30a4\u3092\u5947\u8972\uff01\u30a2\u30e1\u30ea\u30ab\u304c\u53c2\u6226\u3057\u592a\u5e73\u6d0b\u6226\u4e89\u304c\u59cb\u307e\u3063\u305f\u3002',
+   effects:['\u65e5\u672c: +2/\u5730\u57df','\u7c73\u56fd: \u5de5\u696d\u7dcf\u52d5\u54e1 +3/\u5730\u57df'],
+   apply:function(){rel[rk('jp','us')]='war';for(var id in S){if(S[id].own==='jp')S[id].u.i+=2;if(S[id].own==='us')S[id].u.i+=3;}}},
+  {yr:1914,mo:9,id:'marne',sc:'1914',
+   title:'\u30de\u30eb\u30cc\u4f1a\u6226',date:'1914\u5e749\u6708',
+   body:'\u30d5\u30e9\u30f3\u30b9\u8ecd\u304c\u30d1\u30ea\u624b\u524d\u3067\u30c9\u30a4\u30c4\u8ecd\u3092\u6483\u9000\u3002\u897f\u90e8\u6226\u7dda\u306f\u818f\u7740\u72b6\u614b\u3068\u306a\u308b\u3002',
+   effects:['\u4ed8: \u9632\u885b\u6210\u529f \u8cc7\u91d1+300'],
+   apply:function(){if(player==='fr')money+=300;for(var id in S)if(S[id].own==='fr')S[id].u.i+=2;}}
+];
+
+function checkHistEvents(){
+  for(var i=0;i<HIST_EVENTS.length;i++){
+    var ev=HIST_EVENTS[i];
+    if(ev.sc&&ev.sc!==currentScenario)continue;
+    if(ev.yr===yr&&ev.mo===mo&&!_firedEvents[ev.id]){
+      _firedEvents[ev.id]=1;
+      _fireEvent(ev);
+      return;
+    }
+  }
+}
+function _fireEvent(ev){
+  try{ev.apply();}catch(e){console.warn('event err:',e);}
+  applyFoW();updTB();
+  setTimeout(function(){updTroopLabels();},300);
+  addLog('[\u6b77\u53f2\u30a4\u30d9\u30f3\u30c8] '+ev.title,'lt');
+  var em=document.getElementById('evmodal');if(!em)return;
+  var et=document.getElementById('ev-title');if(et)et.textContent=ev.title;
+  var ed=document.getElementById('ev-date');if(ed)ed.textContent=ev.date;
+  var eb=document.getElementById('ev-body');if(eb)eb.textContent=ev.body;
+  var ef=document.getElementById('ev-effects');
+  if(ef){ef.innerHTML='';(ev.effects||[]).forEach(function(e2){var d=document.createElement('div');d.className='ev-effect';d.textContent='\u25b6 '+e2;ef.appendChild(d);});}
+  em.classList.add('open');
+}
+function closeEvModal(){var em=document.getElementById('evmodal');if(em)em.classList.remove('open');}
+
+function showMenu(){
+  var m=document.getElementById('menu');if(m)m.classList.remove('off');
+  var sc=document.getElementById('scensel');if(sc)sc.classList.remove('on');
+  var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');
+}
+function showScenSel(){
+  document.getElementById('menu').classList.add('off');
+  document.getElementById('scensel').classList.add('on');
+  _buildScenGrid();
+}
+function _buildScenGrid(){
+  var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';
+  SCENARIOS.forEach(function(sc){
+    var c=document.createElement('div');c.className='scen-card';
+    c.style.setProperty('--scc',sc.color);
+    c.innerHTML='<div class="scen-year">'+sc.yr+'</div>'+
+      '<div class="scen-name">'+sc.name+'</div>'+
+      '<div class="scen-desc">'+sc.desc+'</div>';
+    c.addEventListener('click',function(){
+      currentScenario=sc.id;_firedEvents={};yr=sc.yr;mo=sc.mo;
+      document.getElementById('scensel').classList.remove('on');
+      var fs=document.getElementById('fsel');if(fs)fs.classList.remove('off');
+      var ft=document.querySelector('.fh-t');if(ft)ft.textContent=sc.nameEn;
+      // Apply scenario overrides after map loads (handled in startGame)
+      buildFsel();
+    });
+    g.appendChild(c);
+  });
+}
+function showHowTo(){
+  var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');
+  if(!t||!ms||!b)return;
+  t.textContent='HOW TO PLAY';ms.textContent='\u4e16\u754c\u5927\u6226\u7565 | Operations Manual';
+  b.innerHTML='<div class="mi" style="font-size:8px;line-height:2.2">'+
+    '\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u9078\u629e\u2192\u56fd\u5bb6\u9078\u629e<br>'+
+    '\u9818\u571f\u30af\u30ea\u30c3\u30af\u2192\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>'+
+    'ASSAULT/TANK RUSH/AIR SUPPORT\u2192\u653b\u6483<br>'+
+    '\u6b69\u5175/\u6226\u8eca/\u822a\u7a7a\u30e6\u30cb\u30c3\u30c8\u5225MOVE\u30dc\u30bf\u30f3\u3067\u79fb\u52d5<br>'+
+    '\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>'+
+    '\u4e00\u62ec\u5f34\u5175\u30dc\u30bf\u30f3\u3067\u524d\u7dda\u5730\u57df\u306b\u4e00\u62ec\u8a70\u5175<br>'+
+    '\u8b1b\u548c\u4f1a\u8b70\u3067\u5272\u8b72\u5185\u5bb9\u3092\u6c7a\u5b9a<br>'+
+    '\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u304c\u767a\u751f'+
+    '</div>';
+  var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';
+  document.getElementById('m-r').style.display='none';
+  document.getElementById('modal').classList.add('open');
+}
+
+// Puppet income flow each turn
+function _puppetIncome(){
+  if(!_puppets)return;
+  for(var master in _puppets){
+    var vassals=_puppets[master];
+    for(var vi=0;vi<vassals.length;vi++){
+      var v=vassals[vi];
+      var vinc=Math.floor(incOf(v)/4);
+      if(vinc>0){
+        if(player===master)money+=vinc;
+        addLog('[\u5080\u5e34] '+((FAC[v]&&FAC[v].n)||v)+'\u304b\u3089 Y'+vinc+'\u7d0d\u4ed8','lai');
+      }
+    }
+  }
+}
 
 return{
   setU:setU,recruit:recruit,
