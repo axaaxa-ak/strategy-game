@@ -1855,6 +1855,9 @@ function checkHistEvents(){
 function _fireEvent(ev){
   try{ev.apply();}catch(e){console.warn('event err:',e);}
   applyFoW();updTB();
+  if (typeof render === 'function') render();         // お使いの描画関数名が render の場合
+  else if (typeof drawMap === 'function') drawMap(); // お使いの描画関数名が drawMap の場合
+  else if (typeof updateMap === 'function') updateMap();
   setTimeout(function(){updTroopLabels();},300);
   addLog('[\u6b77\u53f2\u30a4\u30d9\u30f3\u30c8] '+ev.title,'lt');
   var em=document.getElementById('evmodal');if(!em)return;
