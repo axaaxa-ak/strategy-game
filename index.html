@@ -1557,6 +1557,7 @@ function aiTurn(){
   Object.keys(facs).forEach(function(f){
     if(f===player)return;
     var ids=facs[f].ids;if(!ids.length)return;
+    
     // 前線徴兵: 隣接敵がいる地域に優先増員
     var frontIds=ids.filter(function(id){
       var nbrs=adjOf(id);
@@ -1567,36 +1568,46 @@ function aiTurn(){
     popTargets.forEach(function(id){
       var t=S[id];var pop=Math.max(1,Math.floor(t.eco*0.07*fBonus));t.u.i=(t.u.i||0)+pop;
     });
-    // AI 攻撃
-    if(isWar(player,f)){
-      var best=null,bestScore=-1;
-      ids.forEach(function(fid){
-        var ft=S[fid];var nbrs=adjOf(fid);
-        nbrs.forEach(function(nid){
-          var nt=S[nid];if(!nt||nt.own!==player)return;
+
+    // ★ AI 攻撃（すべての戦争相手の国を対象にするよう修正）
+    var best=null,bestScore=-1;
+    ids.forEach(function(fid){
+      var ft=S[fid];var nbrs=adjOf(fid);
+      nbrs.forEach(function(nid){
+        var nt=S[nid];
+        if(!nt) return;
+        var targetFac = nt.own;
+        
+        // 自分の領土、または同盟国は攻撃しない
+        if(targetFac === f || isAlly(f, targetFac)) return;
+        
+        // ★ 修正箇所：対象国と「戦争状態（isWar）」にある場合のみターゲット候補にする
+        if(isWar(f, targetFac)){
           var score=cAtk(ft.u)/Math.max(1,cDef(nt.u));
           if(score>bestScore){bestScore=score;best={fid:fid,tid:nid};}
-        });
+        }
       });
-      if(best&&bestScore>0.6&&Math.random()<0.45){
-        var at=S[best.fid],df=S[best.tid];
-        var p=0.5+Math.random()*0.3;
-        var si=Math.max(1,Math.floor((at.u.i||0)*p));
-        var st=Math.max(0,Math.floor((at.u.t||0)*p));
-        var ap=si*1.0+st*3.2;ap*=(0.8+Math.random()*0.4);
-        var dp=cDef(df.u)*(0.8+Math.random()*0.4);
-        at.u.i=Math.max(0,(at.u.i||0)-Math.floor(dp*0.1));
-        if(ap>dp){
-          df.own=f;df.u={i:si,t:st,a:0};
-          at.u.i=Math.max(0,(at.u.i||0)-si);
-          df.el.setAttribute('fill',fcol(f));
-          addLog('[AI] '+(FAC[f]&&FAC[f].sn)+' → '+df.name+' 占領','lw');
-        }else{df.u.i=Math.max(0,(df.u.i||0)-Math.floor((df.u.i||0)*0.1));}
-      }
+    });
+
+    // 戦闘・侵攻処理
+    if(best&&bestScore>0.6&&Math.random()<0.45){
+      var at=S[best.fid],df=S[best.tid];
+      var p=0.5+Math.random()*0.3;
+      var si=Math.max(1,Math.floor((at.u.i||0)*p));
+      var st=Math.max(0,Math.floor((at.u.t||0)*p));
+      var ap=si*1.0+st*3.2;ap*=(0.8+Math.random()*0.4);
+      var dp=cDef(df.u)*(0.8+Math.random()*0.4);
+      at.u.i=Math.max(0,(at.u.i||0)-Math.floor(dp*0.1));
+      if(ap>dp){
+        df.own=f;df.u={i:si,t:st,a:0};
+        at.u.i=Math.max(0,(at.u.i||0)-si);
+        df.el.setAttribute('fill',fcol(f));
+        addLog('[AI] '+(FAC[f]&&FAC[f].sn)+' → '+df.name+' 占領','lw');
+      }else{df.u.i=Math.max(0,(df.u.i||0)-Math.floor((df.u.i||0)*0.1));}
     }
   });
 }
-// ── Modal ──
+  // ── Modal ──
 function closeModal(){
   var m=document.getElementById('modal');if(m)m.classList.remove('open');
 }
