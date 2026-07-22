@@ -1158,7 +1158,20 @@ function updPanel(id){
       '<button class="ab r'+(atkMode==='tankrush'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'tankrush\',\''+id+'\')">[TANK RUSH] 機甲突破 Rng:3</button>'+
       '<button class="ab r'+(atkMode==='airstrike'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'bombard\',\''+id+'\')">[AIR SUPPORT] 航空支援 Rng:1</button>'+
       '<button class="ab'+(atkMode==='move'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'move\',\''+id+'\')">[MOVE] 部隊移動 Rng:2</button>'+
-      (atkMode?'<button class="ab" onclick="G.cancelAtk()">[CANCEL] キャンセル</button>':'');
+      (atkMode?'<button class="ab" onclick="G.cancelAtk()">[CANCEL] キャンセル</button>':'')+
+      '<hr style="border-color:var(--b1);margin:6px 0">'+
+      '<div class="sd">BUILD</div>'+
+      '<div class="bg2">'+
+      '<button class="btn" onclick="G.buildFactory(\''+id+'\')">工場建設 Y200</button>'+
+      '<button class="btn" onclick="G.buildShip(\''+id+'\')">造船 Y150</button>'+
+      '</div>'+
+      '<div class="sd">BULK</div>'+
+      '<div class="bg3">'+
+      '<button class="btn" onclick="G.recruitAll(\'i\')">一括[I]</button>'+
+      '<button class="btn" onclick="G.recruitAll(\'t\')">一括[T]</button>'+
+      '<button class="btn" onclick="G.buildFactoryAll()">一括工場</button>'+
+      '</div>'+
+      '<button class="ab" onclick="G.opPuppetCreate(\''+id+'\')">傀帴国建設</button>';
   }else{
     h+='<div class="sd">DIPLOMACY</div><div class="bg2">';
     if(r!=='war'){
@@ -1946,7 +1959,7 @@ return{
   togglePanel:togglePanel,
   showWorldStatus:showWorldStatus,
   showDiplomStatus:showDiplomScreen,
-  buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,
+  buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,buildShip:buildShip,recruitAll:recruitAll,opPuppetCreate:opPuppetCreate,
   recruitAll:recruitAll,opPuppetCreate:opPuppetCreate,
   requestAllyWar:requestAllyWar,showDiplomScreen:showDiplomScreen,
   showMenu:showMenu,showScenSel:showScenSel,showHowTo:showHowTo,
