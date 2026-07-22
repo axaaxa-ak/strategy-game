@@ -1466,12 +1466,25 @@ function showWorldStatus(){
   }
   var rows=Object.keys(facs).sort(function(a,b){return facs[b].cnt-facs[a].cnt;}).slice(0,14);
   var html='<div class="mch">WORLD SITUATION / 世界情勢</div>';
+  
   rows.forEach(function(f){
     var fn=(FAC[f]&&FAC[f].n)||f.replace('nt_','');
     var r2=getRel(player,f);
     var rc=f===player?'#68e888':r2==='war'?'#ff7080':r2==='allied'?'#6898e0':'var(--dm)';
-    html+='<div class="mdi" style="color:'+rc+'">'+fn+' — 領土:'+facs[f].cnt+' ECO:'+facs[f].eco+' POW:'+facs[f].pow+'</div>';
+    
+    // ★ 追加：その国(f)が交戦中の他国（war状態の国）をリストアップする
+    var wars = [];
+    Object.keys(FAC).forEach(function(other){
+      if (f !== other && getRel(f, other) === 'war') {
+        wars.push((FAC[other] && FAC[other].sn) || other); // 略称(sn)またはIDを取得
+      }
+    });
+    var warText = wars.length > 0 ? ' <span style="color:#ff7080;font-size:0.85em;">[交戦: ' + wars.join(', ') + ']</span>' : '';
+
+    // 表示行に交戦情報を追加
+    html+='<div class="mdi" style="color:'+rc+'">'+fn+ warText +' — 領土:'+facs[f].cnt+' ECO:'+facs[f].eco+' POW:'+facs[f].pow+'</div>';
   });
+  
   document.getElementById('m-t').textContent='WORLD SITUATION';
   document.getElementById('m-s').textContent='Turn '+turn+' | '+yr+'-'+(mo<10?'0':'')+mo;
   document.getElementById('m-b').innerHTML=html;
@@ -1479,31 +1492,7 @@ function showWorldStatus(){
   document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()" style="flex:1">CLOSE</button>';
   document.getElementById('modal').classList.add('open');
 }
-function showDiplomStatus(){
-  var html='<div class="mch">外交状況 / DIPLOMATIC STATUS</div>';
-  var byRel={war:[],allied:[],hostile:[],peace:[]};
-  Object.keys(FAC).forEach(function(f){
-    if(f===player)return;
-    var r2=getRel(player,f);if(!byRel[r2])byRel[r2]=[];byRel[r2].push(f);
-  });
-  function sect(title,arr,col){
-    if(!arr.length)return'';
-    var h='<div class="sd">'+title+'</div>';
-    arr.forEach(function(f){h+='<div class="mdi" style="color:'+col+'">'+FAC[f].n+' ('+FAC[f].sn+')</div>';});
-    return h;
-  }
-  html+=sect('■ AT WAR',byRel.war,'#ff7080');
-  html+=sect('● ALLIED',byRel.allied,'#6898e0');
-  html+=sect('▲ HOSTILE',byRel.hostile,'#e8a040');
-  html+=sect('○ PEACE',byRel.peace,'var(--dm)');
-  document.getElementById('m-t').textContent='DIPLOMATIC STATUS';
-  document.getElementById('m-s').textContent=FAC[player].n;
-  document.getElementById('m-b').innerHTML=html;
-  document.getElementById('m-r').style.display='none';
-  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()" style="flex:1">CLOSE</button>';
-  document.getElementById('modal').classList.add('open');
-}
-// ── Troop Tower (HOI4-style division badges) ──
+  // ── Troop Tower (HOI4-style division badges) ──
 function updTroopLabels(){
   var ov=document.getElementById('troop-overlay');if(!ov)return;
   ov.innerHTML='';
@@ -1763,6 +1752,7 @@ function requestAllyWar(ef){var al=[];for(var pr in rel)if(rel[pr]==='allied'){v
 function showDiplomScreen(){var rows='';Object.keys(FAC).forEach(function(fid){if(fid===player)return;var f=FAC[fid];var r=getRel(player,fid);var cnt=0;for(var id in S)if(S[id].own===fid)cnt++;if(cnt===0&&r==='peace')return;var rl={war:'戦争',allied:'同盟',puppet:'傀儡',peace:'中立',hostile:'敵対'}[r]||r;var apv=(_approval[fid]||0);rows+='<tr style="color:'+f.c+'"><td>'+f.sn+'</td><td>'+rl+'</td><td style="color:'+(apv>=0?'#4cd870':'#e05060')+'">'+apv+'</td></tr>';});var mt=document.getElementById('m-t'),ms=document.getElementById('m-s'),mb=document.getElementById('m-b');if(!mt||!ms||!mb)return;mt.textContent='外交状況';ms.textContent='各国好感度';mb.innerHTML='<table class="dipl-tbl"><tr><th>国家</th><th>関係</th><th>好感度</th></tr>'+rows+'</table>';var mbt=document.getElementById('m-btns');if(mbt)mbt.innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');}
 
 // ── Scenario & Event System ─────────────────────────────────────
+  //歴史シナリオ　イベント系
 var currentScenario='1936';
 var _firedEvents={};
 
