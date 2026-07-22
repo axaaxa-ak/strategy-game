@@ -940,6 +940,9 @@ function processSVG(txt){
   for(var i=0;i<allEls.length;i++){
     var el=allEls[i];var id=el.getAttribute('id');
     if(!id||SKIP_RE.test(id))continue;
+    var _tg=el.tagName?el.tagName.toLowerCase():'';
+    if(_tg!=='path'&&_tg!=='polygon')continue;
+    if(/^\d+$/.test(id))continue;
     var own=TF[id]||('nt_'+id);
     el.setAttribute('fill',fcol(own));
     el.setAttribute('stroke-width','0.5');
@@ -961,7 +964,17 @@ function processSVG(txt){
         ldp(95,'初期化完了...');
         updTB();updPanel(null);setupCtrl();
         var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
-        addLog('1936年1月 — '+FAC[player].n+'として世界大戦略を開始。','lt');
+        // Apply scenario territory overrides
+        (function(){
+          var sc3=null;for(var si3=0;si3<SCENARIOS.length;si3++)if(SCENARIOS[si3].id===currentScenario){sc3=SCENARIOS[si3];break;}
+          if(sc3&&sc3.overrides){
+            for(var ovId in sc3.overrides){
+              if(S[ovId]){S[ovId].own=sc3.overrides[ovId];S[ovId].el.setAttribute('fill',fcol(sc3.overrides[ovId]));}
+            }
+          }
+        })();
+        var _scLog=null;for(var _sli=0;_sli<SCENARIOS.length;_sli++)if(SCENARIOS[_sli].id===currentScenario){_scLog=SCENARIOS[_sli];break;}
+        addLog((_scLog?_scLog.yr+'年'+_scLog.mo+'月':'1936年1月')+' — '+FAC[player].n+'として世界大戦略を開始。','lt');
         addLog('自国領土クリック→攻勢命令→赤域クリックで攻撃','li');
         addLog('包囲(ENCIRCLED)状態の敵は防御力-50%。','li');
         updTroopLabels();
@@ -1295,6 +1308,7 @@ function execAtk(fid,tid,mode){
   applyFoW();updTB();if(sel)updPanel(sel);updTroopLabels();
 }
 // ── Bombard ──
+function execAir(fid,tid){execBomb(fid,tid);}
 function execBomb(fid,tid){
   var at=S[fid],df=S[tid];if(!at||!df||at.own!==player)return;
   var nbrs=adjOf(fid);var ok=false;
@@ -1626,14 +1640,19 @@ function setupCtrl(){
   applyTrans();
 
   // Touch: pan + pinch zoom
+  // Manual tap detection vars
+  var _tapSX=0,_tapSY=0,_tapT=0,_tapEl=null,_tapMoved=false;
+  var TAP_DIST=10,TAP_MS=600;
   vp.addEventListener('touchstart',function(e){
     if(e.touches.length===1){
-      _drag=true;
-      _dragSX=e.touches[0].clientX-_camX;
-      _dragSY=e.touches[0].clientY-_camY;
+      var t0=e.touches[0];
+      _drag=true;_tapMoved=false;
+      _dragSX=t0.clientX-_camX;_dragSY=t0.clientY-_camY;
+      _tapSX=t0.clientX;_tapSY=t0.clientY;_tapT=Date.now();
+      _tapEl=document.elementFromPoint(t0.clientX,t0.clientY);
       vp.classList.add('drag');
     }else if(e.touches.length===2){
-      _drag=false;
+      _drag=false;_tapEl=null;
       var dx=e.touches[0].clientX-e.touches[1].clientX;
       var dy=e.touches[0].clientY-e.touches[1].clientY;
       _pinchD=Math.sqrt(dx*dx+dy*dy);
@@ -1642,6 +1661,8 @@ function setupCtrl(){
   },{passive:false});
   vp.addEventListener('touchmove',function(e){
     if(e.touches.length===1&&_drag){
+      var _tdx=e.touches[0].clientX-_tapSX,_tdy=e.touches[0].clientY-_tapSY;
+      if(Math.sqrt(_tdx*_tdx+_tdy*_tdy)>TAP_DIST)_tapMoved=true;
       _camX=e.touches[0].clientX-_dragSX;
       _camY=e.touches[0].clientY-_dragSY;
       applyTrans();
@@ -1660,7 +1681,17 @@ function setupCtrl(){
     e.preventDefault();
   },{passive:false});
   vp.addEventListener('touchend',function(e){
-    if(e.touches.length===0){_drag=false;vp.classList.remove('drag');}
+    if(e.touches.length===0){
+      if(!_tapMoved&&(Date.now()-_tapT)<TAP_MS&&_tapEl){
+        var _nd=_tapEl;
+        while(_nd&&_nd!==vp){
+          var _nid=_nd.getAttribute&&_nd.getAttribute('id');
+          if(_nid&&S[_nid]){onClick(_nid);break;}
+          _nd=_nd.parentElement;
+        }
+      }
+      _drag=false;_tapEl=null;vp.classList.remove('drag');
+    }
     e.preventDefault();
   },{passive:false});
   // Mouse: pan
@@ -1720,13 +1751,9 @@ function setupCtrl(){
 }
 
 // ── INIT: loadMap first, then buildFsel ──
-// FIXED: DOMContentLoaded now ONLY shows faction select UI.
-// SVG loading happens AFTER user picks a faction (in startGame → loadSVG).
 document.addEventListener('DOMContentLoaded',function(){
-  // Hide loading screen initially
   var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
-  // Build faction select UI immediately
-  buildFsel();
+  G.showMenu();
 });
 
 // ── Public API ──
@@ -1920,8 +1947,7 @@ return{
   showDiplomStatus:showDiplomScreen,
   buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,
   recruitAll:recruitAll,opPuppetCreate:opPuppetCreate,
-  requestAllyWar:requestAllyWar,showDiplomScreen:showDiplomScreen,
-  showScenSel: showScenSel
+  requestAllyWar:requestAllyWar,showDiplomScreen:showDiplomScreen
 };
 }());
 </script>
