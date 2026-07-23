@@ -1,6 +1,7 @@
 <!-- iPad画面上にデベロッパーツール（コンソール）を表示するスクリプト -->
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -361,6 +362,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <script>
 'use strict';
+// ─── ここを追加 ───
+window.G = {}; 
+// ──────────────────
+
 // ================================================================
 //  TERRITORY → FACTION MAP
 // ================================================================
