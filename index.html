@@ -359,32 +359,26 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <button class="mb ok" id="m-ok">EXECUTE</button>
   </div>
 </div></div>
-// ==========================================
-// HTMLの onclick から呼び出せるように G に関数を登録する
-// ==========================================
-
-// ローディング画面(#ld)を消してシナリオ選択を開く
-G.showScenSel = function() {
-  var ld = document.getElementById('ld');
-  if (ld) ld.classList.remove('on');
-  if (typeof showScenSel === 'function') showScenSel();
-};
-
-// メニュー表示
-G.showMenu = function() {
-  if (typeof showMenu === 'function') showMenu();
-};
-
-// エラー回避用（未実装の造船機能）
-G.buildShip = function() {
-  console.log('buildShip is not implemented yet.');
-};
 <script>
 'use strict';
-// ─── ここを追加 ───
-window.G = {}; 
-// ──────────────────
 
+// ─── ここから上書き ───
+window.G = {
+  showScenSel: function() {
+    // ローディング画面(#ld)を消す
+    var ld = document.getElementById('ld');
+    if (ld) ld.classList.remove('on');
+    
+    // もし元々コード内にある showScenSel 関数があれば呼ぶ
+    if (typeof showScenSel === 'function') showScenSel();
+  },
+  showMenu: function() {
+    if (typeof showMenu === 'function') showMenu();
+  },
+  buildShip: function() {
+    console.log('buildShip called');
+  }
+};
 // ================================================================
 //  TERRITORY → FACTION MAP
 // ================================================================
