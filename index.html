@@ -361,30 +361,37 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div></div>
 <script>
 'use strict';
+// エラーで止まらないよう、事前にグローバルのダミー関数を用意
+window.buildShip = window.buildShip || function() { console.log('buildShip dummy'); };
 
 window.G = {
   showScenSel: function() {
-    // 1. ローディング画面(#ld)を消す
     var ld = document.getElementById('ld');
     if (ld) ld.classList.remove('on');
 
-    // 2. グローバルにある本物の showScenSel を探して実行
-    var fn = window.showScenSel || (typeof showScenSel !== 'undefined' ? showScenSel : null);
-    if (typeof fn === 'function') {
-      fn();
+    // スクリプト後半で定義される本物の showScenSel を呼び出す
+    if (typeof showScenSel === 'function') {
+      showScenSel();
+    } else if (typeof window.showScenSel === 'function') {
+      window.showScenSel();
     } else {
-      console.warn('showScenSel 関数がまだ読み込まれていないか、存在しません。');
+      console.warn('showScenSel is not yet loaded.');
     }
   },
   showMenu: function() {
-    var fn = window.showMenu || (typeof showMenu !== 'undefined' ? showMenu : null);
-    if (typeof fn === 'function') fn();
+    if (typeof showMenu === 'function') showMenu();
+    else if (typeof window.showMenu === 'function') window.showMenu();
+  },
+  showHowTo: function() {
+    if (typeof showHowTo === 'function') showHowTo();
+    else if (typeof window.showHowTo === 'function') window.showHowTo();
   },
   buildShip: function() {
-    var fn = window.buildShip || (typeof buildShip !== 'undefined' ? buildShip : null);
-    if (typeof fn === 'function') fn();
+    if (typeof buildShip === 'function') buildShip();
   }
 };
+
+  
 // ================================================================
 //  TERRITORY → FACTION MAP
 // ================================================================
