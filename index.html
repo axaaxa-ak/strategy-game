@@ -1948,6 +1948,24 @@ function _puppetIncome(){
   }
 }
 
+function startGame(facId) {
+  player = facId; // プレイヤーの勢力をセット
+  
+  // メニュー画面を隠してゲーム画面を表示する
+  var menu = document.getElementById('menu');
+  if (menu) menu.classList.add('off');
+  
+  var fsel = document.getElementById('fsel');
+  if (fsel) fsel.classList.add('off');
+  
+  // データの初期化や描画の更新
+  updTB();
+  applyFoW();
+  updTroopLabels();
+  
+  addLog('ゲームを開始しました。', 'lt');
+}
+  
 return{
   setU:setU,recruit:recruit,
   setAtk:setAtk,cancelAtk:cancelAtk,
