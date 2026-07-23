@@ -1890,6 +1890,9 @@ function showMenu(){
   var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');
 }
 function showScenSel(){
+  // ローディング画面要素を取得して '.on' クラスを外す（非表示にする）
+var ld = document.getElementById('ld');
+if (ld) ld.classList.remove('on');
   document.getElementById('menu').classList.add('off');
   document.getElementById('scensel').classList.add('on');
   _buildScenGrid();
