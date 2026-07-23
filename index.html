@@ -364,43 +364,35 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 // エラーで止まらないよう、事前にグローバルのダミー関数を用意
 window.buildShip = window.buildShip || function() { console.log('buildShip dummy'); };
 
-// エラー落ちを防ぎつつ、初期化に必要な最小限のオブジェクトを返す
-if (typeof window.buildShip === 'undefined') {
-  window.buildShip = function(a, b, c) {
-    return { id: 0, type: a || 0, hp: 100 };
-  };
-}
+// 1. スクリプト途中で未定義エラーで落ちるのを防ぐ安全バッファ
+window.buildShip = window.buildShip || function() { return {}; };
+window.showScenSel = window.showScenSel || function() {};
+window.showMenu = window.showMenu || function() {};
+window.showHowTo = window.showHowTo || function() {};
 
-window.G = window.G || {};
+// 2. G オブジェクトの安全なブリッジ定義
+window.G = {
+  showScenSel: function() {
+    var ld = document.getElementById('ld');
+    if (ld) ld.style.display = 'none';
 
-G.showScenSel = function() {
-  var ld = document.getElementById('ld');
-  if (ld) ld.classList.remove('on');
-
-  // 本物の showScenSel を呼び出してシナリオとマップをセットアップする
-  if (typeof showScenSel === 'function') {
-    showScenSel();
-  } else if (typeof window.showScenSel === 'function') {
-    window.showScenSel();
+    // 読み込み完了後に定義された本物の関数を実行
+    if (typeof window.showScenSel === 'function') {
+      try { window.showScenSel(); } catch(e) { console.error(e); }
+    }
+  },
+  showMenu: function() {
+    if (typeof window.showMenu === 'function') window.showMenu();
+  },
+  showHowTo: function() {
+    if (typeof window.showHowTo === 'function') window.showHowTo();
+  },
+  buildShip: function(a, b, c) {
+    if (typeof window.buildShip === 'function') return window.buildShip(a, b, c);
   }
 };
 
-G.showMenu = function() {
-  if (typeof showMenu === 'function') showMenu();
-  else if (typeof window.showMenu === 'function') window.showMenu();
-};
 
-G.showHowTo = function() {
-  if (typeof showHowTo === 'function') showHowTo();
-  else if (typeof window.showHowTo === 'function') window.showHowTo();
-};
-
-G.buildShip = function(a, b, c) {
-  if (typeof buildShip === 'function' && buildShip !== G.buildShip) {
-    return buildShip(a, b, c);
-  }
-  return window.buildShip(a, b, c);
-};
   
 // ================================================================
 //  TERRITORY → FACTION MAP
