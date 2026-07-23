@@ -904,27 +904,38 @@ var SKIP_RE=/^(pattern|diagonal|vertical|horizontal|crosshatch|checkers|texture|
 function loadSVG(){
   ldp(12,'SVGマップを取得中...');
   var bust='?v='+Date.now();
-  var filenames=['MapChart_Map.svg'+bust,'MapChart_Map.svg.svg'+bust,
-    './MapChart_Map.svg'+bust,'MapChart_Map.svg','MapChart_Map.svg.svg'];
+  var filenames=[
+    // 1. 同一フォルダ内のローカルパス
+    'MapChart_Map.svg'+bust,
+    './MapChart_Map.svg'+bust,
+    // 2. GitHub Raw の直リンク（CORS対応ドメイン経由）
+    'https://raw.githubusercontent.com/axaaxa-ak/strategy-game/main/MapChart_Map.svg',
+    'MapChart_Map.svg.svg'
+  ];
   var idx=0;
   function tryNext(){
     if(idx>=filenames.length){
-      showErr('SVGファイルが見つかりませんでした。\n確認事項:\n  1. index.html と MapChart_Map.svg が同じフォルダにあるか\n  2. GitHub Pages でデプロイされているか\n  3. ブラウザのコンソールでエラーを確認\n\n試したURL: '+filenames.join(', '));
+      showErr('SVGファイルが見つかりませんでした。\n試したURL: '+filenames.join(', '));
       return;
     }
     var fname=filenames[idx++];
     var xhr=new XMLHttpRequest();
-    xhr.open('GET',fname,true);xhr.timeout=20000;
+    xhr.open('GET',fname,true);
+    xhr.timeout=20000;
     xhr.onload=function(){
       if((xhr.status===200||xhr.status===0)&&xhr.responseText&&xhr.responseText.length>500){
-        ldp(30,'SVG取得完了 — 解析中...');processSVG(xhr.responseText);
-      }else{tryNext();}
+        ldp(30,'SVG取得完了 — 解析中...');
+        processSVG(xhr.responseText);
+      }else{
+        tryNext();
+      }
     };
     xhr.onerror=function(){tryNext();};
     xhr.ontimeout=function(){tryNext();};
     try{xhr.send();}catch(e){tryNext();}
   }
   tryNext();
+}  tryNext();
 }
 // ── SVG Processing: KEY FIX – preserveAspectRatio & correct sizing ──
 function processSVG(txt){
