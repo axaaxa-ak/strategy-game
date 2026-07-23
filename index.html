@@ -2023,6 +2023,48 @@ return{
   closeEvModal:closeEvModal
 };
 }());
+  function selectFaction(factionId) {
+  G.selectedFaction = factionId;
+
+  const fsel = document.getElementById('fsel');
+  if (fsel) fsel.classList.add('off');
+
+  const tbN = document.getElementById('tb-n');
+  if (tbN) tbN.textContent = factionId.toUpperCase();
+
+  const vp = document.getElementById('vp');
+  const mi = document.getElementById('mi');
+  const svgh = document.getElementById('svgh');
+
+  if (vp) vp.style.display = 'block';
+  if (mi) {
+    mi.style.transform = 'translate(0px, 0px) scale(1)';
+    mi.style.display = 'block';
+  }
+
+  if (svgh) {
+    svgh.style.display = 'block';
+    const svgEl = svgh.querySelector('svg');
+    if (svgEl) {
+      svgEl.style.display = 'block';
+      svgEl.style.width = '100%';
+      svgEl.style.height = '100%';
+    }
+  }
+
+  if (typeof window.initMap === 'function') {
+    window.initMap();
+  } else if (typeof window.drawMap === 'function') {
+    window.drawMap();
+  } else if (typeof window.startGame === 'function') {
+    window.startGame(G.selectedScen, G.selectedFaction);
+  }
+
+  console.log('Map view forced refresh for faction:', factionId);
+}
 </script>
 </body>
 </html>
+
+
+
