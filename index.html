@@ -364,33 +364,43 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 // エラーで止まらないよう、事前にグローバルのダミー関数を用意
 window.buildShip = window.buildShip || function() { console.log('buildShip dummy'); };
 
-window.G = {
-  showScenSel: function() {
-    var ld = document.getElementById('ld');
-    if (ld) ld.classList.remove('on');
+// エラー落ちを防ぎつつ、初期化に必要な最小限のオブジェクトを返す
+if (typeof window.buildShip === 'undefined') {
+  window.buildShip = function(a, b, c) {
+    return { id: 0, type: a || 0, hp: 100 };
+  };
+}
 
-    // スクリプト後半で定義される本物の showScenSel を呼び出す
-    if (typeof showScenSel === 'function') {
-      showScenSel();
-    } else if (typeof window.showScenSel === 'function') {
-      window.showScenSel();
-    } else {
-      console.warn('showScenSel is not yet loaded.');
-    }
-  },
-  showMenu: function() {
-    if (typeof showMenu === 'function') showMenu();
-    else if (typeof window.showMenu === 'function') window.showMenu();
-  },
-  showHowTo: function() {
-    if (typeof showHowTo === 'function') showHowTo();
-    else if (typeof window.showHowTo === 'function') window.showHowTo();
-  },
-  buildShip: function() {
-    if (typeof buildShip === 'function') buildShip();
+window.G = window.G || {};
+
+G.showScenSel = function() {
+  var ld = document.getElementById('ld');
+  if (ld) ld.classList.remove('on');
+
+  // 本物の showScenSel を呼び出してシナリオとマップをセットアップする
+  if (typeof showScenSel === 'function') {
+    showScenSel();
+  } else if (typeof window.showScenSel === 'function') {
+    window.showScenSel();
   }
 };
 
+G.showMenu = function() {
+  if (typeof showMenu === 'function') showMenu();
+  else if (typeof window.showMenu === 'function') window.showMenu();
+};
+
+G.showHowTo = function() {
+  if (typeof showHowTo === 'function') showHowTo();
+  else if (typeof window.showHowTo === 'function') window.showHowTo();
+};
+
+G.buildShip = function(a, b, c) {
+  if (typeof buildShip === 'function' && buildShip !== G.buildShip) {
+    return buildShip(a, b, c);
+  }
+  return window.buildShip(a, b, c);
+};
   
 // ================================================================
 //  TERRITORY → FACTION MAP
