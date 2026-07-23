@@ -362,21 +362,27 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script>
 'use strict';
 
-// ─── ここから上書き ───
 window.G = {
   showScenSel: function() {
-    // ローディング画面(#ld)を消す
+    // 1. ローディング画面(#ld)を消す
     var ld = document.getElementById('ld');
     if (ld) ld.classList.remove('on');
-    
-    // もし元々コード内にある showScenSel 関数があれば呼ぶ
-    if (typeof showScenSel === 'function') showScenSel();
+
+    // 2. グローバルにある本物の showScenSel を探して実行
+    var fn = window.showScenSel || (typeof showScenSel !== 'undefined' ? showScenSel : null);
+    if (typeof fn === 'function') {
+      fn();
+    } else {
+      console.warn('showScenSel 関数がまだ読み込まれていないか、存在しません。');
+    }
   },
   showMenu: function() {
-    if (typeof showMenu === 'function') showMenu();
+    var fn = window.showMenu || (typeof showMenu !== 'undefined' ? showMenu : null);
+    if (typeof fn === 'function') fn();
   },
   buildShip: function() {
-    console.log('buildShip called');
+    var fn = window.buildShip || (typeof buildShip !== 'undefined' ? buildShip : null);
+    if (typeof fn === 'function') fn();
   }
 };
 // ================================================================
