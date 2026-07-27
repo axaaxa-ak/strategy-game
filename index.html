@@ -1,7 +1,3 @@
-<!-- iPad画面上にデベロッパーツール（コンソール）を表示するスクリプト -->
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1052,7 +1048,7 @@ function onClick(id){
   if(atkMode){
     if(S[id]&&S[id].own===player){cancelAtk();selTerr(id);return;}
     if(hl[id]){
-      if(atkMode==='bombard')execBomb(atkFrom,id);
+      if(atkMode==='airstrike'||atkMode==='bombard')execAir(atkFrom,id);
       else if(atkMode==='move'||atkMode==='move_i'||atkMode==='move_t'||atkMode==='move_a')execMove(atkFrom,id);
       else showAM(atkFrom,id,atkMode);
       return;
@@ -1111,8 +1107,8 @@ function updPanel(id){
       '<div class="sd">ORDERS / 命令</div>'+
       '<button class="ab r'+(atkMode==='assault'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'assault\',\''+id+'\')">[ASSAULT] 歩兵突撃 Rng:2</button>'+
       '<button class="ab r'+(atkMode==='tankrush'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'tankrush\',\''+id+'\')">[TANK RUSH] 機甲突破 Rng:3</button>'+
-      '<button class="ab r'+(atkMode==='bombard'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'bombard\',\''+id+'\')">[BOMBARD] 砲兵遠撃 Rng:1</button>'+
-      '<button class="ab'+(atkMode==='move'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'move\',\''+id+'\')">[MOVE] 部隊移動 Rng:2</button>'+
+      '<button class="ab r'+(atkMode==='bombard'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'bombard\',\''+id+'\')">[AIR SUPPORT] 航空支援 Rng:1</button>'+
+      '<div class="sd">移動 / MOVE</div>'+'<div class="bg3">'+'<button class="btn" onclick="G.setAtk(\'move_i\',\''+id+'\')">[I]歩兵 Rng:4</button>'+'<button class="btn" onclick="G.setAtk(\'move_t\',\''+id+'\')">[T]戦車 Rng:6</button>'+'<button class="btn" onclick="G.setAtk(\'move_a\',\''+id+'\')">[A]航空 Rng:5</button>'+'</div>'+
       (atkMode?'<button class="ab" onclick="G.cancelAtk()">[CANCEL] キャンセル</button>':'')+
       '<div class="sd">BUILD</div>'+'<div class="bg2">'+'<button class="btn" onclick="G.buildFactory(\''+id+'\')">工場 Y200</button>'+'<button class="btn" onclick="G.buildShip(\''+id+'\')">造船 Y150</button>'+'</div>'+
       '<div class="sd">BULK</div>'+'<div class="bg3">'+'<button class="btn" onclick="G.recruitAll(\'i\')">一括[I]</button>'+'<button class="btn" onclick="G.recruitAll(\'t\')">一括[T]</button>'+'<button class="btn" onclick="G.buildFactoryAll()">一括工場</button>'+'</div>'+
@@ -1160,7 +1156,7 @@ function setAtk(mode,id){
   if(!fid||!S[fid]||S[fid].own!==player)return;
   atkMode=mode;atkFrom=fid;
   var atkSet,movSet;
-  if(mode==='bombard'){atkSet=bombTgts(fid);movSet={};}
+  if(mode==='airstrike'||mode==='bombard'){atkSet=bombTgts(fid);movSet={};}
   else if(mode==='move'||mode==='move_i'||mode==='move_t'||mode==='move_a'){
     var mR=mode==='move_t'?6:mode==='move_a'?5:4;
     var res=reach(fid,mR);atkSet={};movSet={};
@@ -1182,7 +1178,7 @@ function cancelAtk(){
 // ── Move ──
 function execMove(fid,tid){
   var at=S[fid],dt=S[tid];if(!at||!dt)return;
-  if(dt.own!==player&&!isAlly(player,dt.own)){addLog('自軍か同盟国のみ移動可','lw');return;}
+  if(dt.own!==player&&getRel(player,dt.own)!=='allied'&&getRel(player,dt.own)!=='puppet'){addLog('自軍か同盟国のみ移動可','lw');return;}
   var pp2=sendPct/100;var si=0,st=0,sa=0;
   if(atkMode==='move_i'||atkMode==='move')si=Math.max(0,Math.floor((at.u.i||0)*pp2));
   else if(atkMode==='move_t')st=Math.max(0,Math.floor((at.u.t||0)*pp2));
@@ -1278,6 +1274,7 @@ function execBomb(fid,tid){
   cancelAtk();applyFoW();updTB();if(sel)updPanel(sel);updTroopLabels();
 }
 // ── Diplomacy ──
+function setRelG(a,b,v){rel[rk(a,b)]=v;}
 function opD(type,tid){
   var f=S[tid]&&S[tid].own;if(!f)return;
   var fn=(FAC[f]&&FAC[f].n)||f;
@@ -1597,8 +1594,8 @@ function setupCtrl(){
   applyTrans();
 
   // Touch: pan + pinch zoom
-  vp.addEventListener('touchstart',function(e){
   var _tapSX=0,_tapSY=0,_tapT=0,_tapEl=null,_tapMoved=false;
+  vp.addEventListener('touchstart',function(e){
     if(e.touches.length===1){
       var t0=e.touches[0];
       _drag=true;_tapMoved=false;
