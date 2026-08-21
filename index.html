@@ -774,9 +774,6 @@ function startGame(fid){
   var ld=document.getElementById('ld');if(ld)ld.classList.add('on');
   ldp(5,'国家設定中...');
   player=fid;money=FAC[fid].m;rel={};
-  ideology='neutral';manpower=5000;_govChange=null;
-  var _HI={'de':'fascism','it':'fascism','jp':'fascism','es':'fascism','hu':'fascism','ro':'fascism','su':'communism','mo':'communism','cc':'communism','uk':'democracy','fr':'democracy','us':'democracy','ca':'democracy','au':'democracy','nz':'democracy','nl':'democracy','no':'democracy','se':'democracy','dk':'democracy','fi':'democracy','pl':'democracy','gr':'democracy','cz':'democracy','be':'democracy'};
-  if(_HI[fid])ideology=_HI[fid];
   for(var i=0;i<RELS_1936.length;i++){var r=RELS_1936[i];rel[rk(r[0],r[1])]=r[2];}
   var tn=document.getElementById('tb-n');
   if(tn){tn.textContent=FAC[fid].n;tn.style.color=FAC[fid].c;}
@@ -1003,25 +1000,21 @@ function onClick(id){
   if(!S[id])return;
   if(atkMode){
     var own2=S[id].own;
-    // タップした領土が自国なら攻撃キャンセル
     if(own2===player&&id!==atkFrom){cancelAtk();selTerr(id);return;}
-    // 移動モード
     if(atkMode==='move'){
-      if(own2===player||getRel(player,own2)==='allied'||getRel(player,own2)==='puppet'){
-        execMove(atkFrom,id);
-      }else{addLog('自軍か同盟領土へのみ移動可','lw');}
+      var rr=getRel(player,own2);
+      if(own2===player||rr==='allied'||rr==='puppet'){execMove(atkFrom,id);}
+      else{cancelAtk();selTerr(id);}
       return;
     }
-    // 砲撃モード
     if(atkMode==='bombard'){execBomb(atkFrom,id);return;}
-    // 攻撃モード: 敵領土かつ隣接しているか確認
     if(own2!==player&&getRel(player,own2)!=='allied'&&getRel(player,own2)!=='puppet'){
       var nb=adjOf(atkFrom),ok=false;
       for(var i=0;i<nb.length;i++)if(nb[i]===id){ok=true;break;}
       if(ok){showAM(atkFrom,id,atkMode);return;}
-      addLog('射程外。攻撃元に隣接する敵領土を選んでください','lw');return;
+      addLog('射程外。隔接する敵領土を選んでください','lw');
     }
-    addLog('自軍・同盟国には攻撃できません','lw');return;
+    return;
   }
   selTerr(id);
 }
@@ -1104,11 +1097,10 @@ function updPanel(id){
   }
   if(pc){
     pc.innerHTML=h;
-    // iPad: bind touchend for all panel buttons
     [].forEach.call(pc.querySelectorAll('button'),function(b){
       b.addEventListener('touchend',function(e){
         e.preventDefault();e.stopPropagation();
-        b.onclick&&b.onclick(e);
+        if(b.onclick)b.onclick(e);
       },{passive:false});
     });
   }
@@ -1181,6 +1173,17 @@ function showAM(fid,tid,mode){
     '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
     '<button class="mb ok" onclick="G.execAM()">CONFIRM ATTACK</button>';
   updAP();document.getElementById('modal').classList.add('open');
+  setTimeout(function(){
+    var mb=document.getElementById('m-btns');
+    if(!mb)return;
+    [].forEach.call(mb.querySelectorAll('button'),function(b){
+      if(b._td)return;b._td=1;
+      b.addEventListener('touchend',function(e){
+        e.preventDefault();e.stopPropagation();
+        if(b.onclick)b.onclick(e);
+      },{passive:false});
+    });
+  },20);
 }
 function _slS(v){sendPct=+v;var s=document.getElementById('sv-s');if(s)s.textContent=v+'%';updAP();}
 function updAP(){
@@ -1198,6 +1201,7 @@ function execAM(){closeModal();cancelAtk();execAtk(_af,_at,_am);}
 function execAtk(fid,tid,mode){
   var at=S[fid],df=S[tid];
   if(!at||!df||at.own!==player||df.own===player)return;
+  var modeR=mode==='tankrush'?3:2;
   if(!isWar(player,df.own)){
     setRel(player,df.own,'war');
     wCaps[rk(player,df.own)]=wCaps[rk(player,df.own)]||[];
@@ -1244,38 +1248,36 @@ function execBomb(fid,tid){
   cancelAtk();applyFoW();updTB();if(sel)updPanel(sel);updTroopLabels();
 }
 // ── Diplomacy ──
-function _diplSuccessRate(type,f){
-  var apv=_approval[f]||0,base={alliance:0.55,aid:0.95,guarantee:0.90,puppet:0.30}[type]||0.5;
-  return Math.max(0.05,Math.min(0.98,base+apv/200*0.6));
-}
 function opD(type,tid){
   var f=S[tid]&&S[tid].own;if(!f)return;
-  if(_usedDiplo[type+'_'+f]){addLog('このターンは使用済み','lw');return;}
   var fn=(FAC[f]&&FAC[f].n)||f;
-  var pct=Math.round(_diplSuccessRate(type,f)*100);
-  var apv=_approval[f]||0;
+  var mi2={
+    alliance:'同盟条約 — '+fn+'と同盟を結ぶ (Y200)\n同盟国は互いの領土を守り合います。',
+    aid:'経済援助 — '+fn+'に援助 (Y300)\n関係を改善し、友好度を上げます。',
+    guarantee:'独立保障 — '+fn+'の独立を保障 (Y100)\n小国への影響力を増やします。',
+    puppet:'傀儡化工作 — '+fn+'を属国化 (Y500)\n成功すれば領土と収入を間接支配できます。'
+  };
   var mc={alliance:200,aid:300,guarantee:100,puppet:500};
-  var desc={alliance:'同盟条約 (Y200)',aid:'経済援助 (Y300)',guarantee:'独立保障 (Y100)',puppet:'傀儡化工作 (Y500)'};
-  document.getElementById('m-t').textContent='DIPLOMACY';
-  document.getElementById('m-s').textContent=fn+' — '+type.toUpperCase();
+  document.getElementById('m-t').textContent='DIPLOMACY — '+type.toUpperCase();
+  document.getElementById('m-s').textContent=fn+' との外交交渉';
   document.getElementById('m-r').style.display='none';
-  document.getElementById('m-b').innerHTML='<div class="mi">'+desc[type]+'</div>'+
-    '<div class="mi">好感度: '+(apv>=0?'+':'')+apv+' / 成功率: '+pct+'% / 国庫: Y'+money+'</div>';
+  document.getElementById('m-b').innerHTML='<div class="mi">'+mi2[type]+'</div>'+
+    '<div class="mi">現在の国庫: Y'+money+'<br>コスト: Y'+mc[type]+'</div>';
   document.getElementById('m-btns').innerHTML=
     '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
-    '<button class="mb ok" onclick="G._execD(\''+type+'\',\''+f+'\')">EXECUTE '+pct+'%</button>';
+    '<button class="mb ok" onclick="G._execD(\''+type+'\',\''+f+'\')">EXECUTE</button>';
   document.getElementById('modal').classList.add('open');
-  // iPad: rebind modal buttons with touchend
   setTimeout(function(){
-    var mb=document.getElementById('m-btns');if(!mb)return;
+    var mb=document.getElementById('m-btns');
+    if(!mb)return;
     [].forEach.call(mb.querySelectorAll('button'),function(b){
-      if(b._td)return;b._td=true;
+      if(b._td)return;b._td=1;
       b.addEventListener('touchend',function(e){
         e.preventDefault();e.stopPropagation();
-        b.onclick&&b.onclick(e);
+        if(b.onclick)b.onclick(e);
       },{passive:false});
     });
-  },30);
+  },20);
 }
 function _execD(type,f){
   closeModal();
@@ -1317,17 +1319,17 @@ function opPeace(tid){
     '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
     '<button class="mb ok" onclick="G._execPeace(\''+f+'\')">SIGN PEACE</button>';
   document.getElementById('modal').classList.add('open');
-  // iPad: rebind modal buttons with touchend
   setTimeout(function(){
-    var mb=document.getElementById('m-btns');if(!mb)return;
+    var mb=document.getElementById('m-btns');
+    if(!mb)return;
     [].forEach.call(mb.querySelectorAll('button'),function(b){
-      if(b._td)return;b._td=true;
+      if(b._td)return;b._td=1;
       b.addEventListener('touchend',function(e){
         e.preventDefault();e.stopPropagation();
-        b.onclick&&b.onclick(e);
+        if(b.onclick)b.onclick(e);
       },{passive:false});
     });
-  },30);
+  },20);
 }
 function _execPeace(f){
   closeModal();
@@ -1367,17 +1369,17 @@ function opNeg(tid){
     '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
     '<button class="mb ok" onclick="G._execNeg(\''+f+'\')">PROPOSE</button>';
   document.getElementById('modal').classList.add('open');
-  // iPad: rebind modal buttons with touchend
   setTimeout(function(){
-    var mb=document.getElementById('m-btns');if(!mb)return;
+    var mb=document.getElementById('m-btns');
+    if(!mb)return;
     [].forEach.call(mb.querySelectorAll('button'),function(b){
-      if(b._td)return;b._td=true;
+      if(b._td)return;b._td=1;
       b.addEventListener('touchend',function(e){
         e.preventDefault();e.stopPropagation();
-        b.onclick&&b.onclick(e);
+        if(b.onclick)b.onclick(e);
       },{passive:false});
     });
-  },30);
+  },20);
 }
 function _execNeg(f){
   closeModal();var fn=(FAC[f]&&FAC[f].n)||f;
@@ -1398,11 +1400,7 @@ function _execNeg(f){
 function updTB(){
   var m=document.getElementById('tb-m');if(m)m.textContent=money;
   var inc=incOf(player);
-  var _pm=0;for(var _pid in S)if(S[_pid].own===player)_pm+=Math.floor((S[_pid].u.i||0)*0.05+(S[_pid].u.t||0)*0.3+(S[_pid].u.a||0)*0.2);_pm=Math.floor(_pm);var _net=inc-_pm;
-  var tn=document.getElementById('tb-n');if(tn&&FAC[player]){tn.textContent=FAC[player].n;tn.style.color=FAC[player].c;tn.style.cursor='pointer';tn.onclick=function(){G.showNationPanel();};}
-  var ti=document.getElementById('tb-i');if(ti){ti.textContent=(_net>=0?'+':'')+_net;ti.style.color=_net>0?'#68d888':_net<0?'#e05060':'var(--dm)';ti.title='収入:Y'+inc+' 維持費:-Y'+_pm;ti.style.cursor='pointer';ti.onclick=function(){G.showEconBreakdown();};}
-  var mpEl=document.getElementById('ideo-btn');if(mpEl&&IDEO_DEFS[ideology])mpEl.textContent=IDEO_DEFS[ideology].icon+' '+IDEO_DEFS[ideology].name.slice(0,4);
-  checkVictory();
+  var ti=document.getElementById('tb-i');if(ti){ti.textContent='+'+inc;ti.style.color=inc>0?'#68d888':'var(--dm)';}
   var tt=document.getElementById('tb-t');if(tt)tt.textContent=cntOf(player);
   var td=document.getElementById('tb-d');if(td)td.textContent=yr+'.'+(mo<10?'0':'')+mo;
   var tw2=document.getElementById('tb-w');
@@ -1440,17 +1438,17 @@ function showWorldStatus(){
   document.getElementById('m-r').style.display='none';
   document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()" style="flex:1">CLOSE</button>';
   document.getElementById('modal').classList.add('open');
-  // iPad: rebind modal buttons with touchend
   setTimeout(function(){
-    var mb=document.getElementById('m-btns');if(!mb)return;
+    var mb=document.getElementById('m-btns');
+    if(!mb)return;
     [].forEach.call(mb.querySelectorAll('button'),function(b){
-      if(b._td)return;b._td=true;
+      if(b._td)return;b._td=1;
       b.addEventListener('touchend',function(e){
         e.preventDefault();e.stopPropagation();
-        b.onclick&&b.onclick(e);
+        if(b.onclick)b.onclick(e);
       },{passive:false});
     });
-  },30);
+  },20);
 }
 function showDiplomStatus(){
   var html='<div class="mch">外交状況 / DIPLOMATIC STATUS</div>';
@@ -1475,17 +1473,17 @@ function showDiplomStatus(){
   document.getElementById('m-r').style.display='none';
   document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()" style="flex:1">CLOSE</button>';
   document.getElementById('modal').classList.add('open');
-  // iPad: rebind modal buttons with touchend
   setTimeout(function(){
-    var mb=document.getElementById('m-btns');if(!mb)return;
+    var mb=document.getElementById('m-btns');
+    if(!mb)return;
     [].forEach.call(mb.querySelectorAll('button'),function(b){
-      if(b._td)return;b._td=true;
+      if(b._td)return;b._td=1;
       b.addEventListener('touchend',function(e){
         e.preventDefault();e.stopPropagation();
-        b.onclick&&b.onclick(e);
+        if(b.onclick)b.onclick(e);
       },{passive:false});
     });
-  },30);
+  },20);
 }
 // ── Troop Tower (HOI4-style division badges) ──
 function updTroopLabels(){
@@ -1723,134 +1721,6 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 // ── Public API ──
-var ideology='neutral',_govChange=null,manpower=5000,_mpPerTurn=0;
-var IDEO_DEFS={
-  democracy:{name:'\u6c11\u4e3b\u4e3b\u7fa9',icon:'\u{1F5F3}',color:'#5b9bd5',incBonus:0.20,defBonus:0.15},
-  fascism:  {name:'\u30d5\u30a1\u30b7\u30ba\u30e0',icon:'\u2694',color:'#c0392b',atkBonus:0.15,moveBonus:1},
-  communism:{name:'\u5171\u7523\u4e3b\u7fa9',icon:'\u262d',color:'#e53935',maintRed:0.25,mpGainBonus:0.30},
-  neutral:  {name:'\u4e2d\u9053',icon:'\u2696',color:'#888',incBonus:0.10,defBonus:0.15,changeCostRed:0.50}
-};
-function ideoBonusInc(){var d=IDEO_DEFS[ideology],b=1+(d&&d.incBonus||0);return(_govChange&&_govChange.phase===2)?b*0.5:b;}
-function ideoBonusAtk(){var d=IDEO_DEFS[ideology],b=1+(d&&d.atkBonus||0);return(_govChange&&_govChange.phase===2)?b*0.5:b;}
-function ideoBonusDef(){var d=IDEO_DEFS[ideology];return 1+(d&&d.defBonus||0);}
-function ideoMaintMult(){var d=IDEO_DEFS[ideology],m=1-(d&&d.maintRed||0);return(_govChange&&_govChange.phase===2)?Math.max(0.1,m*1.5):m;}
-function ideoMoveBonus(){return(_govChange&&_govChange.phase===2)?-1:(IDEO_DEFS[ideology]&&IDEO_DEFS[ideology].moveBonus||0);}
-function calcMpGain(){var t=0,fc=0;for(var id in S)if(S[id].own===player){t++;fc+=(_fac[id]||0);}var base=t*300+fc*20;return ideology==='communism'?Math.round(base*1.30):base;}
-
-function showIdeoPopup(){
-  var d=IDEO_DEFS[ideology]||IDEO_DEFS.neutral;
-  var cost=Math.max(150,Math.round(incOf(player)*3*(ideology==='neutral'?0.5:1)));
-  var btns='';
-  ['democracy','fascism','communism','neutral'].forEach(function(k){
-    if(k===ideology)return;
-    var dd=IDEO_DEFS[k];
-    btns+='<button class="mb" style="margin:2px" onclick="G.startGovChange(\''+k+'\')">'+dd.icon+' '+dd.name+'</button>';
-  });
-  document.getElementById('m-t').textContent='IDEOLOGY';
-  document.getElementById('m-s').textContent=(d.icon+' '+d.name)+(_govChange?' [移行中 残り'+_govChange.turnsLeft+'T]':'');
-  document.getElementById('m-r').style.display='none';
-  document.getElementById('m-b').innerHTML='<div class="mi">\u653f\u6a29\u4ea4\u4ee3\u30b3\u30b9\u30c8: Y'+cost+'<br>\u56fd\u5eab: Y'+money+'</div>'+
-    '<div class="mi">'+btns+'</div>';
-  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';
-  document.getElementById('modal').classList.add('open');
-}
-
-function startGovChange(target){
-  closeModal();
-  if(_govChange){addLog('\u653f\u6a29\u4ea4\u4ee3\u306f\u65e2\u306b\u9032\u884c\u4e2d\u3067\u3059','lw');return;}
-  var cost=Math.max(ideology==='neutral'?75:150,Math.round(incOf(player)*3*(ideology==='neutral'?0.5:1)));
-  if(money<cost){addLog('\u653f\u6a29\u4ea4\u4ee3\u30b3\u30b9\u30c8: Y'+cost+' \u4e0d\u8db3','lw');return;}
-  money-=cost;_govChange={target:target,turnsLeft:6,phase:1};
-  addLog('[\u653f\u6a29\u79fb\u884c] '+IDEO_DEFS[target].name+'\u3078\u79fb\u884c\u958b\u59cb\u2014 6\u30bf\u30fc\u30f3\u5f8c\u5b8c\u4e86','lt');updTB();
-}
-
-function processGovChange(){
-  if(!_govChange)return;_govChange.turnsLeft--;
-  if(_govChange.turnsLeft===3){
-    _govChange.phase=2;ideology=_govChange.target;
-    for(var f in _approval)_approval[f]=30;
-    addLog('[\u653f\u60c5\u4e0d\u5b89] '+IDEO_DEFS[ideology].name+'\u79fb\u884c\u3002\u5916\u4ea4\u30ea\u30bb\u30c3\u30c8\u30023\u30bf\u30fc\u30f3\u30c7\u30d0\u30d5','lw');
-    var rb=document.getElementById('rebel-border');if(rb)rb.style.display='block';
-  }
-  if(_govChange.turnsLeft<=0){
-    _govChange=null;
-    var rb=document.getElementById('rebel-border');if(rb)rb.style.display='none';
-    addLog('[\u653f\u6a29\u4ea4\u4ee3\u5b8c\u4e86] '+IDEO_DEFS[ideology].name+'\u88dc\u6b63\u304c100%\u9069\u7528','lk');updTB();
-  }
-}
-
-function checkVictory(){
-  var tot=0,my=0,grp=0,myF=0,grpF=0,totF=0;
-  for(var id in S){tot++;totF+=(_fac[id]||0);if(S[id].own===player){my++;myF+=(_fac[id]||0);}}
-  grp=my;grpF=myF;
-  for(var pr in rel){var pp=pr.split('-'),ot=pp[0]===player?pp[1]:pp[1]===player?pp[0]:null;
-    if(!ot||!(rel[pr]==='allied'||rel[pr]==='puppet'))continue;
-    for(var id in S)if(S[id].own===ot){grp++;grpF+=(_fac[id]||0);}
-  }
-  var milOk=(my/tot>=0.50)||(grp/tot>=0.80);
-  var indOk=totF>0&&((myF/totF>=0.65)||(grpF/totF>=0.80));
-  var dipOk=grp/tot>=0.80;
-  var upd=function(k,done,pct){
-    var b=document.getElementById('vc-'+k+'-bar'),p=document.getElementById('vc-'+k+'-pct');
-    if(b){b.style.width=Math.round(Math.min(1,pct)*100)+'%';b.className='vic-bar-fill'+(done?' done':'');}
-    if(p)p.textContent=(done?'\u2713 ':'')+Math.round(Math.min(1,pct)*100)+'%';
-  };
-  upd('mil',milOk,Math.max(my/tot/0.5,grp/tot/0.8));
-  upd('ind',indOk,totF>0?Math.max(myF/totF/0.65,grpF/totF/0.8):0);
-  upd('dip',dipOk,grp/tot/0.8);
-  if([milOk,indOk,dipOk].filter(Boolean).length>=2){
-    setTimeout(function(){
-      document.getElementById('m-t').textContent='VICTORY';
-      document.getElementById('m-s').textContent='\u30b2\u30fc\u30e0\u30af\u30ea\u30a2!';
-      document.getElementById('m-b').innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:40px">\ud83c\udfc6</div><div style="font-family:var(--hd);font-size:14px;color:var(--ac)">'+((FAC[player]&&FAC[player].n)||player)+'</div></div>';
-      document.getElementById('m-btns').innerHTML='<button class="mb ok" onclick="G.closeModal()">CONTINUE</button>';
-      document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');
-    },500);return true;
-  }
-  return false;
-}
-
-function showVictoryPanel(){checkVictory();var vp=document.getElementById('vic-panel');if(vp)vp.classList.toggle('on');}
-
-function showNationPanel(){
-  var f=FAC[player];if(!f)return;
-  var terr=0,facs=0,ti=0,tt=0,ta=0,pm=0;
-  for(var id in S)if(S[id].own===player){terr++;facs+=(_fac[id]||0);ti+=(S[id].u.i||0);tt+=(S[id].u.t||0);ta+=(S[id].u.a||0);pm+=Math.floor((S[id].u.i||0)*0.05+(S[id].u.t||0)*0.3+(S[id].u.a||0)*0.2);}
-  pm=Math.round(pm);var inc=incOf(player),net=inc-pm;
-  var d=IDEO_DEFS[ideology]||IDEO_DEFS.neutral;
-  var al=[],en=[];
-  for(var pr in rel){var pp=pr.split('-'),ot=pp[0]===player?pp[1]:pp[1]===player?pp[0]:null;if(!ot)continue;if(rel[pr]==='allied'&&FAC[ot])al.push(FAC[ot].sn);if(rel[pr]==='war'&&FAC[ot])en.push(FAC[ot].sn);}
-  var rows=[
-    ['\u601d\u60f3','<span style="color:'+d.color+'">'+d.icon+' '+d.name+'</span>'],
-    (_govChange?['\u653f\u6a29\u79fb\u884c','<span style="color:#f0d060">\u6b8b\u308a'+_govChange.turnsLeft+'T Phase'+_govChange.phase+'</span>']:null),
-    ['\u9818\u571f',terr],['\u5de5\u5834',facs+'\u57fa'],
-    ['\u56fd\u5eab','<span style="color:#68d888">Y'+money+'</span>'],
-    ['\u7d14\u53ce\u5165','<span style="color:'+(net>=0?'#68d888':'#e05060')+'">'+(net>=0?'+':'')+net+'</span>'],
-    ['\u6b69\u5175/\u6226\u8eca/\u822a\u7a7a',ti+'/'+tt+'/'+ta],
-    ['MP',manpower+' (+'+calcMpGain()+'/T)'],
-    (al.length?['\u540c\u76df\u56fd','<span style="color:#4cd870">'+al.slice(0,4).join(', ')+'</span>']:null),
-    (en.length?['\u4ea4\u6230\u4e2d','<span style="color:#e05060">'+en.slice(0,4).join(', ')+'</span>']:null),
-  ].filter(Boolean);
-  var html='<div style="font-size:8px;line-height:2.2">'+rows.map(function(r){return'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">'+r[0]+'</span><span>'+r[1]+'</span></div>';}).join('')+'</div>';
-  document.getElementById('econ-content').innerHTML=html;
-  document.getElementById('econ-modal').style.display='flex';
-}
-
-function showEconBreakdown(){
-  var inc=incOf(player),pm=0,terr=0,facs=0;
-  for(var id in S)if(S[id].own===player){terr++;facs+=(_fac[id]||0);pm+=Math.floor((S[id].u.i||0)*0.05+(S[id].u.t||0)*0.3+(S[id].u.a||0)*0.2);}
-  pm=Math.round(pm);var net=inc-pm;
-  var html='<div style="font-size:8px;line-height:2.2">'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">\u9818\u571f\u6570</span><span>'+terr+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">\u5de5\u5834</span><span>'+facs+'\u57fa</span></div>'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">\u53ce\u5165</span><span style="color:#68d888">+Y'+inc+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">\u7dad\u6301\u8cbb</span><span style="color:#e05060">-Y'+pm+'</span></div>'
-    +'<div style="border-top:1px solid var(--b2);margin-top:4px;padding-top:4px;display:flex;justify-content:space-between"><span style="color:var(--dm)">\u7d14\u53ce\u5165/T</span>'
-    +'<span style="font-family:var(--hd);color:'+(net>=0?'#68d888':'#e05060')+'">'+(net>=0?'+':'')+net+'</span></div></div>';
-  document.getElementById('econ-content').innerHTML=html;
-  document.getElementById('econ-modal').style.display='flex';
-}
-
 return{
   setU:setU,recruit:recruit,
   setAtk:setAtk,cancelAtk:cancelAtk,
