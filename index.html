@@ -997,24 +997,15 @@ function openPanelMobile(){
 }
 // ── Click handler ──
 function onClick(id){
-  if(!S[id])return;
   if(atkMode){
-    var own2=S[id].own;
-    if(own2===player&&id!==atkFrom){cancelAtk();selTerr(id);return;}
-    if(atkMode==='move'){
-      var rr=getRel(player,own2);
-      if(own2===player||rr==='allied'||rr==='puppet'){execMove(atkFrom,id);}
-      else{cancelAtk();selTerr(id);}
-      return;
-    }
+    if(S[id]&&S[id].own===player){cancelAtk();selTerr(id);return;}
+    if(atkMode==='move'){execMove(atkFrom,id);return;}
     if(atkMode==='bombard'){execBomb(atkFrom,id);return;}
-    if(own2!==player&&getRel(player,own2)!=='allied'&&getRel(player,own2)!=='puppet'){
-      var nb=adjOf(atkFrom),ok=false;
-      for(var i=0;i<nb.length;i++)if(nb[i]===id){ok=true;break;}
-      if(ok){showAM(atkFrom,id,atkMode);return;}
-      addLog('射程外。隔接する敵領土を選んでください','lw');
-    }
-    return;
+    // FIX: adjOf direct check instead of hl[]
+    var nb=adjOf(atkFrom),ok=false;
+    for(var i=0;i<nb.length;i++)if(nb[i]===id){ok=true;break;}
+    if(ok){showAM(atkFrom,id,atkMode);return;}
+    addLog('射程外です。主力陣地に隔接する敵領土を選んでください','lw');return;
   }
   selTerr(id);
 }
