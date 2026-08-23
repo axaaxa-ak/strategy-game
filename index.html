@@ -1086,6 +1086,9 @@ function updPanel(id){
       }
     }
   }
+  if(isOwn){
+    h+='<div class="sd">SYSTEM</div>'+'<div class="bg2">'+'<button class="btn" onclick="G.showIdeoPopup()">'+((IDEO_DEFS&&IDEO_DEFS[ideology])?IDEO_DEFS[ideology].icon+' '+IDEO_DEFS[ideology].name:'IDEOLOGY')+'</button>'+'<button class="btn" onclick="G.showVictoryPanel()">&#127942; \u52dd\u5229\u6761\u4ef6</button>'+'<button class="btn" onclick="G.showDiplomScreen()">\u5168\u4f53\u5916\u4ea4\u72b6\u6cc1</button>'+'</div>';
+  }
   if(pc){
     pc.innerHTML=h;
     [].forEach.call(pc.querySelectorAll('button'),function(b){
@@ -1527,6 +1530,11 @@ function nextTurn(){
     var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;
   }
   addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
+  checkHistEvents();
+  processGovChange();
+  _mpPerTurn=calcMpGain();manpower+=_mpPerTurn;
+  _usedDiplo={};
+  checkVictory();
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
 }
 // ── AI Turn ──
@@ -1712,6 +1720,123 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 // ── Public API ──
+// ═══ HISTORICAL EVENTS ═══════════════════════════════════════════
+var HIST_EVENTS=[
+  {yr:1936,mo:3,id:'rhineland',sc:'1936',title:'\u30e9\u30a4\u30f3\u30e9\u30f3\u30c8\u9032\u99d0',date:'1936\u5e743\u6708',body:'\u30d2\u30c8\u30e9\u30fc\u304c\u30f4\u30a7\u30eb\u30b5\u30a4\u30e6\u6761\u7d04\u3092\u7834\u68c4\u3002',effects:['\u30c9\u30a4\u30c4+400'],apply:function(){if(player==='de')money+=400;for(var id in S)if(S[id].own==='de')S[id].u.i++;}},
+  {yr:1936,mo:10,id:'rome_berlin',sc:'1936',title:'\u65e5\u72ec\u4f0a\u67a2\u8ef8',date:'1936\u5e7410\u6708',body:'\u65e5\u72ec\u4f0a\u4e09\u56fd\u540c\u76df\u7de0\u7d50\u3002',effects:['\u5404+150\u8cc7\u91d1'],apply:function(){setRel('de','it','allied');setRel('de','jp','allied');setRel('it','jp','allied');if(player==='de'||player==='it'||player==='jp')money+=150;}},
+  {yr:1937,mo:7,id:'marco_polo',sc:'1936',title:'\u76e7\u6e9d\u6a4b\u4e8b\u4ef6',date:'1937\u5e747\u6708',body:'\u65e5\u4e2d\u5168\u9762\u6230\u4e89\u958b\u59cb\u3002',effects:['\u65e5\u4e2d\u958b\u6230'],apply:function(){setRel('jp','cn','war');for(var id in S){if(S[id].own==='jp')S[id].u.i+=2;if(S[id].own==='cn')S[id].u.i++;}}},
+  {yr:1938,mo:3,id:'anschluss',sc:'1936',title:'\u30aa\u30fc\u30b9\u30c8\u30ea\u30a2\u4f75\u5408',date:'1938\u5e743\u6708',body:'\u30c9\u30a4\u30c4\u304c\u30aa\u30fc\u30b9\u30c8\u30ea\u30a2\u3092\u4f75\u5408\u3002',effects:['\u30c9\u30a4\u30c4+500'],apply:function(){for(var id in S)if(S[id].own==='at'){S[id].own='de';if(S[id].el)S[id].el.setAttribute('fill',fcol('de'));}if(player==='de')money+=500;}},
+  {yr:1939,mo:8,id:'molotov',sc:'1936',title:'\u72ec\u30bd\u4e0d\u53ef\u4fb5',date:'1939\u5e748\u6708',body:'\u30c9\u30a4\u30c4\u3068\u30bd\u9023\u304c\u79d8密\u5354\u5b9a\u3002',effects:['\u72ec\u30bd\u8b1b\u548c\u3001\u5404+200'],apply:function(){setRel('de','su','peace');if(player==='de'||player==='su')money+=200;}},
+  {yr:1939,mo:9,id:'ww2_start',sc:'1936',title:'WW2\u958b\u6230',date:'1939\u5e749\u6708',body:'\u30c9\u30a4\u30c4\u304c\u30dd\u30fc\u30e9\u30f3\u30c9\u306b\u4fb5\u653b\u3002',effects:['\u5168\u9762\u6230\u4e89\u958b\u59cb'],apply:function(){setRel('de','pl','war');setRel('de','uk','war');setRel('de','fr','war');for(var id in S){if(S[id].own==='de')S[id].u.i+=3;if(S[id].own==='uk'||S[id].own==='fr')S[id].u.i+=2;}}},
+  {yr:1940,mo:5,id:'fall_france',sc:'1936',title:'\u30d5\u30e9\u30f3\u30b9\u9677\u4f0f',date:'1940\u5e745\u6708',body:'\u30d1\u30ea\u9099\u5931\u3002\u30c9\u30a4\u30c4\u6700\u5927\u306e\u52dd\u5229\u3002',effects:['\u30c9\u30a4\u30c4+600'],apply:function(){for(var id in S)if(S[id].own==='de')S[id].u.i+=2;if(player==='de')money+=600;}},
+  {yr:1941,mo:6,id:'barbarossa',sc:'1936',title:'\u30d0\u30eb\u30d0\u30ed\u30c3\u30b5\u4f5c\u6226',date:'1941\u5e746\u6708',body:'\u30c9\u30a4\u30c4\u304c\u30bd\u9023\u306b\u4fb5\u653b\uff01',effects:['\u72ec\u30bd\u958b\u6220'],apply:function(){setRel('de','su','war');for(var id in S){if(S[id].own==='de')S[id].u.i+=3;if(S[id].own==='su')S[id].u.i+=2;}}},
+  {yr:1941,mo:12,id:'pearl_harbor',sc:'1936',title:'\u771f\u73e0\u6e7e\u653b\u6483',date:'1941\u5e7412\u6708',body:'\u65e5\u672c\u304c\u30cf\u30ef\u30a4\u3092\u5947\u8972\u3002\u7c73\u56fd\u53c2\u6220\u3002',effects:['\u65e5\u7c73\u958b\u6220'],apply:function(){setRel('jp','us','war');setRel('jp','uk','war');for(var id in S){if(S[id].own==='jp')S[id].u.i+=2;if(S[id].own==='us')S[id].u.i+=3;}}},
+  {yr:1942,mo:11,id:'stalingrad',sc:'1936',title:'\u30b9\u30bf\u30fc\u30ea\u30f3\u30b0\u30e9\u30fc\u30c9',date:'1942\u5e7411\u6708',body:'\u30bd\u9023\u5305\u56f2\u7db2\u3002\u5927\u6226\u306e\u8ee2\u6362\u70b9\u3002',effects:['\u30bd\u9023+400'],apply:function(){for(var id in S){if(S[id].own==='su')S[id].u.i+=2;if(S[id].own==='de')S[id].u.i=Math.max(0,Math.floor((S[id].u.i||0)*0.75));}if(player==='su')money+=400;}},
+  {yr:1944,mo:6,id:'d_day',sc:'1936',title:'D\u30c7\u30a4\u4e0a\u9678',date:'1944\u5e746\u6708',body:'\u9023\u5408\u56fd\u304c\u30ce\u30eb\u30de\u30f3\u30c7\u30a3\u30fc\u306b\u4e0a\u9678\u3002',effects:['\u82f1\u7c73\u5f37\u5316'],apply:function(){for(var id in S)if(S[id].own==='uk'||S[id].own==='us')S[id].u.i+=2;}},
+  {yr:1945,mo:8,id:'atomic_bomb',sc:'1936',title:'\u539f\u7206\u30fb\u65e5\u672c\u964d\u4f0f',date:'1945\u5e748\u6708',body:'\u7c73\u56fd\u304c\u5e83\u5cf6\u30fb\u9577\u5d0e\u306b\u539f\u7206\u3002\u65e5\u672c\u964d\u4f0f\u3002',effects:['\u65e5\u5175\u529b\u6e1b'],apply:function(){for(var id in S)if(S[id].own==='jp'){S[id].u.i=Math.floor((S[id].u.i||0)/2);S[id].u.t=0;}if(player==='us')money+=800;}},
+  {yr:1914,mo:8,id:'ww1_start',sc:'1914',title:'WW1\u958b\u6230',date:'1914\u5e748\u6708',body:'\u6b27\u5dde\u5217\u5f37\u304c\u6b21\u3005\u5ba3\u6220\u3002',effects:['\u5168\u6b27+2\u5175'],apply:function(){for(var id in S){var o=S[id].own;if(o==='de'||o==='at'||o==='uk'||o==='fr'||o==='su')S[id].u.i+=2;}}},
+  {yr:1917,mo:3,id:'russian_rev',sc:'1914',title:'\u30ed\u30b7\u30a2\u9769\u547d',date:'1917\u5e743\u6708',body:'\u30c4\u30a1\u30fc\u30ea\u6c7a\u5e9e\u3002\u7c73\u56fd\u53c2\u6220\u3002',effects:['\u30bd\u9023\u5185\u4e71','\u7c73\u53c2\u6220'],apply:function(){for(var id in S)if(S[id].own==='su')S[id].u.i=Math.max(0,Math.floor((S[id].u.i||0)/2));setRel('us','de','war');for(var id in S)if(S[id].own==='us')S[id].u.i+=3;if(player==='us')money+=500;}},
+  {yr:2001,mo:9,id:'nine_eleven',sc:'2000',title:'9.11\u30c6\u30ed',date:'2001\u5e749\u6708',body:'\u7c73\u56fd\u3067\u5927\u898f\u6a21\u30c6\u30ed\u3002',effects:['\u7c73\u56fd+800'],apply:function(){if(player==='us')money+=800;for(var id in S)if(S[id].own==='us')S[id].u.i+=3;}},
+  {yr:2003,mo:3,id:'iraq_war',sc:'2000',title:'\u30a4\u30e9\u30af\u6226\u4e89',date:'2003\u5e743\u6708',body:'\u7c73\u82f1\u304c\u30a4\u30e9\u30af\u306b\u4fb5\u653b\u3002',effects:['\u7c73\u56fd+400'],apply:function(){for(var id in S)if(S[id].own==='us')S[id].u.i+=3;if(player==='us')money+=400;}},
+  {yr:1453,mo:5,id:'cpfall',sc:'1453',title:'\u30b3\u30f3\u30b9\u30bf\u30f3\u30c6\u30a3\u30ce\u30fc\u30d7\u30eb\u999d\u843d',date:'1453\u5e745\u6708',body:'\u30e1\u30d5\u30e1\u30c8\u4e8c\u4e16\u304c\u6771\u30ed\u30fc\u30de\u5e1d\u56fd\u3092\u6ec5\u307c\u3059\u3002',effects:['\u30aa\u30b9\u30de\u30f3+500'],apply:function(){if(player==='tr')money+=500;for(var id in S)if(S[id].own==='tr')S[id].u.i+=3;}}
+];
+var _firedEvents={};
+var currentScenario='1936';
+
+function checkHistEvents(){
+  if(!HIST_EVENTS)return;
+  HIST_EVENTS.forEach(function(ev){
+    if(_firedEvents[ev.id])return;
+    if(ev.sc&&ev.sc!==currentScenario)return;
+    if(ev.yr===yr&&ev.mo===mo){
+      _firedEvents[ev.id]=1;
+      document.getElementById('m-t').textContent=ev.title;
+      document.getElementById('m-s').textContent=ev.date||'';
+      document.getElementById('m-r').style.display='none';
+      document.getElementById('m-b').innerHTML='<div class="mi">'+ev.body+'</div>'+
+        (ev.effects?'<div class="mi" style="color:var(--dm)">'+ev.effects.join('<br>')+'</div>':'');
+      document.getElementById('m-btns').innerHTML='<button class="mb ok" onclick="G.closeEvModal()">CONFIRM</button>';
+      document.getElementById('modal').classList.add('open');
+      if(ev.apply)try{ev.apply();}catch(e){console.warn('ev err',e);}
+    }
+  });
+}
+function closeEvModal(){closeModal();updTB();if(sel)updPanel(sel);}
+
+// showNationPanel
+function showNationPanel(){
+  var f=FAC[player];if(!f)return;
+  var terr=0,facs=0,ti=0,tt=0,ta=0,pm=0;
+  for(var id in S)if(S[id].own===player){terr++;facs+=(_fac[id]||0);ti+=(S[id].u.i||0);tt+=(S[id].u.t||0);ta+=(S[id].u.a||0);pm+=Math.floor((S[id].u.i||0)*0.05+(S[id].u.t||0)*0.3+(S[id].u.a||0)*0.2);}
+  pm=Math.round(pm);var inc=incOf(player),net=inc-pm;
+  var d=IDEO_DEFS[ideology]||IDEO_DEFS.neutral;
+  var al=[],en=[];
+  for(var pr in rel){var pp=pr.split('-'),ot=pp[0]===player?pp[1]:pp[1]===player?pp[0]:null;if(!ot)continue;if(rel[pr]==='allied'&&FAC[ot])al.push(FAC[ot].sn);if(rel[pr]==='war'&&FAC[ot])en.push(FAC[ot].sn);}
+  var rows=[
+    ['思想','<span style="color:'+d.color+'">'+d.icon+' '+d.name+'</span>'],
+    (_govChange?['政権移行','残り'+_govChange.turnsLeft+'T']:null),
+    ['領土',terr],['工場',facs+'基'],
+    ['国庫','<span style="color:#68d888">Y'+money+'</span>'],
+    ['純収入','<span style="color:'+(net>=0?'#68d888':'#e05060')+'">'+(net>=0?'+':'')+net+'</span>'],
+    ['歩兵/戦車/航空',ti+'/'+tt+'/'+ta],
+    ['MP',manpower+' (+'+calcMpGain()+'/T)'],
+    (al.length?['同盟国',al.slice(0,5).join(', ')]:null),
+    (en.length?['交戰中','<span style="color:#e05060">'+en.slice(0,4).join(', ')+'</span>']:null),
+  ].filter(Boolean);
+  var html='<div style="font-size:8px;line-height:2.2">'+rows.map(function(r){return'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">'+r[0]+'</span><span>'+r[1]+'</span></div>';}).join('')+'</div>';
+  document.getElementById('econ-content').innerHTML=html;
+  document.getElementById('econ-modal').style.display='flex';
+}
+
+// _diplSuccessRate
+function _diplSuccessRate(type,f){
+  var apv=_approval[f]||0,base={alliance:0.55,aid:0.95,guarantee:0.90,puppet:0.30}[type]||0.5;
+  return Math.max(0.05,Math.min(0.98,base+apv/200*0.6));
+}
+
+// MOD system
+var _loadedMods=[],_activeMod=null;
+function loadMod(mod){
+  if(!mod||!mod.id||!mod.name){addLog('[MOD Error] id/name必須','lw');return false;}
+  _loadedMods=_loadedMods.filter(function(m){return m.id!==mod.id;});
+  _loadedMods.push(mod);addLog('[MOD] "'+mod.name+'"読み込み完了','lk');
+  injectModScenario(mod);return true;
+}
+function injectModScenario(mod){
+  SCENARIOS=SCENARIOS.filter(function(s){return s.id!==mod.id;});
+  SCENARIOS.push({id:mod.id,yr:mod.year||1936,mo:mod.month||1,color:mod.color||'#80e080',name:mod.name,desc:mod.description||'Custom MOD',overrides:mod.territories||{},relations:mod.relations||[],isMod:true,_mod:mod});
+}
+function applyModToGame(mod){
+  if(!mod)return;
+  if(mod.factions)Object.keys(mod.factions).forEach(function(fid){var fd=mod.factions[fid];FAC[fid]=Object.assign(FAC[fid]||{},{n:fd.name||fid,en:fd.nameEn||fd.name||fid,sn:fd.short||fid.toUpperCase().slice(0,4),c:fd.color||'#888',r:fd.region||'EUROPE',m:fd.manpower||1000,incBonus:fd.incBonus||0.8});});
+  var ov=mod.territories||{};Object.keys(ov).forEach(function(tid){if(S[tid]){S[tid].own=ov[tid];if(S[tid].el)S[tid].el.setAttribute('fill',fcol(ov[tid]));}});
+  if(mod.startUnits)Object.keys(mod.startUnits).forEach(function(fid){var u=mod.startUnits[fid];for(var id in S)if(S[id].own===fid){if(u.i!==undefined)S[id].u.i=u.i;if(u.t!==undefined)S[id].u.t=u.t;if(u.a!==undefined)S[id].u.a=u.a;break;}});
+  if(mod.events)mod.events.forEach(function(ev){ev.sc=mod.id;if(!ev.apply&&ev.effects_code){try{ev.apply=new Function(ev.effects_code);}catch(e){}}HIST_EVENTS=HIST_EVENTS.filter(function(e2){return e2.id!==ev.id;});HIST_EVENTS.push(ev);});
+  _activeMod=mod;addLog('[MOD] "'+mod.name+'"適用完了','lk');
+}
+function removeMod(id){_loadedMods=_loadedMods.filter(function(m){return m.id!==id;});SCENARIOS=SCENARIOS.filter(function(s){return s.id!==id;});if(_activeMod&&_activeMod.id===id)_activeMod=null;addLog('[MOD] 削除: '+id,'lai');}
+function modToggle(){
+  var ml=document.getElementById('mod-list');if(!ml)return;
+  if(ml.classList.contains('on')){ml.classList.remove('on');return;}
+  var inner='<div class="mod-item" style="color:var(--ac);cursor:pointer" onclick="G.modLoadFile()">+ JSON読み込む</div>';
+  if(_loadedMods.length){
+    _loadedMods.forEach(function(m){
+      inner+='<div class="mod-item">'+m.name+'</div>';
+    });
+  }
+  ml.innerHTML=inner;
+  ml.classList.add('on');
+}
+function modLoadFile(){document.getElementById('mod-file-input').click();}
+function _parseModFile(file){var r=new FileReader();r.onload=function(e){try{var m=JSON.parse(e.target.result);if(Array.isArray(m))m.forEach(loadMod);else loadMod(m);}catch(err){addLog('[MOD Error] '+err.message,'lw');}};r.readAsText(file);}
+function _setupModDrop(){
+  var inp=document.getElementById('mod-file-input');
+  if(inp)inp.addEventListener('change',function(e){Array.from(e.target.files).forEach(_parseModFile);e.target.value='';});
+  document.addEventListener('dragover',function(e){e.preventDefault();});
+  document.addEventListener('drop',function(e){var files=Array.from(e.dataTransfer.files).filter(function(f){return f.name.endsWith('.json');});if(files.length){e.preventDefault();files.forEach(_parseModFile);}});
+  var mb=document.getElementById('mod-drop');if(mb)mb.addEventListener('touchend',function(e){e.preventDefault();G.modToggle();},{passive:false});
+}
+
 return{
   setU:setU,recruit:recruit,
   setAtk:setAtk,cancelAtk:cancelAtk,
