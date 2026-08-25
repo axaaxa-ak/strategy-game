@@ -859,7 +859,24 @@ function processSVG(txt){
   for(var i=0;i<allEls.length;i++){
     var el=allEls[i];var id=el.getAttribute('id');
     if(!id||SKIP_RE.test(id))continue;
-    var own=TF[id]||('nt_'+id);
+    var _ll=id.toLowerCase();
+    var own=TF[id]||(
+      _ll.match(/manchur|kwantung|korea|hamgyong|pyongan|gangwon|gyeong|taiwan|formosa|okinawa/)?'jp':
+      _ll.match(/borneo|sumatra|java|celebes|sulawesi|dutch_east/)?'nl':
+      _ll.match(/indochina|annam|tonkin|cochin|laos|cambodia/)?'fr':
+      _ll.match(/angola|mozambique|cape_verde|portuguese/)?'pt':
+      _ll.match(/eritrea|somali|libya/)?'it':
+      _ll.match(/xinjiang|sinkiang/)?'xj':
+      _ll.match(/tibet|lhasa/)?'ti':
+      _ll.match(/outer_mongol|tuva/)?'mo':
+      _ll.match(/india|punjab|bengal|bombay|madras|sind|baluch/)?'bi':
+      _ll.match(/iraq|baghdad|mosul/)?'iq':
+      _ll.match(/persia|iran/)?'ir':
+      _ll.match(/saudi|nejd|hejaz/)?'sa':
+      _ll.match(/egypt|sudan|kenya|nigeria|rhodesia|gold_coast/)?'uk':
+      _ll.match(/french_west|algeria|tunis|senegal|cameroun/)?'fr':
+      _ll.match(/belgian_congo/)?'be':
+      'uk');
     el.setAttribute('fill',fcol(own));
     el.setAttribute('stroke-width','0.5');
     el.classList.add('tl2');
@@ -1454,41 +1471,28 @@ function showWorldStatus(){
   },20);
 }
 function showDiplomStatus(){
-  var html='<div class="mch">外交状況 / DIPLOMATIC STATUS</div>';
-  var byRel={war:[],allied:[],hostile:[],peace:[]};
-  Object.keys(FAC).forEach(function(f){
-    if(f===player)return;
-    var r2=getRel(player,f);if(!byRel[r2])byRel[r2]=[];byRel[r2].push(f);
+  var rows='';
+  Object.keys(FAC).forEach(function(fid){
+    if(fid===player)return;
+    var f=FAC[fid],r=getRel(player,fid);
+    var cnt=0;for(var id in S)if(S[id].own===fid)cnt++;
+    if(cnt===0&&r==='peace')return;
+    var rl={war:'[WAR]',allied:'[ALLY]',puppet:'[PUP]',peace:'-'}[r]||r;
+    var apv=(_approval&&_approval[fid])||0;
+    var apvC=apv>=0?'#4cd870':'#e05060';
+    var alR=typeof _diplSuccessRate==='function'?Math.round(_diplSuccessRate('alliance',fid)*100):50;
+    rows+='<tr style="color:'+f.c+'">'+'<td style="padding:3px 4px;font-size:9px">'+f.sn+'</td>'+'<td style="padding:3px 4px;font-size:8px">'+rl+'</td>'+'<td style="padding:3px 4px;font-family:var(--hd);color:'+apvC+'">'+(apv>=0?'+':'')+apv+'</td>'+'<td style="padding:3px 4px;font-size:7px;color:var(--dm)">同盟'+alR+'%</td>'+'</tr>';
   });
-  function sect(title,arr,col){
-    if(!arr.length)return'';
-    var h='<div class="sd">'+title+'</div>';
-    arr.forEach(function(f){h+='<div class="mdi" style="color:'+col+'">'+FAC[f].n+' ('+FAC[f].sn+')</div>';});
-    return h;
-  }
-  html+=sect('■ AT WAR',byRel.war,'#ff7080');
-  html+=sect('● ALLIED',byRel.allied,'#6898e0');
-  html+=sect('▲ HOSTILE',byRel.hostile,'#e8a040');
-  html+=sect('○ PEACE',byRel.peace,'var(--dm)');
-  document.getElementById('m-t').textContent='DIPLOMATIC STATUS';
-  document.getElementById('m-s').textContent=FAC[player].n;
-  document.getElementById('m-b').innerHTML=html;
+  var mt=document.getElementById('m-t'),ms=document.getElementById('m-s'),mb=document.getElementById('m-b');
+  if(!mt||!ms||!mb)return;
+  mt.textContent='DIPLOMACY';
+  ms.textContent='各国との好感度・外交関係';
+  mb.innerHTML='<div style="overflow-y:auto;max-height:55vh"><table class="dipl-tbl" style="width:100%">'+'<tr><th>国家</th><th>関係</th><th>好感度</th><th>同盟成功率</th></tr>'+rows+'</table></div>';
+  var mbt=document.getElementById('m-btns');
+  if(mbt)mbt.innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';
   document.getElementById('m-r').style.display='none';
-  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()" style="flex:1">CLOSE</button>';
   document.getElementById('modal').classList.add('open');
-  setTimeout(function(){
-    var mb=document.getElementById('m-btns');
-    if(!mb)return;
-    [].forEach.call(mb.querySelectorAll('button'),function(b){
-      if(b._td)return;b._td=1;
-      b.addEventListener('touchend',function(e){
-        e.preventDefault();e.stopPropagation();
-        if(b.onclick)b.onclick(e);
-      },{passive:false});
-    });
-  },20);
 }
-// ── Troop Tower (HOI4-style division badges) ──
 function updTroopLabels(){
   var ov=document.getElementById('troop-overlay');if(!ov)return;
   ov.innerHTML='';
@@ -1538,7 +1542,13 @@ function nextTurn(){
     var t=S[id];if(t.own!==player)continue;
     var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;
   }
-  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
+  // Maintenance costs
+  var _maint=0;
+  for(var _mid in S){if(S[_mid].own!==player)continue;
+    _maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);}
+  _maint=Math.floor(_maint);
+  if(_maint>0){money=Math.max(0,money-_maint);}
+  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' 維持費-'+_maint+' | 定期増員完了','lai');
   checkHistEvents();
   processGovChange();
   _mpPerTurn=calcMpGain();manpower+=_mpPerTurn;
