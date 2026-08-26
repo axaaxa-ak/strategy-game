@@ -184,7 +184,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .wb{font-size:6px;padding:2px 5px}
   #sp{left:0;right:0;top:auto;bottom:0;width:100%;height:42vh;max-height:42vh;
       border-right:none;border-top:2px solid var(--b2);
-      transform:translateY(calc(100% - 42px));
+      transform:translateY(0);
       transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:920;
       border-radius:10px 10px 0 0}
   #sp.open{transform:translateY(0)}
@@ -1006,17 +1006,17 @@ function clearHL(){
 }
 // ── Mobile panel ──
 function togglePanel(){
-  _isMobile=checkMobile();if(!_isMobile)return;
   _panelOpen=!_panelOpen;
   var sp=document.getElementById('sp'),tog=document.getElementById('sp-tog');
   if(sp)sp.classList.toggle('open',_panelOpen);
   if(tog)tog.textContent=_panelOpen?'▼ PANEL':'▲ PANEL';
 }
 function openPanelMobile(){
-  _isMobile=checkMobile();if(!_isMobile||_panelOpen)return;
-  _panelOpen=true;
+  // Always open the panel when a territory is selected
   var sp=document.getElementById('sp'),tog=document.getElementById('sp-tog');
-  if(sp)sp.classList.add('open');if(tog)tog.textContent='▼ PANEL';
+  if(sp)sp.classList.add('open');
+  if(tog)tog.textContent='▼ PANEL';
+  _panelOpen=true;
 }
 // ── Click handler ──
 function onClick(id){
@@ -1110,7 +1110,7 @@ function updPanel(id){
     }
   }
   if(isOwn){
-    h+='<div class="sd">SYSTEM</div>'+'<div class="bg2">'+'<button class="btn" onclick="G.showIdeoPopup()">'+((IDEO_DEFS&&IDEO_DEFS[ideology])?IDEO_DEFS[ideology].icon+' '+IDEO_DEFS[ideology].name:'IDEOLOGY')+'</button>'+'<button class="btn" onclick="G.showVictoryPanel()">&#127942; \u52dd\u5229\u6761\u4ef6</button>'+'<button class="btn" onclick="G.showDiplomScreen()">\u5168\u4f53\u5916\u4ea4\u72b6\u6cc1</button>'+'</div>';
+    h+='<div class="sd">SYSTEM</div>'+'<div class="bg2">'+'<button class="btn" onclick="G.showIdeoPopup()">'+((IDEO_DEFS&&IDEO_DEFS[ideology])?IDEO_DEFS[ideology].icon+' '+IDEO_DEFS[ideology].name:'IDEOLOGY')+'</button>'+'<button class="btn" onclick="G.showVictoryPanel()">&#127942; \u52dd\u5229\u6761\u4ef6</button>'+'<button class="btn" onclick="G.showDiplomStatus()">\u5168\u4f53\u5916\u4ea4\u72b6\u6cc1</button>'+'</div>';
   }
   if(pc){
     pc.innerHTML=h;
@@ -1537,23 +1537,19 @@ function updTroopLabels(){
 function nextTurn(){
   turn++;mo++;if(mo>12){mo=1;yr++;}
   var inc=incOf(player);money+=inc;
-  // 定期ポップ: 自国地域に自然増員
-  for(var id in S){
-    var t=S[id];if(t.own!==player)continue;
-    var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;
-  }
-  // Maintenance costs
+  // 自然増員
+  for(var id in S){var t=S[id];if(t.own!==player)continue;var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;}
+  // 維持費
   var _maint=0;
-  for(var _mid in S){if(S[_mid].own!==player)continue;
-    _maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);}
-  _maint=Math.floor(_maint);
-  if(_maint>0){money=Math.max(0,money-_maint);}
-  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' 維持費-'+_maint+' | 定期増員完了','lai');
-  checkHistEvents();
-  processGovChange();
-  _mpPerTurn=calcMpGain();manpower+=_mpPerTurn;
+  for(var _mid in S){if(S[_mid].own!==player)continue;_maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);}
+  _maint=Math.floor(_maint);if(_maint>0)money=Math.max(0,money-_maint);
+  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' 維持費-'+_maint,'lai');
+  // システム処理
+  if(typeof checkHistEvents==='function')checkHistEvents();
+  if(typeof processGovChange==='function')processGovChange();
+  if(typeof calcMpGain==='function'){_mpPerTurn=calcMpGain();manpower+=_mpPerTurn;}
   _usedDiplo={};
-  checkVictory();
+  if(typeof checkVictory==='function')checkVictory();
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
 }
 // ── AI Turn ──
@@ -1991,6 +1987,7 @@ return{
 <div id="vic-panel" style="display:none;position:fixed;top:50px;left:50%;transform:translateX(-50%);background:rgba(6,16,26,.97);border:1px solid var(--ac);padding:14px 18px;z-index:5000;min-width:300px"><div style="font-family:var(--hd);font-size:10px;color:var(--ac);margin-bottom:10px">VICTORY CONDITIONS</div><div style="margin-bottom:8px"><div style="font-size:8px;color:var(--dm);display:flex;justify-content:space-between"><span>&#9876; 覆権</span><span id="vc-mil-pct">0%</span></div><div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-top:2px"><div id="vc-mil-bar" style="height:100%;border-radius:3px;width:0%;background:var(--ac);transition:.4s"></div></div></div><div style="margin-bottom:8px"><div style="font-size:8px;color:var(--dm);display:flex;justify-content:space-between"><span>&#127981; 産業</span><span id="vc-ind-pct">0%</span></div><div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-top:2px"><div id="vc-ind-bar" style="height:100%;border-radius:3px;width:0%;background:var(--ac);transition:.4s"></div></div></div><div style="margin-bottom:8px"><div style="font-size:8px;color:var(--dm);display:flex;justify-content:space-between"><span>&#129309; 外交</span><span id="vc-dip-pct">0%</span></div><div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-top:2px"><div id="vc-dip-bar" style="height:100%;border-radius:3px;width:0%;background:var(--ac);transition:.4s"></div></div></div><div style="font-size:7px;color:var(--dm)">2つ同時達成で勝利</div><button onclick="document.getElementById('vic-panel').style.display='none'" style="margin-top:8px;background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--tx);padding:4px 16px;cursor:pointer;font-family:var(--hd);font-size:7px">CLOSE</button></div>
 <div id="rebel-border" style="display:none;position:fixed;inset:0;pointer-events:none;z-index:8000;border:4px solid rgba(220,50,50,.6);animation:rbp 1.5s ease-in-out infinite"></div>
 <style>@keyframes rbp{0%,100%{border-color:rgba(220,50,50,.3)}50%{border-color:rgba(220,50,50,.9)}}</style>
+<div id="mp-display" style="position:fixed;right:12px;bottom:98px;z-index:900;background:rgba(160,216,239,.08);border:1px solid rgba(160,216,239,.25);color:#a0d8ef;padding:4px 10px;font-family:var(--hd);font-size:7px;letter-spacing:1px;cursor:pointer" onclick="G.showNationPanel()">MP: ...</div>
 <button onclick="G.showVictoryPanel()" style="position:fixed;right:12px;bottom:44px;z-index:900;background:rgba(200,162,72,.12);border:1px solid rgba(200,162,72,.3);color:var(--ac);padding:4px 10px;font-family:var(--hd);font-size:7px;cursor:pointer">&#127942; VICTORY</button>
 <button onclick="G.showIdeoPopup()" id="ideo-btn" style="position:fixed;right:12px;bottom:72px;z-index:900;background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--dm);padding:4px 10px;font-family:var(--hd);font-size:7px;cursor:pointer">IDEO</button>
 </body>
