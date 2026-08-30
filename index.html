@@ -1102,7 +1102,6 @@ function processSVG(txt){
         var scLog=null;for(var sli=0;sli<SCENARIOS.length;sli++)if(SCENARIOS[sli].id===currentScenario){scLog=SCENARIOS[sli];break;}
         // Apply active mod
         if(_activeMod)applyModToGame(_activeMod);
-        if(typeof applyModToGame==='function'&&_activeMod)applyModToGame(_activeMod);
         addLog((scLog?scLog.yr+'年'+scLog.mo+'月':'1936年1月')+' — '+FAC[player].n+'として世界大戦略を開始。','lt');
         addLog('自国領土クリック→攻勢命令→赤域クリックで攻撃','li');
         addLog('包囲(ENCIRCLED)状態の敵は防御力-50%。','li');
@@ -1240,8 +1239,8 @@ function onClick(id){
   if(atkMode){
     var isMv=atkMode==='move'||atkMode==='move_i'||atkMode==='move_t'||atkMode==='move_a';
     if(isMv){
-      var rr=getRel(player,tOwn);
-      if((tOwn===player||rr==='allied'||rr==='puppet')&&id!==atkFrom){execMove(atkFrom,id);}
+      var r2=getRel(player,tOwn);
+      if((tOwn===player||r2==='allied'||r2==='puppet')&&id!==atkFrom)execMove(atkFrom,id);
       else{cancelAtk();if(tOwn===player)selTerr(id);}
       return;
     }
@@ -1479,9 +1478,6 @@ function _diplSuccessRate(type,f){
 }
 function opD(type,tid){
   var f=S[tid]&&S[tid].own;if(!f)return;
-  if(_usedDiplo&&_usedDiplo[type+'_'+f]){addLog('このターンは使用済み','lw');return;}
-  var pct=typeof _diplSuccessRate==='function'?Math.round(_diplSuccessRate(type,f)*100):50;
-  var apv=(_approval&&_approval[f])||0;
   // Note: once-per-turn limit enforced in _execD
   var fn=(FAC[f]&&FAC[f].n)||f;
   var apv=_approval[f]||0;
@@ -1655,7 +1651,7 @@ function updTB(){
   var ti=document.getElementById('tb-i');
   if(ti){
     ti.textContent=(net>=0?'+':'')+net;
-    ti.onclick=function(){(G.showEconBreakdown?G.showEconBreakdown():G.showNationPanel&&G.showNationPanel());};
+    ti.onclick=function(){G.showMpBreakdown();};
     ti.title='収入:Y'+inc+' 維持費:-Y'+_pmaint+' (タップで内訳)';
     ti.style.cursor='pointer';
     ti.style.color=net>0?'#68d888':net<0?'#e05060':'var(--dm)';}
@@ -1666,7 +1662,7 @@ function updTB(){
   if(mpEl){
     var mpGain=calcMpGain();
     mpEl.textContent='MP: '+manpower+' (+'+mpGain+'/T)';
-    mpEl.onclick=function(){(G.showEconBreakdown?G.showEconBreakdown():G.showNationPanel&&G.showNationPanel());};
+    mpEl.onclick=function(){G.showMpBreakdown();};
     mpEl.style.color=manpower<1000?'#e05060':manpower<3000?'#f0d060':'#a0d8ef';
   }
   var tt=document.getElementById('tb-t');if(tt)tt.textContent=cntOf(player);
@@ -1789,17 +1785,27 @@ function updTroopLabels(){
 function nextTurn(){
   turn++;mo++;if(mo>12){mo=1;yr++;}
   var inc=incOf(player);money+=inc;
-  for(var id in S){var t=S[id];if(t.own!==player)continue;var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;}
   var _maint=0;
-  for(var _mid in S){if(S[_mid].own!==player)continue;_maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);}
-  _maint=Math.floor(_maint);if(_maint>0)money=Math.max(0,money-_maint);
-  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' 維持費-'+_maint,'lai');
+  for(var _mid in S){
+    if(S[_mid].own!==player)continue;
+    _maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);
+  }
+  var _maintMult=ideoMaintMult();
+  _maint=Math.round(_maint*_maintMult);
+  if(_maint>0){money=Math.max(0,money-_maint);
+    if(_maint>10)addLog('[維持費] -Y'+_maint+(ideology!=='neutral'?' (思想補正補正)':''),'lai');}
+  for(var _gid in S){
+    var _gt=S[_gid];var _nb=adjOf(_gid);var _brd=false;
+    for(var _ni=0;_ni<_nb.length;_ni++)if(S[_nb[_ni]]&&S[_nb[_ni]].own!==_gt.own){_brd=true;break;}
+    if(!_brd)continue;
+    var _facBonus=(_fac[_gid]||0)*2;
+    var _pop=Math.max(0,Math.floor((_gt.eco+_facBonus)*(_gt.own===player?0.04:0.03)));
+    if(_pop>0)_gt.u.i=(_gt.u.i||0)+_pop;
+  }
+  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
+  checkHistEvents();
   _puppetIncome();
-  if(typeof checkHistEvents==='function')checkHistEvents();
-  if(typeof processGovChange==='function')processGovChange();
-  if(typeof calcMpGain==='function'){_mpPerTurn=calcMpGain();manpower+=_mpPerTurn;}
-  _usedAir={};_usedDiplo={};
-  if(typeof checkVictory==='function')checkVictory();
+  _usedAir={};
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
 }
 // ── AI Turn ──
@@ -2085,8 +2091,7 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 // ── Public API ──
-var _usedAir={},_fac={},_puppets={},_jwar={},_ships={},_approval={},_usedDiplo={};
-var _newU={},_seaMov={},_vetI=0,_vetT=0,_vetA=0;
+var _usedAir={},_fac={},_puppets={},_jwar={},_ships={},_approval={};
 var currentScenario='1936',_firedEvents={};
 
 var SCENARIOS=[
@@ -2427,7 +2432,18 @@ function selectScen(scenId){var sc=null;for(var si=0;si<SCENARIOS.length;si++)if
 function showMenu(){var m=document.getElementById('menu');if(m)m.classList.remove('off');var sc=document.getElementById('scensel');if(sc)sc.classList.remove('on');var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');}
 function showScenSel(){var m=document.getElementById('menu');if(m)m.classList.add('off');var ss=document.getElementById('scensel');if(ss)ss.classList.add('on');_buildScenGrid();}
 function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';SCENARIOS.forEach(function(sc){var c=document.createElement('div');c.className='scen-card';c.style.setProperty('--scc',sc.color);c.innerHTML='<div class="scen-year">'+sc.yr+'</div><div class="scen-name">'+sc.name+(sc.isMod?' <span style="color:#80e080;font-size:6px;border:1px solid #80e080;padding:1px 3px">MOD</span>':'')+'</div><div class="scen-desc">'+sc.desc+'</div>';c.addEventListener('click',function(){G.selectScen(sc.id);});g.appendChild(c);});}
-function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');if(!t||!ms||!b)return;t.textContent='HOW TO PLAY';ms.textContent='\u9059\u3073\u65b9';b.innerHTML='<div class="mi" style="font-size:8px;line-height:2">\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u2192\u56fd\u5bb6\u9078\u629e<br>\u9818\u571f\u30bf\u30c3\u30d7\u3067\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>ASSAULT/TANK RUSH\u2192\u653b\u6483<br>\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u767a\u751f</div>';var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');}
+function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');if(!t||!ms||!b)return;t.textContent='HOW TO PLAY';ms.textContent='\u9059\u3073\u65b9';b.innerHTML='<div class="mi" style="font-size:8px;line-height:2">\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u2192\u56fd\u5bb6\u9078\u629e<br>\u9818\u571f\u30bf\u30c3\u30d7\u3067\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>ASSAULT/TANK RUSH\u2192\u653b\u6483<br>\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u767a\u751f</div>';var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');
+  setTimeout(function(){
+    var mb=document.getElementById('m-btns');if(!mb)return;
+    [].forEach.call(mb.querySelectorAll('button'),function(b){
+      if(b._td)return;b._td=true;
+      b.addEventListener('touchend',function(e){
+        e.preventDefault();e.stopPropagation();
+        if(b.onclick)b.onclick(e);
+      },{passive:false});
+    });
+  },20);
+}
 
 function buildFactory(id){if(!id||!S[id]||S[id].own!==player)return;if(money<200){addLog('\u5de5\u5834Y200\u4e0d\u8db3','lw');return;}money-=200;_fac[id]=(_fac[id]||0)+1;addLog('[\u5de5\u5834\u5efa\u8a2d] '+S[id].name+' '+_fac[id]+'\u57fa','lt');updTB();if(sel)updPanel(sel);}
 function buildFactoryAll(){var cnt=0;for(var id in S){if(S[id].own!==player||money<200)continue;money-=200;_fac[id]=(_fac[id]||0)+1;cnt++;}if(cnt)addLog('[\u4e00\u62ec\u5de5\u5834] '+cnt+'\u7b87\u6240','lt');else addLog('\u8cc7\u91d1\u4e0d\u8db3','lw');updTB();}
@@ -2513,7 +2529,7 @@ function loadGame(){try{var raw=localStorage.getItem('warcmd_v1');if(!raw){addLo
   if(ideEl&&IDEO_DEFS[ideology])ideEl.textContent=IDEO_DEFS[ideology].icon+' '+IDEO_DEFS[ideology].name.slice(0,4)+(_govChange?' *':'');
   var mpEl=document.getElementById('mp-bar');
   if(mpEl){mpEl.textContent='人的資源: '+manpower+' (+'+(_mpPerTurn||calcMpGain())+')';
-    mpEl.onclick=function(){(G.showEconBreakdown?G.showEconBreakdown():G.showNationPanel&&G.showNationPanel());};
+    mpEl.onclick=function(){G.showMpBreakdown();};
   }}applyFoW();updTB();if(sel)updPanel(sel);updTroopLabels();addLog('[LOAD] Turn'+turn+'\u304b\u3089\u518d\u958b','lt');var fe=document.getElementById('fsel');if(fe)fe.classList.add('off');var me=document.getElementById('menu');if(me)me.classList.add('off');var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');}catch(e){addLog('[LOAD\u5931\u6557] '+e,'lw');}}
 
 // ════════════════════════════════════════════════════════════════
@@ -3228,45 +3244,6 @@ function _fixModalTouch(){
   }
 }
 
-function showEconBreakdown(){
-  var inc=incOf(player),pm=0,terr=0,facs=0;
-  for(var id in S)if(S[id].own===player){terr++;facs+=(_fac[id]||0);pm+=Math.floor((S[id].u.i||0)*0.05+(S[id].u.t||0)*0.3+(S[id].u.a||0)*0.2);}
-  pm=Math.round(pm);var net=inc-pm;
-  document.getElementById('m-t').textContent='収支内訳';
-  document.getElementById('m-s').textContent='領土'+terr+' / 工場'+facs+'基';
-  document.getElementById('m-r').style.display='none';
-  document.getElementById('m-b').innerHTML='<div class="mi" style="font-size:8px;line-height:2.4">'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">収入</span><span style="color:#68d888">+Y'+inc+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">維持費</span><span style="color:#e05060">-Y'+pm+'</span></div>'
-    +'<div style="border-top:1px solid var(--b2);padding-top:4px;display:flex;justify-content:space-between"><span style="color:var(--dm)">純収入/T</span>'
-    +'<span style="font-family:var(--hd);color:'+(net>=0?'#68d888':'#e05060')+'">'+(net>=0?'+':'')+net+'</span></div></div>';
-  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';
-  document.getElementById('modal').classList.add('open');
-}
-function showNationPanel(){
-  var terr=0,facs=0,ti=0,tt=0,ta=0,pm=0;
-  for(var id in S)if(S[id].own===player){terr++;facs+=(_fac[id]||0);ti+=(S[id].u.i||0);tt+=(S[id].u.t||0);ta+=(S[id].u.a||0);pm+=Math.floor((S[id].u.i||0)*0.05+(S[id].u.t||0)*0.3+(S[id].u.a||0)*0.2);}
-  pm=Math.round(pm);var inc=incOf(player),net=inc-pm;
-  var al=[],en=[];
-  for(var pr in rel){var pp=pr.split('-'),ot=pp[0]===player?pp[1]:pp[1]===player?pp[0]:null;if(!ot)continue;if(rel[pr]==='allied'&&FAC[ot])al.push(FAC[ot].sn);if(rel[pr]==='war'&&FAC[ot])en.push(FAC[ot].sn);}
-  var d=(typeof IDEO_DEFS!=='undefined'&&IDEO_DEFS[ideology])||{icon:'',name:ideology||'neutral'};
-  document.getElementById('m-t').textContent='国家情報';
-  document.getElementById('m-s').textContent=(FAC[player]&&FAC[player].n)||player;
-  document.getElementById('m-r').style.display='none';
-  document.getElementById('m-b').innerHTML='<div class="mi" style="font-size:8px;line-height:2.4">'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">思想</span><span>'+d.icon+' '+d.name+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">領土/工場</span><span>'+terr+' / '+facs+'基</span></div>'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">国庫</span><span style="color:#68d888">Y'+money+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">純収入/T</span><span style="color:'+(net>=0?'#68d888':'#e05060')+'">'+(net>=0?'+':'')+net+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">歩兵/戦車/航空</span><span>'+ti+'/'+tt+'/'+ta+'</span></div>'
-    +(typeof manpower!=='undefined'?'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">MP</span><span>'+manpower+'</span></div>':'')
-    +(al.length?'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">同盟国</span><span style="color:#4cd870">'+al.slice(0,5).join(', ')+'</span></div>':'')
-    +(en.length?'<div style="display:flex;justify-content:space-between"><span style="color:var(--dm)">交戰中</span><span style="color:#e05060">'+en.slice(0,4).join(', ')+'</span></div>':'')
-    +'</div>';
-  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';
-  document.getElementById('modal').classList.add('open');
-}
-
 return{
   setU:setU,recruit:recruit,
   setAtk:setAtk,cancelAtk:cancelAtk,
@@ -3290,8 +3267,7 @@ return{
   showIdeoPopup:showIdeoPopup,startGovChange:startGovChange,
   showMpBreakdown:showMpBreakdown,showVictoryPanel:showVictoryPanel,
   checkVictory:checkVictory
-,
-  showEconBreakdown:showEconBreakdown};
+};
 }());
 </script>
 <!-- Ideology tag in toolbar -->
