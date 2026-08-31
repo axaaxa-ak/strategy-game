@@ -873,6 +873,11 @@ function buildFsel(){
       tabs.querySelectorAll('.ftab').forEach(function(b){b.classList.remove('on')});
       btn.classList.add('on');renderCards(reg);
     };
+    btn.addEventListener('touchend',function(e){
+      e.preventDefault();e.stopPropagation();
+      tabs.querySelectorAll('.ftab').forEach(function(b){b.classList.remove('on')});
+      btn.classList.add('on');renderCards(reg);
+    },{passive:false});
     tabs.appendChild(btn);
   });
   renderCards('EUROPE');
@@ -888,7 +893,11 @@ function renderCards(region){
       '<div class="fc-n">'+f.n+'</div>'+
       '<div class="fc-d">'+f.d+'</div>'+
       '<button class="fc-b" data-fid="'+fid+'">SELECT &#9654;</button>';
-    c.querySelector('.fc-b').addEventListener('click',function(e){
+    var _fcb=c.querySelector('.fc-b');
+    _fcb.addEventListener('touchend',function(e){
+      e.preventDefault();e.stopPropagation();startGame(_fcb.getAttribute('data-fid'));
+    },{passive:false});
+    _fcb.addEventListener('click',function(e){
       e.stopPropagation();startGame(e.currentTarget.getAttribute('data-fid'));
     });
     g.appendChild(c);
@@ -1478,6 +1487,7 @@ function _diplSuccessRate(type,f){
 }
 function opD(type,tid){
   var f=S[tid]&&S[tid].own;if(!f)return;
+  if(_usedDiplo&&_usedDiplo[type+'_'+f]){addLog('このターンは使用済み','lw');return;}
   // Note: once-per-turn limit enforced in _execD
   var fn=(FAC[f]&&FAC[f].n)||f;
   var apv=_approval[f]||0;
@@ -1785,27 +1795,25 @@ function updTroopLabels(){
 function nextTurn(){
   turn++;mo++;if(mo>12){mo=1;yr++;}
   var inc=incOf(player);money+=inc;
+  // 自然増員
+  for(var id in S){var t=S[id];if(t.own!==player)continue;var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;}
+  // 維持費
   var _maint=0;
-  for(var _mid in S){
-    if(S[_mid].own!==player)continue;
-    _maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);
-  }
-  var _maintMult=ideoMaintMult();
-  _maint=Math.round(_maint*_maintMult);
-  if(_maint>0){money=Math.max(0,money-_maint);
-    if(_maint>10)addLog('[維持費] -Y'+_maint+(ideology!=='neutral'?' (思想補正補正)':''),'lai');}
-  for(var _gid in S){
-    var _gt=S[_gid];var _nb=adjOf(_gid);var _brd=false;
-    for(var _ni=0;_ni<_nb.length;_ni++)if(S[_nb[_ni]]&&S[_nb[_ni]].own!==_gt.own){_brd=true;break;}
-    if(!_brd)continue;
-    var _facBonus=(_fac[_gid]||0)*2;
-    var _pop=Math.max(0,Math.floor((_gt.eco+_facBonus)*(_gt.own===player?0.04:0.03)));
-    if(_pop>0)_gt.u.i=(_gt.u.i||0)+_pop;
-  }
-  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
-  checkHistEvents();
-  _puppetIncome();
-  _usedAir={};
+  for(var _mid in S){if(S[_mid].own!==player)continue;_maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);}
+  _maint=Math.floor(_maint);if(_maint>0)money=Math.max(0,money-_maint);
+  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' 維持費-'+_maint,'lai');
+  // 傀儡収入
+  if(typeof _puppetIncome==='function')_puppetIncome();
+  // 歴史イベント
+  if(typeof checkHistEvents==='function')checkHistEvents();
+  // 政権交代
+  if(typeof processGovChange==='function')processGovChange();
+  // Manpower
+  if(typeof calcMpGain==='function'){_mpPerTurn=calcMpGain();manpower+=_mpPerTurn;}
+  // ターン制リセット
+  _usedAir={};if(typeof _usedDiplo!=='undefined')_usedDiplo={};
+  // 勝利条件チェック
+  if(typeof checkVictory==='function')checkVictory();
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
 }
 // ── AI Turn ──
@@ -2431,7 +2439,8 @@ function closeEvModal(){var em=document.getElementById('evmodal');if(em)em.class
 function selectScen(scenId){var sc=null;for(var si=0;si<SCENARIOS.length;si++)if(SCENARIOS[si].id===scenId){sc=SCENARIOS[si];break;}if(!sc)return;currentScenario=sc.id;_firedEvents={};yr=sc.yr;mo=sc.mo;var ss=document.getElementById('scensel');if(ss)ss.classList.remove('on');var m=document.getElementById('menu');if(m)m.classList.add('off');var fs=document.getElementById('fsel');if(fs)fs.classList.remove('off');var ft=document.querySelector('.fh-t');if(ft)ft.textContent=sc.nameEn||sc.name;buildFsel();}
 function showMenu(){var m=document.getElementById('menu');if(m)m.classList.remove('off');var sc=document.getElementById('scensel');if(sc)sc.classList.remove('on');var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');}
 function showScenSel(){var m=document.getElementById('menu');if(m)m.classList.add('off');var ss=document.getElementById('scensel');if(ss)ss.classList.add('on');_buildScenGrid();}
-function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';SCENARIOS.forEach(function(sc){var c=document.createElement('div');c.className='scen-card';c.style.setProperty('--scc',sc.color);c.innerHTML='<div class="scen-year">'+sc.yr+'</div><div class="scen-name">'+sc.name+(sc.isMod?' <span style="color:#80e080;font-size:6px;border:1px solid #80e080;padding:1px 3px">MOD</span>':'')+'</div><div class="scen-desc">'+sc.desc+'</div>';c.addEventListener('click',function(){G.selectScen(sc.id);});g.appendChild(c);});}
+function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';SCENARIOS.forEach(function(sc){var c=document.createElement('div');c.className='scen-card';c.style.setProperty('--scc',sc.color);c.innerHTML='<div class="scen-year">'+sc.yr+'</div><div class="scen-name">'+sc.name+(sc.isMod?' <span style="color:#80e080;font-size:6px;border:1px solid #80e080;padding:1px 3px">MOD</span>':'')+'</div><div class="scen-desc">'+sc.desc+'</div>';c.addEventListener('click',function(){G.selectScen(sc.id);});
+  c.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();G.selectScen(sc.id);},{passive:false});g.appendChild(c);});}
 function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');if(!t||!ms||!b)return;t.textContent='HOW TO PLAY';ms.textContent='\u9059\u3073\u65b9';b.innerHTML='<div class="mi" style="font-size:8px;line-height:2">\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u2192\u56fd\u5bb6\u9078\u629e<br>\u9818\u571f\u30bf\u30c3\u30d7\u3067\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>ASSAULT/TANK RUSH\u2192\u653b\u6483<br>\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u767a\u751f</div>';var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');
   setTimeout(function(){
     var mb=document.getElementById('m-btns');if(!mb)return;
@@ -3244,6 +3253,25 @@ function _fixModalTouch(){
   }
 }
 
+function recruit(){
+  if(!sel||S[sel].own!==player)return;
+  var u=UC[curUnit];if(!u)return;
+  if(money<u.c){addLog('資金不足','lw');return;}
+  if(typeof manpower!=='undefined'&&typeof calcMpCost==='function'){
+    var mc=calcMpCost(curUnit,1);
+    if(manpower<mc){addLog('MP不足: '+mc+' 必要 (現在:'+manpower+')','lw');return;}
+    manpower-=mc;
+  }
+  money-=u.c;
+  var added=u.b;S[sel].u[curUnit]=(S[sel].u[curUnit]||0)+added;
+  if(!_newU[sel])_newU[sel]={i:0,t:0,a:0};
+  _newU[sel][curUnit]=(_newU[sel][curUnit]||0)+added;
+  addLog('[征兵] '+S[sel].name+' '+curUnit.toUpperCase()+'x'+added,'lt');
+  updPanel(sel);updTB();
+}
+
+var UC={i:{c:100,b:10,n:'歩兵'},t:{c:100,b:2,n:'戦車'},a:{c:90,b:3,n:'航空'}};
+
 return{
   setU:setU,recruit:recruit,
   setAtk:setAtk,cancelAtk:cancelAtk,
@@ -3256,7 +3284,7 @@ return{
   showWorldStatus:showWorldStatus,
   showDiplomStatus:showDiplomScreen,
   showMenu:showMenu,showScenSel:showScenSel,showHowTo:showHowTo,
-  selectScen:selectScen,closeEvModal:closeEvModal,
+  selectScen:selectScen,startGame:startGame,closeEvModal:closeEvModal,
   buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,
   buildShip:buildShip,recruitAll:recruitAll,
   opPuppetCreate:opPuppetCreate,requestAllyWar:requestAllyWar,
