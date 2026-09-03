@@ -2096,7 +2096,35 @@ document.addEventListener('DOMContentLoaded',function(){
   // Hide loading screen initially
   var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
   G.showMenu();
-  _setupModDrop();
+  try{_setupModDrop();}catch(e){}
+  // Global touchend fix for all onclick buttons
+  document.addEventListener('touchend',function(e){
+    var el=e.target;
+    while(el&&el!==document.body){
+      if(el.tagName==='BUTTON'&&el.onclick){
+        e.preventDefault();
+        el.onclick(e);
+        return;
+      }
+      el=el.parentElement;
+    }
+  },{passive:false});
+  // MOD file input handler
+  var inp=document.getElementById('mod-file-input');
+  if(inp)inp.addEventListener('change',function(e){
+    Array.from(e.target.files).forEach(function(f){
+      var r=new FileReader();
+      r.onload=function(ev){try{var m=JSON.parse(ev.target.result);G.loadMod(m);}catch(er){};};
+      r.readAsText(f);
+    });e.target.value='';
+  });
+  document.addEventListener('dragover',function(e){e.preventDefault();});
+  document.addEventListener('drop',function(e){
+    var files=Array.from(e.dataTransfer.files).filter(function(f){return f.name.endsWith('.json');});
+    if(files.length){e.preventDefault();files.forEach(function(f){
+      var r=new FileReader();r.onload=function(ev){try{G.loadMod(JSON.parse(ev.target.result));}catch(er){};};
+      r.readAsText(f);});}
+  });
 });
 
 // ── Public API ──
