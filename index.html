@@ -23,6 +23,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #ld-err.on{display:block}
 /* FACTION SELECT */
 #fsel{position:fixed;inset:0;background:rgba(2,8,14,.98);display:flex;flex-direction:column;align-items:center;z-index:7000;overflow:hidden}
+#fsel.off{display:none!important}
 #fsel.off{display:none}
 .fh{padding:16px 16px 8px;text-align:center;flex-shrink:0}
 .fh-t{font-family:var(--hd);font-size:19px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
@@ -2096,6 +2097,8 @@ function setupCtrl(){
 document.addEventListener('DOMContentLoaded',function(){
   // Hide loading screen initially
   var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
+  var fs0=document.getElementById('fsel');if(fs0)fs0.classList.add('off');
+  var ss0=document.getElementById('scensel');if(ss0)ss0.classList.remove('on');
   G.showMenu();
   try{_setupModDrop();}catch(e){}
 
@@ -3351,5 +3354,32 @@ return{
 <input type="file" id="mod-file-input" accept=".json" style="display:none" multiple>
 <div id="mod-drop" onclick="G.modToggle()">&#128196; MOD</div>
 <div id="mod-list"></div>
-<div id="naval-info"></div></body>
+<div id="naval-info"></div>
+<script>
+// iPad fix: direct button dispatcher
+document.addEventListener('DOMContentLoaded',function(){
+  function bindBtn(sel,fn){
+    var el=document.querySelector(sel);
+    if(!el)return;
+    ['click','touchend'].forEach(function(ev){
+      el.addEventListener(ev,function(e){
+        if(ev==='touchend')e.preventDefault();
+        e.stopPropagation();
+        fn();
+      },{passive:false});
+    });
+  }
+  // Wait for G to be available
+  setTimeout(function(){
+    if(typeof G==='undefined'){
+      document.body.innerHTML='<div style="color:red;padding:20px;font-size:20px">ERROR: G is undefined. Check console.</div>';
+      return;
+    }
+    console.log('G loaded OK. showScenSel:',typeof G.showScenSel);
+    bindBtn('.menu-btn.primary',G.showScenSel);
+  },500);
+});
+</script>
+
+</body>
 </html>
