@@ -3308,7 +3308,7 @@ function setAtk(mode,fid){
   atkMode=mode;atkFrom=fid;
   var res=reach(fid,mode==='tankrush'?3:mode==='airstrike'?5:2);
   var atkSet={},movSet={};
-  _seaMov=res.seaMov||{};
+  if(typeof _seaMov!=='undefined')_seaMov=res.seaMov||{};
   for(var id in res.atk)atkSet[id]=1;
   for(var id in res.mov)if(id!==fid)movSet[id]=1;
   clearHL();
