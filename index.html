@@ -608,6 +608,14 @@ var TF=(function(){
   t["São_Paulo"]='br';t["Paraná"]='br';t["Espírito_Santo"]='br';
   t["Goiás"]='br';t["Pará"]='br';t["Ceará"]='br';
   t["Maranhão"]='br';t["Amapá"]='br';t["Piauí"]='br';
+  // Brazil main states
+  t['Amazonas']='br';t['Mato_Grosso']='br';t['Mato_Grosso_do_Sul']='br';
+  t['Minas_Gerais']='br';t['Bahia']='br';t['Pernambuco']='br';
+  t['Acre']='br';t['Rondonia']='br';t['Roraima']='br';
+  t['Tocantins']='br';t['Alagoas']='br';t['Sergipe']='br';
+  t['Rio_de_Janeiro']='br';t['Rio_Grande_do_Norte']='br';
+  t['Rio_Grande_do_Sul']='br';t['Paraiba']='br';
+  t['Santa_Catarina']='br';t['Minas']='br';t['Brazil']='br';
   t["Córdoba"]='ar';t["Tucumán"]='ar';t["Entre_Ríos"]='ar';
   t["Tierra_del_Fuego"]='ar';t["Bolívar"]='ar';
   t["Araucanía"]='cl';t["Aysén"]='cl';t["Arica_y_Tarapacá"]='cl';
@@ -2122,8 +2130,9 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 // ── Public API ──
-var _usedAir={},_fac={},_puppets={},_jwar={},_ships={},_approval={};
-var currentScenario='1936',_firedEvents={};
+var _usedAir={},_fac={},_puppets={},_jwar={},_ships={},_approval={},_usedDiplo={};
+var _newU={},_seaMov={},_vetI=0,_vetT=0,_vetA=0,_mpPerTurn=0;
+var currentScenario='1936',_firedEvents={},manpower=5000,ideology='neutral',_govChange=null;
 
 var SCENARIOS=[
   {id:'1936',yr:1936,mo:1,color:'#c8a248',name:'\u7b2c\u4e8c\u6b21\u5927\u6226\u524d\u591c',nameEn:'EVE OF WW2 1936',desc:'1936\u5e741\u6708\u3002\u65e5\u72ec\u4f0a\u306e\u67a2\u8ef8\u3068\u82f1\u4ed8\u30bd\u9023\u306e\u5bfe\u7acb\u304c\u6df1\u307e\u308b\u3002',overrides:{},relations:[['it','et','war'],['uk','fr','allied'],['uk','au','allied'],['su','mo','allied'],['jp','mk','allied'],['de','it','allied']]},
