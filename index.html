@@ -1355,17 +1355,15 @@ function updPanel(id){
   }
   if(pc){
     pc.innerHTML=h;
-    (function bindBtns(root){
-      var bl=root.querySelectorAll('button');
-      for(var i=0;i<bl.length;i++)(function(b){
-        var s=b.getAttribute('onclick');if(!s)return;
-        b.removeAttribute('onclick');
-        var fn=new Function(s);
-        function run(e){e.stopPropagation();if(e.cancelable)e.preventDefault();try{fn();}catch(x){}}
-        b.addEventListener('click',run);
-        b.addEventListener('touchend',run,{passive:false});
-      })(bl[i]);
-    })(pc);
+    // iPad: add touchend to all panel buttons (keep onclick for desktop)
+    var _pbl=pc.querySelectorAll('button');
+    for(var _pi=0;_pi<_pbl.length;_pi++)(function(b){
+      b.addEventListener('touchend',function(e){
+        e.stopPropagation();
+        if(e.cancelable)e.preventDefault();
+        if(b.onclick)b.onclick(e);
+      },{passive:false});
+    })(_pbl[_pi]);
   }
 }// ── Move ──
 function execMove(fid,tid){
