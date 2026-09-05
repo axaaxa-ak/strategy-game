@@ -1,6 +1,7 @@
 <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 
+
   log.scrollTop=log.scrollHeight;<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -3295,6 +3296,38 @@ function recruit(){
 }
 
 var UC={i:{c:100,b:10,n:'歩兵'},t:{c:100,b:2,n:'戦車'},a:{c:90,b:3,n:'航空'}};
+
+// ── Unit type selector ──────────────────────────────────────────
+function setU(type){
+  curUnit=type;
+  if(sel)updPanel(sel);
+}
+
+// ── Attack mode ─────────────────────────────────────────────────
+function setAtk(mode,fid){
+  if(!fid)fid=sel;
+  if(!fid||S[fid].own!==player){addLog('自国領土を選んでください','lw');return;}
+  atkMode=mode;atkFrom=fid;
+  var res=reach(fid,mode==='tankrush'?3:mode==='airstrike'?5:2);
+  var atkSet={},movSet={};
+  _seaMov=res.seaMov||{};
+  for(var id in res.atk)atkSet[id]=1;
+  for(var id in res.mov)if(id!==fid)movSet[id]=1;
+  clearHL();
+  for(var id in atkSet)if(S[id]){hl[id]='atk';S[id].el.classList.add('ha');}
+  for(var id in movSet)if(S[id]){if(!hl[id])hl[id]='mov';S[id].el.classList.add('hm');}
+  var mi=document.getElementById('movind');
+  var lbl={move:'移動',move_i:'歩兵移動',move_t:'戦車移動',move_a:'航空移動',assault:'連合攻撃',tankrush:'戦車究極',airstrike:'空袭',bombard:'砂砲負'}[mode]||mode;
+  if(mi){mi.textContent=lbl+' — ['+S[fid].name+'] タップで攻撃・移動先を選択';mi.classList.add('on');}
+}
+
+// ── Cancel attack/move mode ──────────────────────────────────────
+function cancelAtk(){
+  atkMode=null;atkFrom=null;
+  clearHL();
+  var mi=document.getElementById('movind');
+  if(mi)mi.classList.remove('on');
+}
 
 return{
   setU:setU,recruit:recruit,
