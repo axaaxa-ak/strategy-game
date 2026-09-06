@@ -1098,6 +1098,17 @@ function processSVG(txt){
       else if(lid.match(/new_caledonia|tahiti|french_polynesia/))own='fr';
       else if(lid.match(/new_zealand/))own='nz';
       // Default: closest major power by region - just neutral
+      // Brazil unlisted states
+      else if(lid.match(/amazonas|mato.grosso|minas.gerais|bahia|pernambuco|ceara|acre|rondonia|roraima|tocantins|rio.grande|espirito|goias|maranhao|piaui|amapa|sao.paulo|parana|santa.catarina|alagoas|sergipe|paraiba/))own='br';
+      // Soviet unlisted interior
+      else if(lid.match(/siberia|novosibirsk|omsk|krasnoyarsk|irkutsk|yakutsk|chukotka|kamchatka|magadan|kolyma|amur|khabarovsk|buryatia|tyumen|surgut|altai|yamalia|tobolsk|dudinka|vologda|arkhangelsk|murmansk|pskov|novgorod|tver|vladimir|ivanovo|yaroslavl|kirov|perm|sverdlovsk|chelyabinsk|kurgan|orenburg|samara|saratov|volgograd|rostov|krasnodar|stavropol|dagestan|voronezh|kursk|tula|ryazan|nizhny/))own='su';
+      // German unlisted states
+      else if(lid.match(/rhineland|bavaria|saxony|westphalia|hannover|schleswig|thuringia|hessen|baden|saarland|pomerania|silesia|prussia|memel|brandenbur/))own='de';
+      // Spanish unlisted states
+      else if(lid.match(/castile|aragon|catalonia|andalusia|galicia_es|valencia|extremadura|murcia|asturias|basque|navarre|la.rioja|canary/))own='es';
+      // Middle East unlisted
+      else if(lid.match(/trucial|socotra|dhofar/))own='uk';
+      else if(lid.match(/hadramaut|mahra/))own='uk';
       else own='uk';
     }
     el.setAttribute('fill',fcol(own));
@@ -2548,7 +2559,20 @@ function showDiplomScreen(){
 }
 function execAir(fid,tid){var at=S[fid],df=S[tid];if(!at||!df||at.own!==player)return;var ok=false;var nbrs=adjOf(fid);for(var i=0;i<nbrs.length;i++)if(nbrs[i]===tid){ok=true;break;}if(!ok){addLog('\u822a\u7a7a\u652f\u63f4\u5c04\u7a0b\u5916','lw');return;}if(!(at.u.a>0)){addLog('\u822a\u7a7a\u30e6\u30cb\u30c3\u30c8\u306a\u3057','lw');return;}if(_usedAir[fid]){addLog('\u672c\u30bf\u30fc\u30f3\u4f7f\u7528\u6e08\u307f','lw');return;}_usedAir[fid]=1;var use=Math.max(1,Math.floor((at.u.a||0)*(sendPct/100)));var dmg=Math.max(1,Math.floor(use*2.5*(0.7+Math.random()*0.6)));df.u.i=Math.max(0,(df.u.i||0)-Math.floor(dmg*0.7));df.u.t=Math.max(0,(df.u.t||0)-Math.floor(dmg*0.2));addLog('[\u822a\u7a7a\u652f\u63f4] '+at.name+'\u2192'+df.name+' \u30c0\u30e1\u30fc\u30b8'+dmg,'lt');c
   if(df.own!==player)setRel(player,df.own,'war');updTroopLabels();}
-function _puppetIncome(){for(var m in _puppets){var vs=_puppets[m];for(var vi=0;vi<vs.length;vi++){var vinc=Math.floor(incOf(vs[vi])/4);if(vinc>0&&player===m)money+=vinc;}}}
+function _puppetIncome(){
+  for(var m in _puppets){
+    if(m!==player)continue;
+    var vs=_puppets[m];
+    for(var vi=0;vi<vs.length;vi++){
+      var pf=vs[vi];
+      // Count territories owned by puppet faction
+      var pinc=0;
+      for(var id in S)if(S[id].own===pf)pinc+=S[id].eco;
+      var vinc=Math.floor(pinc*0.25);
+      if(vinc>0)money+=vinc;
+    }
+  }
+}
 function saveGame(){try{var _modsToSave=_loadedMods.map(function(m){return{id:m.id,name:m.name};});
 var d={pl:player,mo2:money,tu:turn,yr2:yr,mo3:mo,sc:currentScenario,rel:rel,wc:wCaps,fi:_firedEvents,ideo:ideology,mp:manpower,gc:_govChange,mods:_modsToSave,tr:{}};for(var id in S)d.tr[id]={o:S[id].own,e:S[id].eco,i:S[id].u.i||0,t:S[id].u.t||0,a:S[id].u.a||0};localStorage.setItem('warcmd_v1',JSON.stringify(d));addLog('[SAVE] Turn'+turn+' \u4fdd\u5b58\u5b8c\u4e86','lt');var sb=document.getElementById('save-btn');if(sb){var ot=sb.textContent;sb.textContent='SAVED!';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.textContent=ot;},1500);}}catch(e){addLog('[SAVE\u5931\u6557] '+e,'lw');}}
 function loadGame(){try{var raw=localStorage.getItem('warcmd_v1');if(!raw){addLog('\u30bb\u30fc\u30d6\u30c7\u30fc\u30bf\u306a\u3057','lw');return;}var d=JSON.parse(raw);player=d.pl;money=d.mo2;turn=d.tu;yr=d.yr2;mo=d.mo3;currentScenario=d.sc||'1936';rel=d.rel||{};wCaps=d.wc||{};_firedEvents=d.fi||{};
@@ -3002,8 +3026,10 @@ function opPuppetCreate_byFac(f){
     c:(FAC[f]&&FAC[f].c)||'#3c8050',r:(FAC[f]&&FAC[f].r)||'EUROPE',
     d:'傀帴国家',cap:(FAC[f]&&FAC[f].cap)||[700,150],m:300};
   rel[rk(player,pv)]='puppet';
+  rel[rk(player,f)]='puppet';  // also set for original faction
   if(!_puppets[player])_puppets[player]=[];
   if(_puppets[player].indexOf(pv)<0)_puppets[player].push(pv);
+  if(_puppets[player].indexOf(f)<0)_puppets[player].push(f);
   applyFoW();updTB();if(sel)updPanel(sel);
 }
 
@@ -3315,22 +3341,45 @@ function setU(type){
 // ── Attack mode ─────────────────────────────────────────────────
 function setAtk(mode,fid){
   if(!fid)fid=sel;
-  if(!fid||S[fid].own!==player){addLog('自国領土を選んでください','lw');return;}
+  if(!fid||!S[fid]||S[fid].own!==player){addLog('自国領土を選んでください','lw');return;}
   atkMode=mode;atkFrom=fid;
-  var res=reach(fid,mode==='tankrush'?3:mode==='airstrike'?5:2);
+  clearHL();hl={};
   var atkSet={},movSet={};
-  if(typeof _seaMov!=='undefined')_seaMov=res.seaMov||{};
-  for(var id in res.atk)atkSet[id]=1;
-  for(var id in res.mov)if(id!==fid)movSet[id]=1;
-  clearHL();
+  _seaMov=_seaMov||{};
+  // For assault/tankrush: use reach() with ADJ, fall back to all enemy neighbors
+  if(mode==='assault'||mode==='tankrush'){
+    var rng=mode==='tankrush'?3:2;
+    var res=reach(fid,rng);
+    atkSet=res.atk||{};movSet=res.mov||{};
+    // Fallback: if no atk found (ADJ empty), check all S[] territories
+    if(Object.keys(atkSet).length===0){
+      for(var tid in S){
+        if(!S[tid]||tid===fid)continue;
+        var trel=getRel(player,S[tid].own);
+        if(S[tid].own!==player&&trel!=='allied'&&trel!=='puppet'){
+          // Mark ALL enemy territories as potential targets (user selects adjacent ones)
+          atkSet[tid]=1;
+        }else if(S[tid].own===player||trel==='allied'||trel==='puppet'){
+          if(tid!==fid)movSet[tid]=1;
+        }
+      }
+    }
+  }else if(mode==='move'||mode==='move_i'||mode==='move_t'||mode==='move_a'){
+    var res2=reach(fid,4);
+    movSet=res2.mov||{};
+    _seaMov=res2.seaMov||{};
+  }else if(mode==='airstrike'||mode==='bombard'){
+    // All visible enemy territories
+    for(var tid in S){
+      if(S[tid]&&S[tid].own!==player&&getRel(player,S[tid].own)!=='allied')atkSet[tid]=1;
+    }
+  }
   for(var id in atkSet)if(S[id]){hl[id]='atk';S[id].el.classList.add('ha');}
-  for(var id in movSet)if(S[id]){if(!hl[id])hl[id]='mov';S[id].el.classList.add('hm');}
+  for(var id in movSet)if(S[id]&&!hl[id]){hl[id]='mov';S[id].el.classList.add('hm');}
   var mi=document.getElementById('movind');
-  var lbl={move:'移動',move_i:'歩兵移動',move_t:'戦車移動',move_a:'航空移動',assault:'連合攻撃',tankrush:'戦車究極',airstrike:'空袭',bombard:'砂砲負'}[mode]||mode;
+  var lbl={move:'移動',move_i:'歩兵移動',move_t:'戦車移動',move_a:'航空移動',assault:'連合攻撃',tankrush:'戦車究極',airstrike:'空袭',bombard:'砂砲負た'}[mode]||mode;
   if(mi){mi.textContent=lbl+' — ['+S[fid].name+'] タップで攻撃・移動先を選択';mi.classList.add('on');}
 }
-
-// ── Cancel attack/move mode ──────────────────────────────────────
 function cancelAtk(){
   atkMode=null;atkFrom=null;
   clearHL();
