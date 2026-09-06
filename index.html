@@ -1378,11 +1378,19 @@ function updPanel(id){
     // iPad: add touchend to all panel buttons (keep onclick for desktop)
     var _pbl=pc.querySelectorAll('button');
     for(var _pi=0;_pi<_pbl.length;_pi++)(function(b){
-      b.addEventListener('touchend',function(e){
-        e.stopPropagation();
-        if(e.cancelable)e.preventDefault();
-        if(b.onclick)b.onclick(e);
-      },{passive:false});
+      // Get onclick string and fix escaped quotes before eval
+      var _oc=b.getAttribute('onclick');
+      if(_oc){
+        _oc=_oc.replace(/\\'/g,"'");
+        b.removeAttribute('onclick');
+        var _fn=(function(s){return function(){
+          try{(new Function('G',s))(window.G||G);}catch(_e){console.warn('btn:',_e,s);}
+        };}(_oc));
+        b.addEventListener('click',_fn);
+        b.addEventListener('touchend',function(e){
+          e.stopPropagation();if(e.cancelable)e.preventDefault();_fn();
+        },{passive:false});
+      }
     })(_pbl[_pi]);
   }
 }// ── Move ──
@@ -2490,10 +2498,22 @@ function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElement
     var mb=document.getElementById('m-btns');if(!mb)return;
     [].forEach.call(mb.querySelectorAll('button'),function(b){
       if(b._td)return;b._td=true;
-      b.addEventListener('touchend',function(e){
-        e.preventDefault();e.stopPropagation();
-        if(b.onclick)b.onclick(e);
-      },{passive:false});
+      var _oc2=b.getAttribute('onclick');
+      if(_oc2){
+        _oc2=_oc2.replace(/\\'/g,"'");
+        b.removeAttribute('onclick');
+        var _mf=(function(s){return function(){
+          try{(new Function('G',s))(window.G||G);}catch(_e){console.warn(_e);}
+        };}(_oc2));
+        b.addEventListener('click',_mf);
+        b.addEventListener('touchend',function(e){
+          e.preventDefault();e.stopPropagation();_mf();
+        },{passive:false});
+      }else if(b.onclick){
+        b.addEventListener('touchend',function(e){
+          e.preventDefault();e.stopPropagation();b.onclick(e);
+        },{passive:false});
+      }
     });
   },20);
 }
