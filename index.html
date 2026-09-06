@@ -1272,9 +1272,10 @@ function onClick(id){
       if(atkMode==='airstrike'||atkMode==='bombard'){execAir(atkFrom,id);return;}
       var nb=adjOf(atkFrom),ok=false;
       for(var ni=0;ni<nb.length;ni++)if(nb[ni]===id){ok=true;break;}
+      if(!ok&&hl&&hl[id]==='atk')ok=true;  // fallback: use hl from setAtk
       if(!ok&&typeof isSeaRoute==='function'&&isSeaRoute(atkFrom,id)&&(_ships[atkFrom]||0)>0)ok=true;
       if(ok){showAM(atkFrom,id,atkMode);return;}
-      addLog('射程外。隔接領土を選んでください','lw');
+      addLog('射程外。隣接領土を選んでください','lw');
     }
     return;
   }
@@ -2545,7 +2546,8 @@ function showDiplomScreen(){
     })(bl[i]);
   },20);
 }
-function execAir(fid,tid){var at=S[fid],df=S[tid];if(!at||!df||at.own!==player)return;var ok=false;var nbrs=adjOf(fid);for(var i=0;i<nbrs.length;i++)if(nbrs[i]===tid){ok=true;break;}if(!ok){addLog('\u822a\u7a7a\u652f\u63f4\u5c04\u7a0b\u5916','lw');return;}if(!(at.u.a>0)){addLog('\u822a\u7a7a\u30e6\u30cb\u30c3\u30c8\u306a\u3057','lw');return;}if(_usedAir[fid]){addLog('\u672c\u30bf\u30fc\u30f3\u4f7f\u7528\u6e08\u307f','lw');return;}_usedAir[fid]=1;var use=Math.max(1,Math.floor((at.u.a||0)*(sendPct/100)));var dmg=Math.max(1,Math.floor(use*2.5*(0.7+Math.random()*0.6)));df.u.i=Math.max(0,(df.u.i||0)-Math.floor(dmg*0.7));df.u.t=Math.max(0,(df.u.t||0)-Math.floor(dmg*0.2));addLog('[\u822a\u7a7a\u652f\u63f4] '+at.name+'\u2192'+df.name+' \u30c0\u30e1\u30fc\u30b8'+dmg,'lt');cancelAtk();if(sel)updPanel(sel);updTroopLabels();}
+function execAir(fid,tid){var at=S[fid],df=S[tid];if(!at||!df||at.own!==player)return;var ok=false;var nbrs=adjOf(fid);for(var i=0;i<nbrs.length;i++)if(nbrs[i]===tid){ok=true;break;}if(!ok){addLog('\u822a\u7a7a\u652f\u63f4\u5c04\u7a0b\u5916','lw');return;}if(!(at.u.a>0)){addLog('\u822a\u7a7a\u30e6\u30cb\u30c3\u30c8\u306a\u3057','lw');return;}if(_usedAir[fid]){addLog('\u672c\u30bf\u30fc\u30f3\u4f7f\u7528\u6e08\u307f','lw');return;}_usedAir[fid]=1;var use=Math.max(1,Math.floor((at.u.a||0)*(sendPct/100)));var dmg=Math.max(1,Math.floor(use*2.5*(0.7+Math.random()*0.6)));df.u.i=Math.max(0,(df.u.i||0)-Math.floor(dmg*0.7));df.u.t=Math.max(0,(df.u.t||0)-Math.floor(dmg*0.2));addLog('[\u822a\u7a7a\u652f\u63f4] '+at.name+'\u2192'+df.name+' \u30c0\u30e1\u30fc\u30b8'+dmg,'lt');c
+  if(df.own!==player)setRel(player,df.own,'war'););updTroopLabels();}
 function _puppetIncome(){for(var m in _puppets){var vs=_puppets[m];for(var vi=0;vi<vs.length;vi++){var vinc=Math.floor(incOf(vs[vi])/4);if(vinc>0&&player===m)money+=vinc;}}}
 function saveGame(){try{var _modsToSave=_loadedMods.map(function(m){return{id:m.id,name:m.name};});
 var d={pl:player,mo2:money,tu:turn,yr2:yr,mo3:mo,sc:currentScenario,rel:rel,wc:wCaps,fi:_firedEvents,ideo:ideology,mp:manpower,gc:_govChange,mods:_modsToSave,tr:{}};for(var id in S)d.tr[id]={o:S[id].own,e:S[id].eco,i:S[id].u.i||0,t:S[id].u.t||0,a:S[id].u.a||0};localStorage.setItem('warcmd_v1',JSON.stringify(d));addLog('[SAVE] Turn'+turn+' \u4fdd\u5b58\u5b8c\u4e86','lt');var sb=document.getElementById('save-btn');if(sb){var ot=sb.textContent;sb.textContent='SAVED!';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.textContent=ot;},1500);}}catch(e){addLog('[SAVE\u5931\u6557] '+e,'lw');}}
