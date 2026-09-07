@@ -1,7 +1,6 @@
 <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 
-
   log.scrollTop=log.scrollHeight;<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -26,6 +25,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #ld-err.on{display:block}
 /* FACTION SELECT */
 #fsel{position:fixed;inset:0;background:rgba(2,8,14,.98);display:flex;flex-direction:column;align-items:center;z-index:7000;overflow:hidden}
+#fsel.off{display:none!important}
 #fsel.off{display:none}
 .fh{padding:16px 16px 8px;text-align:center;flex-shrink:0}
 .fh-t{font-family:var(--hd);font-size:19px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
@@ -326,6 +326,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   background:rgba(6,16,26,.95);border:1px solid #5ab0ff;color:#5ab0ff;
   padding:6px 14px;font-family:var(--hd);font-size:8px;letter-spacing:2px;z-index:1000}
 #naval-info.on{display:block}
+button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
 </style>
 </head>
 <body>
@@ -2142,6 +2143,7 @@ function setupCtrl(){
 document.addEventListener('DOMContentLoaded',function(){
   // Hide loading screen initially
   var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
+  var _fs=document.getElementById('fsel');if(_fs)_fs.classList.add('off');
   G.showMenu();
   _setupModDrop();
 });
@@ -2487,7 +2489,9 @@ function closeEvModal(){var em=document.getElementById('evmodal');if(em)em.class
 function selectScen(scenId){var sc=null;for(var si=0;si<SCENARIOS.length;si++)if(SCENARIOS[si].id===scenId){sc=SCENARIOS[si];break;}if(!sc)return;currentScenario=sc.id;_firedEvents={};yr=sc.yr;mo=sc.mo;var ss=document.getElementById('scensel');if(ss)ss.classList.remove('on');var m=document.getElementById('menu');if(m)m.classList.add('off');var fs=document.getElementById('fsel');if(fs)fs.classList.remove('off');var ft=document.querySelector('.fh-t');if(ft)ft.textContent=sc.nameEn||sc.name;buildFsel();}
 function showMenu(){var m=document.getElementById('menu');if(m)m.classList.remove('off');var sc=document.getElementById('scensel');if(sc)sc.classList.remove('on');var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');}
 function showScenSel(){var m=document.getElementById('menu');if(m)m.classList.add('off');var ss=document.getElementById('scensel');if(ss)ss.classList.add('on');_buildScenGrid();}
-function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';SCENARIOS.forEach(function(sc){var c=document.createElement('div');c.className='scen-card';c.style.setProperty('--scc',sc.color);c.innerHTML='<div class="scen-year">'+sc.yr+'</div><div class="scen-name">'+sc.name+(sc.isMod?' <span style="color:#80e080;font-size:6px;border:1px solid #80e080;padding:1px 3px">MOD</span>':'')+'</div><div class="scen-desc">'+sc.desc+'</div>';c.addEventListener('click',function(){G.selectScen(sc.id);});g.appendChild(c);});}
+function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';SCENARIOS.forEach(function(sc){var c=document.createElement('div');c.className='scen-card';c.style.setProperty('--scc',sc.color);c.innerHTML='<div class="scen-year">'+sc.yr+'</div><div class="scen-name">'+sc.name+(sc.isMod?' <span style="color:#80e080;font-size:6px;border:1px solid #80e080;padding:1px 3px">MOD</span>':'')+'</div><div class="scen-desc">'+sc.desc+'</div>';c.addEventListener('click',function(){G.selectScen(sc.id);});
+  c.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();G.selectScen(sc.id);},{passive:false});
+  g.appendChild(c);});}
 function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');if(!t||!ms||!b)return;t.textContent='HOW TO PLAY';ms.textContent='\u9059\u3073\u65b9';b.innerHTML='<div class="mi" style="font-size:8px;line-height:2">\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u2192\u56fd\u5bb6\u9078\u629e<br>\u9818\u571f\u30bf\u30c3\u30d7\u3067\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>ASSAULT/TANK RUSH\u2192\u653b\u6483<br>\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u767a\u751f</div>';var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');}
 
 function buildFactory(id){if(!id||!S[id]||S[id].own!==player)return;if(money<200){addLog('\u5de5\u5834Y200\u4e0d\u8db3','lw');return;}money-=200;_fac[id]=(_fac[id]||0)+1;addLog('[\u5de5\u5834\u5efa\u8a2d] '+S[id].name+' '+_fac[id]+'\u57fa','lt');updTB();if(sel)updPanel(sel);}
@@ -3308,6 +3312,22 @@ function execAllyWar(ally,enemy){
   if(Math.random()<rate){setRel(ally,enemy,'war');addLog('['+((FAC[ally]&&FAC[ally].sn)||ally)+'] 参戰承認! 対 '+((FAC[enemy]&&FAC[enemy].n)||enemy),'lk');}
   else addLog('['+((FAC[ally]&&FAC[ally].sn)||ally)+'] 参戰拒否','lw');
 }
+
+// ── Unit / Attack controls ───────────────────────────────────
+function setU(type){curUnit=type;if(sel)updPanel(sel);}
+function cancelAtk(){atkMode=null;atkFrom=null;clearHL();var mi=document.getElementById('movind');if(mi)mi.classList.remove('on');}
+function recruit(){
+  if(!sel||!S[sel]||S[sel].own!==player)return;
+  var u=UC[curUnit];if(!u)return;
+  if(money<u.c){addLog('資金不足 Y'+u.c+'必要','lw');return;}
+  money-=u.c;
+  S[sel].u[curUnit]=(S[sel].u[curUnit]||0)+u.b;
+  if(!_newU[sel])_newU[sel]={i:0,t:0,a:0};
+  _newU[sel][curUnit]=(_newU[sel][curUnit]||0)+u.b;
+  addLog('[征兵] '+S[sel].name+' '+u.n+'x'+u.b+' Y'+u.c,'lt');
+  updPanel(sel);updTB();
+}
+var UC={i:{c:100,b:10,n:'歩兵'},t:{c:100,b:2,n:'戦車'},a:{c:90,b:3,n:'航空'}};
 
 return{
   setU:setU,recruit:recruit,
