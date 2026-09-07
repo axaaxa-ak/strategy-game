@@ -26,7 +26,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #ld-err.on{display:block}
 /* FACTION SELECT */
 #fsel{position:fixed;inset:0;background:rgba(2,8,14,.98);display:flex;flex-direction:column;align-items:center;z-index:7000;overflow:hidden}
-#fsel.off{display:none!important}
 #fsel.off{display:none}
 .fh{padding:16px 16px 8px;text-align:center;flex-shrink:0}
 .fh-t{font-family:var(--hd);font-size:19px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
@@ -42,7 +41,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .fc-sn{font-family:var(--hd);font-size:9px;letter-spacing:2px;margin-bottom:2px;color:var(--cc,#888)}
 .fc-n{font-family:var(--hd);font-size:12px;color:#ddeeff;line-height:1.2;margin-bottom:2px}
 .fc-d{font-size:7.5px;color:var(--dm);line-height:1.7;margin-bottom:8px;min-height:44px}
-.fc-b{cursor:pointer;touch-action:manipulation;width:100%;background:var(--a2);border:1px solid var(--a3);color:var(--ac);padding:6px;font-family:var(--fn);font-size:8px;letter-spacing:2px;cursor:pointer;transition:.15s}
+.fc-b{width:100%;background:var(--a2);border:1px solid var(--a3);color:var(--ac);padding:6px;font-family:var(--fn);font-size:8px;letter-spacing:2px;cursor:pointer;transition:.15s}
 .fc-b:hover{background:rgba(200,162,72,.22);border-color:var(--ac)}
 /* TOPBAR */
 #tb{position:fixed;top:0;left:0;right:0;height:44px;background:var(--pn);border-bottom:1px solid var(--b2);display:flex;align-items:stretch;z-index:1000;overflow:hidden}
@@ -234,7 +233,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .menu-sub{font-family:var(--hd);font-size:13px;color:var(--dm);letter-spacing:4px;margin-bottom:14px}
 .menu-line{width:min(280px,70vw);height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);margin:0 auto 22px}
 .menu-btns{display:flex;flex-direction:column;gap:10px;align-items:center}
-.menu-btn{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation;display:flex;align-items:center;gap:14px;width:min(300px,80vw);background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--tx);padding:13px 18px;cursor:pointer;font-family:var(--fn);font-size:12px;letter-spacing:1px;transition:.2s;text-align:left}
+.menu-btn{display:flex;align-items:center;gap:14px;width:min(300px,80vw);background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--tx);padding:13px 18px;cursor:pointer;font-family:var(--fn);font-size:12px;letter-spacing:1px;transition:.2s;text-align:left}
 .menu-btn:hover,.menu-btn:active{background:var(--a2);border-color:var(--ac);color:#fff}
 .menu-btn.primary{border-color:var(--a3);background:var(--a2);color:var(--ac)}
 .menu-btn-icon{font-size:20px;flex-shrink:0;width:26px;text-align:center}
@@ -243,7 +242,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .scen-head{padding:18px 16px 10px;text-align:center;flex-shrink:0;width:100%;max-width:720px}
 .scen-title{font-family:var(--hd);font-size:16px;color:var(--ac);letter-spacing:4px;margin-bottom:4px}
 .scen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:0 14px 16px;width:100%;max-width:720px}
-.scen-card{cursor:pointer;touch-action:manipulation;background:rgba(255,255,255,.03);border:1px solid var(--b2);padding:13px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.scen-card{background:rgba(255,255,255,.03);border:1px solid var(--b2);padding:13px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
 .scen-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--scc,var(--ac))}
 .scen-card:hover,.scen-card:active{border-color:var(--scc,var(--ac));background:rgba(255,255,255,.06)}
 .scen-year{font-family:var(--hd);font-size:20px;color:var(--ac);margin-bottom:2px}
@@ -327,7 +326,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   background:rgba(6,16,26,.95);border:1px solid #5ab0ff;color:#5ab0ff;
   padding:6px 14px;font-family:var(--hd);font-size:8px;letter-spacing:2px;z-index:1000}
 #naval-info.on{display:block}
-button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 </style>
 </head>
 <body>
@@ -608,14 +606,6 @@ var TF=(function(){
   t["São_Paulo"]='br';t["Paraná"]='br';t["Espírito_Santo"]='br';
   t["Goiás"]='br';t["Pará"]='br';t["Ceará"]='br';
   t["Maranhão"]='br';t["Amapá"]='br';t["Piauí"]='br';
-  // Brazil main states
-  t['Amazonas']='br';t['Mato_Grosso']='br';t['Mato_Grosso_do_Sul']='br';
-  t['Minas_Gerais']='br';t['Bahia']='br';t['Pernambuco']='br';
-  t['Acre']='br';t['Rondonia']='br';t['Roraima']='br';
-  t['Tocantins']='br';t['Alagoas']='br';t['Sergipe']='br';
-  t['Rio_de_Janeiro']='br';t['Rio_Grande_do_Norte']='br';
-  t['Rio_Grande_do_Sul']='br';t['Paraiba']='br';
-  t['Santa_Catarina']='br';t['Minas']='br';t['Brazil']='br';
   t["Córdoba"]='ar';t["Tucumán"]='ar';t["Entre_Ríos"]='ar';
   t["Tierra_del_Fuego"]='ar';t["Bolívar"]='ar';
   t["Araucanía"]='cl';t["Aysén"]='cl';t["Arica_y_Tarapacá"]='cl';
@@ -887,11 +877,6 @@ function buildFsel(){
       tabs.querySelectorAll('.ftab').forEach(function(b){b.classList.remove('on')});
       btn.classList.add('on');renderCards(reg);
     };
-    btn.addEventListener('touchend',function(e){
-      e.preventDefault();e.stopPropagation();
-      tabs.querySelectorAll('.ftab').forEach(function(b){b.classList.remove('on')});
-      btn.classList.add('on');renderCards(reg);
-    },{passive:false});
     tabs.appendChild(btn);
   });
   renderCards('EUROPE');
@@ -907,11 +892,7 @@ function renderCards(region){
       '<div class="fc-n">'+f.n+'</div>'+
       '<div class="fc-d">'+f.d+'</div>'+
       '<button class="fc-b" data-fid="'+fid+'">SELECT &#9654;</button>';
-    var _fcb=c.querySelector('.fc-b');
-    _fcb.addEventListener('touchend',function(e){
-      e.preventDefault();e.stopPropagation();startGame(_fcb.getAttribute('data-fid'));
-    },{passive:false});
-    _fcb.addEventListener('click',function(e){
+    c.querySelector('.fc-b').addEventListener('click',function(e){
       e.stopPropagation();startGame(e.currentTarget.getAttribute('data-fid'));
     });
     g.appendChild(c);
@@ -1098,17 +1079,6 @@ function processSVG(txt){
       else if(lid.match(/new_caledonia|tahiti|french_polynesia/))own='fr';
       else if(lid.match(/new_zealand/))own='nz';
       // Default: closest major power by region - just neutral
-      // Brazil unlisted states
-      else if(lid.match(/amazonas|mato.grosso|minas.gerais|bahia|pernambuco|ceara|acre|rondonia|roraima|tocantins|rio.grande|espirito|goias|maranhao|piaui|amapa|sao.paulo|parana|santa.catarina|alagoas|sergipe|paraiba/))own='br';
-      // Soviet unlisted interior
-      else if(lid.match(/siberia|novosibirsk|omsk|krasnoyarsk|irkutsk|yakutsk|chukotka|kamchatka|magadan|kolyma|amur|khabarovsk|buryatia|tyumen|surgut|altai|yamalia|tobolsk|dudinka|vologda|arkhangelsk|murmansk|pskov|novgorod|tver|vladimir|ivanovo|yaroslavl|kirov|perm|sverdlovsk|chelyabinsk|kurgan|orenburg|samara|saratov|volgograd|rostov|krasnodar|stavropol|dagestan|voronezh|kursk|tula|ryazan|nizhny/))own='su';
-      // German unlisted states
-      else if(lid.match(/rhineland|bavaria|saxony|westphalia|hannover|schleswig|thuringia|hessen|baden|saarland|pomerania|silesia|prussia|memel|brandenbur/))own='de';
-      // Spanish unlisted states
-      else if(lid.match(/castile|aragon|catalonia|andalusia|galicia_es|valencia|extremadura|murcia|asturias|basque|navarre|la.rioja|canary/))own='es';
-      // Middle East unlisted
-      else if(lid.match(/trucial|socotra|dhofar/))own='uk';
-      else if(lid.match(/hadramaut|mahra/))own='uk';
       else own='uk';
     }
     el.setAttribute('fill',fcol(own));
@@ -1255,17 +1225,13 @@ function clearHL(){
 }
 // ── Mobile panel ──
 function togglePanel(){
+  _isMobile=checkMobile();if(!_isMobile)return;
   _panelOpen=!_panelOpen;
   var sp=document.getElementById('sp'),tog=document.getElementById('sp-tog');
   if(sp)sp.classList.toggle('open',_panelOpen);
   if(tog)tog.textContent=_panelOpen?'▼ PANEL':'▲ PANEL';
 }
-function openPanelMobile(){
-  var sp=document.getElementById('sp'),tog=document.getElementById('sp-tog');
-  if(sp)sp.classList.add('open');
-  if(tog)tog.textContent='▼ PANEL';
-  _panelOpen=true;
-}
+function openPanelMobile(){var sp=document.getElementById('sp'),tog=document.getElementById('sp-tog');if(sp)sp.classList.add('open');if(tog)tog.textContent='▼ PANEL';_panelOpen=true;}
 // ── Click handler ──
 function onClick(id){
   if(!S[id])return;
@@ -1279,15 +1245,9 @@ function onClick(id){
       return;
     }
     if(tOwn===player&&id!==atkFrom){cancelAtk();selTerr(id);return;}
-    if(tOwn!==player&&getRel(player,tOwn)!=='allied'&&getRel(player,tOwn)!=='puppet'){
-      if(atkMode==='airstrike'||atkMode==='bombard'){execAir(atkFrom,id);return;}
-      var nb=adjOf(atkFrom),ok=false;
-      for(var ni=0;ni<nb.length;ni++)if(nb[ni]===id){ok=true;break;}
-      if(!ok&&hl&&hl[id]==='atk')ok=true;  // fallback: use hl from setAtk
-      if(!ok&&typeof isSeaRoute==='function'&&isSeaRoute(atkFrom,id)&&(_ships[atkFrom]||0)>0)ok=true;
-      if(ok){showAM(atkFrom,id,atkMode);return;}
-      addLog('射程外。隣接領土を選んでください','lw');
-    }
+    if(atkMode==='airstrike'||atkMode==='bombard'){execAir(atkFrom,id);return;}
+    if(hl[id]==='atk'){showAM(atkFrom,id,atkMode);return;}
+    addLog('陴接領土をタップしてください','lw');
     return;
   }
   selTerr(id);
@@ -1375,23 +1335,17 @@ function updPanel(id){
   }
   if(pc){
     pc.innerHTML=h;
-    // iPad: add touchend to all panel buttons (keep onclick for desktop)
-    var _pbl=pc.querySelectorAll('button');
-    for(var _pi=0;_pi<_pbl.length;_pi++)(function(b){
-      // Get onclick string and fix escaped quotes before eval
-      var _oc=b.getAttribute('onclick');
-      if(_oc){
-        _oc=_oc.replace(/\\'/g,"'");
+    (function bindBtns(root){
+      var bl=root.querySelectorAll('button');
+      for(var i=0;i<bl.length;i++)(function(b){
+        var s=b.getAttribute('onclick');if(!s)return;
         b.removeAttribute('onclick');
-        var _fn=(function(s){return function(){
-          try{(new Function('G',s))(window.G||G);}catch(_e){console.warn('btn:',_e,s);}
-        };}(_oc));
-        b.addEventListener('click',_fn);
-        b.addEventListener('touchend',function(e){
-          e.stopPropagation();if(e.cancelable)e.preventDefault();_fn();
-        },{passive:false});
-      }
-    })(_pbl[_pi]);
+        var fn=new Function(s);
+        function run(e){e.stopPropagation();if(e.cancelable)e.preventDefault();try{fn();}catch(x){}}
+        b.addEventListener('click',run);
+        b.addEventListener('touchend',run,{passive:false});
+      })(bl[i]);
+    })(pc);
   }
 }// ── Move ──
 function execMove(fid,tid){
@@ -1430,7 +1384,19 @@ function showAM(fid,tid,mode){
     '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
     '<button class="mb ok" onclick="G.execAM()">CONFIRM ATTACK</button>';
   updAP();document.getElementById('modal').classList.add('open');
-  setTimeout(_fixModalTouch,50);
+  setTimeout(function(){
+    var mb=document.getElementById('m-btns');if(!mb)return;
+    [].forEach.call(mb.querySelectorAll('button'),function(b){
+      if(b._td)return;b._td=true;
+      var oc=b.getAttribute('onclick');
+      if(!oc)return;
+      b.removeAttribute('onclick');
+      oc=oc.replace(/\\'/g,"'");
+      var fn=(function(s){return function(){try{(new Function('G',s))(G);}catch(e){};};})(oc);
+      b.addEventListener('click',fn);
+      b.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();fn();},{passive:false});
+    });
+  },30);
 }
 function _slS(v){sendPct=+v;var s=document.getElementById('sv-s');if(s)s.textContent=v+'%';updAP();}
 function updAP(){
@@ -1519,7 +1485,7 @@ function _diplSuccessRate(type,f){
 }
 function opD(type,tid){
   var f=S[tid]&&S[tid].own;if(!f)return;
-  if(_usedDiplo&&_usedDiplo[type+'_'+f]){addLog('このターンは使用済み','lw');return;}
+  if(type==='alliance'&&getRel(player,f)==='allied'){showAllyWarRequest(f);return;}
   // Note: once-per-turn limit enforced in _execD
   var fn=(FAC[f]&&FAC[f].n)||f;
   var apv=_approval[f]||0;
@@ -1554,7 +1520,19 @@ function opD(type,tid){
     '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
     '<button class="mb ok" onclick="G._execD(\''+type+'\',\''+f+'\')">EXECUTE ('+ratePct+'%)</button>';
   document.getElementById('modal').classList.add('open');
-  setTimeout(_fixModalTouch,50);
+  setTimeout(function(){
+    var mb=document.getElementById('m-btns');if(!mb)return;
+    [].forEach.call(mb.querySelectorAll('button'),function(b){
+      if(b._td)return;b._td=true;
+      var oc=b.getAttribute('onclick');
+      if(!oc)return;
+      b.removeAttribute('onclick');
+      oc=oc.replace(/\\'/g,"'");
+      var fn=(function(s){return function(){try{(new Function('G',s))(G);}catch(e){};};})(oc);
+      b.addEventListener('click',fn);
+      b.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();fn();},{passive:false});
+    });
+  },30);
 }
 function _execD(type,f){
   closeModal();
@@ -1617,7 +1595,19 @@ function opPeace(tid){
     '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
     '<button class="mb ok" onclick="G._execPeace(\''+f+'\')">SIGN PEACE</button>';
   document.getElementById('modal').classList.add('open');
-  setTimeout(_fixModalTouch,50);
+  setTimeout(function(){
+    var mb=document.getElementById('m-btns');if(!mb)return;
+    [].forEach.call(mb.querySelectorAll('button'),function(b){
+      if(b._td)return;b._td=true;
+      var oc=b.getAttribute('onclick');
+      if(!oc)return;
+      b.removeAttribute('onclick');
+      oc=oc.replace(/\\'/g,"'");
+      var fn=(function(s){return function(){try{(new Function('G',s))(G);}catch(e){};};})(oc);
+      b.addEventListener('click',fn);
+      b.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();fn();},{passive:false});
+    });
+  },30);
 }
 function _execPeace(f){
   closeModal();
@@ -1657,7 +1647,19 @@ function opNeg(tid){
     '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
     '<button class="mb ok" onclick="G._execNeg(\''+f+'\')">PROPOSE</button>';
   document.getElementById('modal').classList.add('open');
-  setTimeout(_fixModalTouch,50);
+  setTimeout(function(){
+    var mb=document.getElementById('m-btns');if(!mb)return;
+    [].forEach.call(mb.querySelectorAll('button'),function(b){
+      if(b._td)return;b._td=true;
+      var oc=b.getAttribute('onclick');
+      if(!oc)return;
+      b.removeAttribute('onclick');
+      oc=oc.replace(/\\'/g,"'");
+      var fn=(function(s){return function(){try{(new Function('G',s))(G);}catch(e){};};})(oc);
+      b.addEventListener('click',fn);
+      b.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();fn();},{passive:false});
+    });
+  },30);
 }
 function _execNeg(f){
   closeModal();var fn=(FAC[f]&&FAC[f].n)||f;
@@ -1744,7 +1746,19 @@ function showWorldStatus(){
   document.getElementById('m-r').style.display='none';
   document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()" style="flex:1">CLOSE</button>';
   document.getElementById('modal').classList.add('open');
-  setTimeout(_fixModalTouch,50);
+  setTimeout(function(){
+    var mb=document.getElementById('m-btns');if(!mb)return;
+    [].forEach.call(mb.querySelectorAll('button'),function(b){
+      if(b._td)return;b._td=true;
+      var oc=b.getAttribute('onclick');
+      if(!oc)return;
+      b.removeAttribute('onclick');
+      oc=oc.replace(/\\'/g,"'");
+      var fn=(function(s){return function(){try{(new Function('G',s))(G);}catch(e){};};})(oc);
+      b.addEventListener('click',fn);
+      b.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();fn();},{passive:false});
+    });
+  },30);
 }
 function showDiplomStatus(){
   var html='<div class="mch">外交状況 / DIPLOMATIC STATUS</div>';
@@ -1827,25 +1841,27 @@ function updTroopLabels(){
 function nextTurn(){
   turn++;mo++;if(mo>12){mo=1;yr++;}
   var inc=incOf(player);money+=inc;
-  // 自然増員
-  for(var id in S){var t=S[id];if(t.own!==player)continue;var pop=Math.max(1,Math.floor(t.eco*0.05));t.u.i=(t.u.i||0)+pop;}
-  // 維持費
   var _maint=0;
-  for(var _mid in S){if(S[_mid].own!==player)continue;_maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);}
-  _maint=Math.floor(_maint);if(_maint>0)money=Math.max(0,money-_maint);
-  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' 維持費-'+_maint,'lai');
-  // 傀儡収入
-  if(typeof _puppetIncome==='function')_puppetIncome();
-  // 歴史イベント
-  if(typeof checkHistEvents==='function')checkHistEvents();
-  // 政権交代
-  if(typeof processGovChange==='function')processGovChange();
-  // Manpower
-  if(typeof calcMpGain==='function'){_mpPerTurn=calcMpGain();manpower+=_mpPerTurn;}
-  // ターン制リセット
-  _usedAir={};if(typeof _usedDiplo!=='undefined')_usedDiplo={};
-  // 勝利条件チェック
-  if(typeof checkVictory==='function')checkVictory();
+  for(var _mid in S){
+    if(S[_mid].own!==player)continue;
+    _maint+=Math.floor((S[_mid].u.i||0)*0.05+(S[_mid].u.t||0)*0.3+(S[_mid].u.a||0)*0.2);
+  }
+  var _maintMult=ideoMaintMult();
+  _maint=Math.round(_maint*_maintMult);
+  if(_maint>0){money=Math.max(0,money-_maint);
+    if(_maint>10)addLog('[維持費] -Y'+_maint+(ideology!=='neutral'?' (思想補正補正)':''),'lai');}
+  for(var _gid in S){
+    var _gt=S[_gid];var _nb=adjOf(_gid);var _brd=false;
+    for(var _ni=0;_ni<_nb.length;_ni++)if(S[_nb[_ni]]&&S[_nb[_ni]].own!==_gt.own){_brd=true;break;}
+    if(!_brd)continue;
+    var _facBonus=(_fac[_gid]||0)*2;
+    var _pop=Math.max(0,Math.floor((_gt.eco+_facBonus)*(_gt.own===player?0.04:0.03)));
+    if(_pop>0)_gt.u.i=(_gt.u.i||0)+_pop;
+  }
+  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
+  checkHistEvents();
+  _puppetIncome();
+  _usedAir={};
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
 }
 // ── AI Turn ──
@@ -2126,33 +2142,13 @@ function setupCtrl(){
 document.addEventListener('DOMContentLoaded',function(){
   // Hide loading screen initially
   var ld=document.getElementById('ld');if(ld)ld.classList.remove('on');
-  var fs0=document.getElementById('fsel');if(fs0)fs0.classList.add('off');
-  var ss0=document.getElementById('scensel');if(ss0)ss0.classList.remove('on');
   G.showMenu();
-  try{_setupModDrop();}catch(e){}
-
-  // MOD file input handler
-  var inp=document.getElementById('mod-file-input');
-  if(inp)inp.addEventListener('change',function(e){
-    Array.from(e.target.files).forEach(function(f){
-      var r=new FileReader();
-      r.onload=function(ev){try{var m=JSON.parse(ev.target.result);G.loadMod(m);}catch(er){};};
-      r.readAsText(f);
-    });e.target.value='';
-  });
-  document.addEventListener('dragover',function(e){e.preventDefault();});
-  document.addEventListener('drop',function(e){
-    var files=Array.from(e.dataTransfer.files).filter(function(f){return f.name.endsWith('.json');});
-    if(files.length){e.preventDefault();files.forEach(function(f){
-      var r=new FileReader();r.onload=function(ev){try{G.loadMod(JSON.parse(ev.target.result));}catch(er){};};
-      r.readAsText(f);});}
-  });
+  _setupModDrop();
 });
 
 // ── Public API ──
-var _usedAir={},_fac={},_puppets={},_jwar={},_ships={},_approval={},_usedDiplo={};
-var _newU={},_seaMov={},_vetI=0,_vetT=0,_vetA=0,_mpPerTurn=0;
-var currentScenario='1936',_firedEvents={},manpower=5000,ideology='neutral',_govChange=null;
+var _usedAir={},_fac={},_puppets={},_jwar={},_ships={},_approval={};
+var currentScenario='1936',_firedEvents={};
 
 var SCENARIOS=[
   {id:'1936',yr:1936,mo:1,color:'#c8a248',name:'\u7b2c\u4e8c\u6b21\u5927\u6226\u524d\u591c',nameEn:'EVE OF WW2 1936',desc:'1936\u5e741\u6708\u3002\u65e5\u72ec\u4f0a\u306e\u67a2\u8ef8\u3068\u82f1\u4ed8\u30bd\u9023\u306e\u5bfe\u7acb\u304c\u6df1\u307e\u308b\u3002',overrides:{},relations:[['it','et','war'],['uk','fr','allied'],['uk','au','allied'],['su','mo','allied'],['jp','mk','allied'],['de','it','allied']]},
@@ -2491,32 +2487,8 @@ function closeEvModal(){var em=document.getElementById('evmodal');if(em)em.class
 function selectScen(scenId){var sc=null;for(var si=0;si<SCENARIOS.length;si++)if(SCENARIOS[si].id===scenId){sc=SCENARIOS[si];break;}if(!sc)return;currentScenario=sc.id;_firedEvents={};yr=sc.yr;mo=sc.mo;var ss=document.getElementById('scensel');if(ss)ss.classList.remove('on');var m=document.getElementById('menu');if(m)m.classList.add('off');var fs=document.getElementById('fsel');if(fs)fs.classList.remove('off');var ft=document.querySelector('.fh-t');if(ft)ft.textContent=sc.nameEn||sc.name;buildFsel();}
 function showMenu(){var m=document.getElementById('menu');if(m)m.classList.remove('off');var sc=document.getElementById('scensel');if(sc)sc.classList.remove('on');var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');}
 function showScenSel(){var m=document.getElementById('menu');if(m)m.classList.add('off');var ss=document.getElementById('scensel');if(ss)ss.classList.add('on');_buildScenGrid();}
-function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';SCENARIOS.forEach(function(sc){var c=document.createElement('div');c.className='scen-card';c.style.setProperty('--scc',sc.color);c.innerHTML='<div class="scen-year">'+sc.yr+'</div><div class="scen-name">'+sc.name+(sc.isMod?' <span style="color:#80e080;font-size:6px;border:1px solid #80e080;padding:1px 3px">MOD</span>':'')+'</div><div class="scen-desc">'+sc.desc+'</div>';c.addEventListener('click',function(){G.selectScen(sc.id);});
-  c.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();G.selectScen(sc.id);},{passive:false});g.appendChild(c);});}
-function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');if(!t||!ms||!b)return;t.textContent='HOW TO PLAY';ms.textContent='\u9059\u3073\u65b9';b.innerHTML='<div class="mi" style="font-size:8px;line-height:2">\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u2192\u56fd\u5bb6\u9078\u629e<br>\u9818\u571f\u30bf\u30c3\u30d7\u3067\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>ASSAULT/TANK RUSH\u2192\u653b\u6483<br>\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u767a\u751f</div>';var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');
-  setTimeout(function(){
-    var mb=document.getElementById('m-btns');if(!mb)return;
-    [].forEach.call(mb.querySelectorAll('button'),function(b){
-      if(b._td)return;b._td=true;
-      var _oc2=b.getAttribute('onclick');
-      if(_oc2){
-        _oc2=_oc2.replace(/\\'/g,"'");
-        b.removeAttribute('onclick');
-        var _mf=(function(s){return function(){
-          try{(new Function('G',s))(window.G||G);}catch(_e){console.warn(_e);}
-        };}(_oc2));
-        b.addEventListener('click',_mf);
-        b.addEventListener('touchend',function(e){
-          e.preventDefault();e.stopPropagation();_mf();
-        },{passive:false});
-      }else if(b.onclick){
-        b.addEventListener('touchend',function(e){
-          e.preventDefault();e.stopPropagation();b.onclick(e);
-        },{passive:false});
-      }
-    });
-  },20);
-}
+function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return;g.innerHTML='';SCENARIOS.forEach(function(sc){var c=document.createElement('div');c.className='scen-card';c.style.setProperty('--scc',sc.color);c.innerHTML='<div class="scen-year">'+sc.yr+'</div><div class="scen-name">'+sc.name+(sc.isMod?' <span style="color:#80e080;font-size:6px;border:1px solid #80e080;padding:1px 3px">MOD</span>':'')+'</div><div class="scen-desc">'+sc.desc+'</div>';c.addEventListener('click',function(){G.selectScen(sc.id);});g.appendChild(c);});}
+function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');if(!t||!ms||!b)return;t.textContent='HOW TO PLAY';ms.textContent='\u9059\u3073\u65b9';b.innerHTML='<div class="mi" style="font-size:8px;line-height:2">\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u2192\u56fd\u5bb6\u9078\u629e<br>\u9818\u571f\u30bf\u30c3\u30d7\u3067\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>ASSAULT/TANK RUSH\u2192\u653b\u6483<br>\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u767a\u751f</div>';var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');}
 
 function buildFactory(id){if(!id||!S[id]||S[id].own!==player)return;if(money<200){addLog('\u5de5\u5834Y200\u4e0d\u8db3','lw');return;}money-=200;_fac[id]=(_fac[id]||0)+1;addLog('[\u5de5\u5834\u5efa\u8a2d] '+S[id].name+' '+_fac[id]+'\u57fa','lt');updTB();if(sel)updPanel(sel);}
 function buildFactoryAll(){var cnt=0;for(var id in S){if(S[id].own!==player||money<200)continue;money-=200;_fac[id]=(_fac[id]||0)+1;cnt++;}if(cnt)addLog('[\u4e00\u62ec\u5de5\u5834] '+cnt+'\u7b87\u6240','lt');else addLog('\u8cc7\u91d1\u4e0d\u8db3','lw');updTB();}
@@ -2577,22 +2549,8 @@ function showDiplomScreen(){
     })(bl[i]);
   },20);
 }
-function execAir(fid,tid){var at=S[fid],df=S[tid];if(!at||!df||at.own!==player)return;var ok=false;var nbrs=adjOf(fid);for(var i=0;i<nbrs.length;i++)if(nbrs[i]===tid){ok=true;break;}if(!ok){addLog('\u822a\u7a7a\u652f\u63f4\u5c04\u7a0b\u5916','lw');return;}if(!(at.u.a>0)){addLog('\u822a\u7a7a\u30e6\u30cb\u30c3\u30c8\u306a\u3057','lw');return;}if(_usedAir[fid]){addLog('\u672c\u30bf\u30fc\u30f3\u4f7f\u7528\u6e08\u307f','lw');return;}_usedAir[fid]=1;var use=Math.max(1,Math.floor((at.u.a||0)*(sendPct/100)));var dmg=Math.max(1,Math.floor(use*2.5*(0.7+Math.random()*0.6)));df.u.i=Math.max(0,(df.u.i||0)-Math.floor(dmg*0.7));df.u.t=Math.max(0,(df.u.t||0)-Math.floor(dmg*0.2));addLog('[\u822a\u7a7a\u652f\u63f4] '+at.name+'\u2192'+df.name+' \u30c0\u30e1\u30fc\u30b8'+dmg,'lt');c
-  if(df.own!==player)setRel(player,df.own,'war');updTroopLabels();}
-function _puppetIncome(){
-  for(var m in _puppets){
-    if(m!==player)continue;
-    var vs=_puppets[m];
-    for(var vi=0;vi<vs.length;vi++){
-      var pf=vs[vi];
-      // Count territories owned by puppet faction
-      var pinc=0;
-      for(var id in S)if(S[id].own===pf)pinc+=S[id].eco;
-      var vinc=Math.floor(pinc*0.25);
-      if(vinc>0)money+=vinc;
-    }
-  }
-}
+function execAir(fid,tid){var at=S[fid],df=S[tid];if(!at||!df||at.own!==player)return;var ok=false;var nbrs=adjOf(fid);for(var i=0;i<nbrs.length;i++)if(nbrs[i]===tid){ok=true;break;}if(!ok){addLog('\u822a\u7a7a\u652f\u63f4\u5c04\u7a0b\u5916','lw');return;}if(!(at.u.a>0)){addLog('\u822a\u7a7a\u30e6\u30cb\u30c3\u30c8\u306a\u3057','lw');return;}if(_usedAir[fid]){addLog('\u672c\u30bf\u30fc\u30f3\u4f7f\u7528\u6e08\u307f','lw');return;}_usedAir[fid]=1;var use=Math.max(1,Math.floor((at.u.a||0)*(sendPct/100)));var dmg=Math.max(1,Math.floor(use*2.5*(0.7+Math.random()*0.6)));df.u.i=Math.max(0,(df.u.i||0)-Math.floor(dmg*0.7));df.u.t=Math.max(0,(df.u.t||0)-Math.floor(dmg*0.2));addLog('[\u822a\u7a7a\u652f\u63f4] '+at.name+'\u2192'+df.name+' \u30c0\u30e1\u30fc\u30b8'+dmg,'lt');cancelAtk();if(sel)updPanel(sel);updTroopLabels();}
+function _puppetIncome(){for(var m in _puppets){var vs=_puppets[m];for(var vi=0;vi<vs.length;vi++){var vinc=Math.floor(incOf(vs[vi])/4);if(vinc>0&&player===m)money+=vinc;}}}
 function saveGame(){try{var _modsToSave=_loadedMods.map(function(m){return{id:m.id,name:m.name};});
 var d={pl:player,mo2:money,tu:turn,yr2:yr,mo3:mo,sc:currentScenario,rel:rel,wc:wCaps,fi:_firedEvents,ideo:ideology,mp:manpower,gc:_govChange,mods:_modsToSave,tr:{}};for(var id in S)d.tr[id]={o:S[id].own,e:S[id].eco,i:S[id].u.i||0,t:S[id].u.t||0,a:S[id].u.a||0};localStorage.setItem('warcmd_v1',JSON.stringify(d));addLog('[SAVE] Turn'+turn+' \u4fdd\u5b58\u5b8c\u4e86','lt');var sb=document.getElementById('save-btn');if(sb){var ot=sb.textContent;sb.textContent='SAVED!';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.textContent=ot;},1500);}}catch(e){addLog('[SAVE\u5931\u6557] '+e,'lw');}}
 function loadGame(){try{var raw=localStorage.getItem('warcmd_v1');if(!raw){addLog('\u30bb\u30fc\u30d6\u30c7\u30fc\u30bf\u306a\u3057','lw');return;}var d=JSON.parse(raw);player=d.pl;money=d.mo2;turn=d.tu;yr=d.yr2;mo=d.mo3;currentScenario=d.sc||'1936';rel=d.rel||{};wCaps=d.wc||{};_firedEvents=d.fi||{};
@@ -3046,10 +3004,8 @@ function opPuppetCreate_byFac(f){
     c:(FAC[f]&&FAC[f].c)||'#3c8050',r:(FAC[f]&&FAC[f].r)||'EUROPE',
     d:'傀帴国家',cap:(FAC[f]&&FAC[f].cap)||[700,150],m:300};
   rel[rk(player,pv)]='puppet';
-  rel[rk(player,f)]='puppet';  // also set for original faction
   if(!_puppets[player])_puppets[player]=[];
   if(_puppets[player].indexOf(pv)<0)_puppets[player].push(pv);
-  if(_puppets[player].indexOf(f)<0)_puppets[player].push(f);
   applyFoW();updTB();if(sel)updPanel(sel);
 }
 
@@ -3333,78 +3289,24 @@ function _fixModalTouch(){
   }
 }
 
-function recruit(){
-  if(!sel||S[sel].own!==player)return;
-  var u=UC[curUnit];if(!u)return;
-  if(money<u.c){addLog('資金不足','lw');return;}
-  if(typeof manpower!=='undefined'&&typeof calcMpCost==='function'){
-    var mc=calcMpCost(curUnit,1);
-    if(manpower<mc){addLog('MP不足: '+mc+' 必要 (現在:'+manpower+')','lw');return;}
-    manpower-=mc;
-  }
-  money-=u.c;
-  var added=u.b;S[sel].u[curUnit]=(S[sel].u[curUnit]||0)+added;
-  if(!_newU[sel])_newU[sel]={i:0,t:0,a:0};
-  _newU[sel][curUnit]=(_newU[sel][curUnit]||0)+added;
-  addLog('[征兵] '+S[sel].name+' '+curUnit.toUpperCase()+'x'+added,'lt');
-  updPanel(sel);updTB();
+function showAllyWarRequest(allyFac){
+  var fn=(FAC[allyFac]&&FAC[allyFac].n)||allyFac;
+  var enemies=[];
+  for(var pr in rel){var pp=pr.split('-'),ot=pp[0]===player?pp[1]:pp[1]===player?pp[0]:null;if(ot&&rel[pr]==='war')enemies.push(ot);}
+  if(!enemies.length){addLog('現在戦争相手なし','lw');return;}
+  var rows=enemies.map(function(e){return'<div style="margin:4px 0"><button class="btn" onclick="G.execAllyWar(\''+allyFac+'\',\''+e+'\')">参戰要請: '+((FAC[e]&&FAC[e].n)||e)+'</button></div>';}).join('');
+  document.getElementById('m-t').textContent='参戰要請';
+  document.getElementById('m-s').textContent=fn+'に参戰を要請';
+  document.getElementById('m-r').style.display='none';
+  document.getElementById('m-b').innerHTML='<div class="mi">'+rows+'</div>';
+  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()">CANCEL</button>';
+  document.getElementById('modal').classList.add('open');
 }
-
-var UC={i:{c:100,b:10,n:'歩兵'},t:{c:100,b:2,n:'戦車'},a:{c:90,b:3,n:'航空'}};
-
-// ── Unit type selector ──────────────────────────────────────────
-function setU(type){
-  curUnit=type;
-  if(sel)updPanel(sel);
-}
-
-// ── Attack mode ─────────────────────────────────────────────────
-function setAtk(mode,fid){
-  if(!fid)fid=sel;
-  if(!fid||!S[fid]||S[fid].own!==player){addLog('自国領土を選んでください','lw');return;}
-  atkMode=mode;atkFrom=fid;
-  clearHL();hl={};
-  var atkSet={},movSet={};
-  _seaMov=_seaMov||{};
-  // For assault/tankrush: use reach() with ADJ, fall back to all enemy neighbors
-  if(mode==='assault'||mode==='tankrush'){
-    var rng=mode==='tankrush'?3:2;
-    var res=reach(fid,rng);
-    atkSet=res.atk||{};movSet=res.mov||{};
-    // Fallback: if no atk found (ADJ empty), check all S[] territories
-    if(Object.keys(atkSet).length===0){
-      for(var tid in S){
-        if(!S[tid]||tid===fid)continue;
-        var trel=getRel(player,S[tid].own);
-        if(S[tid].own!==player&&trel!=='allied'&&trel!=='puppet'){
-          // Mark ALL enemy territories as potential targets (user selects adjacent ones)
-          atkSet[tid]=1;
-        }else if(S[tid].own===player||trel==='allied'||trel==='puppet'){
-          if(tid!==fid)movSet[tid]=1;
-        }
-      }
-    }
-  }else if(mode==='move'||mode==='move_i'||mode==='move_t'||mode==='move_a'){
-    var res2=reach(fid,4);
-    movSet=res2.mov||{};
-    _seaMov=res2.seaMov||{};
-  }else if(mode==='airstrike'||mode==='bombard'){
-    // All visible enemy territories
-    for(var tid in S){
-      if(S[tid]&&S[tid].own!==player&&getRel(player,S[tid].own)!=='allied')atkSet[tid]=1;
-    }
-  }
-  for(var id in atkSet)if(S[id]){hl[id]='atk';S[id].el.classList.add('ha');}
-  for(var id in movSet)if(S[id]&&!hl[id]){hl[id]='mov';S[id].el.classList.add('hm');}
-  var mi=document.getElementById('movind');
-  var lbl={move:'移動',move_i:'歩兵移動',move_t:'戦車移動',move_a:'航空移動',assault:'連合攻撃',tankrush:'戦車究極',airstrike:'空袭',bombard:'砂砲負た'}[mode]||mode;
-  if(mi){mi.textContent=lbl+' — ['+S[fid].name+'] タップで攻撃・移動先を選択';mi.classList.add('on');}
-}
-function cancelAtk(){
-  atkMode=null;atkFrom=null;
-  clearHL();
-  var mi=document.getElementById('movind');
-  if(mi)mi.classList.remove('on');
+function execAllyWar(ally,enemy){
+  closeModal();
+  var rate=Math.max(0.2,Math.min(0.9,0.5+((_approval&&_approval[ally])||0)/200));
+  if(Math.random()<rate){setRel(ally,enemy,'war');addLog('['+((FAC[ally]&&FAC[ally].sn)||ally)+'] 参戰承認! 対 '+((FAC[enemy]&&FAC[enemy].n)||enemy),'lk');}
+  else addLog('['+((FAC[ally]&&FAC[ally].sn)||ally)+'] 参戰拒否','lw');
 }
 
 return{
@@ -3416,10 +3318,10 @@ return{
   opNeg:opNeg,_execNeg:_execNeg,
   nextTurn:nextTurn,closeModal:closeModal,
   togglePanel:togglePanel,
-  showWorldStatus:showWorldStatus,
+  showWorldStatus:showWorldStatus,showAllyWarRequest:showAllyWarRequest,execAllyWar:execAllyWar,
   showDiplomStatus:showDiplomScreen,
   showMenu:showMenu,showScenSel:showScenSel,showHowTo:showHowTo,
-  selectScen:selectScen,startGame:startGame,closeEvModal:closeEvModal,
+  selectScen:selectScen,closeEvModal:closeEvModal,
   buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,
   buildShip:buildShip,recruitAll:recruitAll,
   opPuppetCreate:opPuppetCreate,requestAllyWar:requestAllyWar,
@@ -3467,32 +3369,5 @@ return{
 <input type="file" id="mod-file-input" accept=".json" style="display:none" multiple>
 <div id="mod-drop" onclick="G.modToggle()">&#128196; MOD</div>
 <div id="mod-list"></div>
-<div id="naval-info"></div>
-<script>
-// iPad fix: direct button dispatcher
-document.addEventListener('DOMContentLoaded',function(){
-  function bindBtn(sel,fn){
-    var el=document.querySelector(sel);
-    if(!el)return;
-    ['click','touchend'].forEach(function(ev){
-      el.addEventListener(ev,function(e){
-        if(ev==='touchend')e.preventDefault();
-        e.stopPropagation();
-        fn();
-      },{passive:false});
-    });
-  }
-  // Wait for G to be available
-  setTimeout(function(){
-    if(typeof G==='undefined'){
-      document.body.innerHTML='<div style="color:red;padding:20px;font-size:20px">ERROR: G is undefined. Check console.</div>';
-      return;
-    }
-    console.log('G loaded OK. showScenSel:',typeof G.showScenSel);
-    bindBtn('.menu-btn.primary',G.showScenSel);
-  },500);
-});
-</script>
-
-</body>
+<div id="naval-info"></div></body>
 </html>
