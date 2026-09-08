@@ -2574,7 +2574,28 @@ function showDiplomScreen(){
   },20);
 }
 function execAir(fid,tid){var at=S[fid],df=S[tid];if(!at||!df||at.own!==player)return;var ok=false;var nbrs=adjOf(fid);for(var i=0;i<nbrs.length;i++)if(nbrs[i]===tid){ok=true;break;}if(!ok){addLog('\u822a\u7a7a\u652f\u63f4\u5c04\u7a0b\u5916','lw');return;}if(!(at.u.a>0)){addLog('\u822a\u7a7a\u30e6\u30cb\u30c3\u30c8\u306a\u3057','lw');return;}if(_usedAir[fid]){addLog('\u672c\u30bf\u30fc\u30f3\u4f7f\u7528\u6e08\u307f','lw');return;}_usedAir[fid]=1;var use=Math.max(1,Math.floor((at.u.a||0)*(sendPct/100)));var dmg=Math.max(1,Math.floor(use*2.5*(0.7+Math.random()*0.6)));df.u.i=Math.max(0,(df.u.i||0)-Math.floor(dmg*0.7));df.u.t=Math.max(0,(df.u.t||0)-Math.floor(dmg*0.2));addLog('[\u822a\u7a7a\u652f\u63f4] '+at.name+'\u2192'+df.name+' \u30c0\u30e1\u30fc\u30b8'+dmg,'lt');cancelAtk();if(sel)updPanel(sel);updTroopLabels();}
-function _puppetIncome(){var _total=0;for(var m in _puppets){var vs=_puppets[m];for(var vi=0;vi<vs.length;vi++){var _pr=_puppetRate[vs[vi]]||4;var vinc=Math.floor(incOf(vs[vi])/_pr);if(vinc>0&&player===m){money+=vinc;_total+=vinc;}}}return _total;}
+function _puppetIncome(){
+  var _total=0;
+  if(!_puppets[player])return 0;
+  var vs=_puppets[player];
+  for(var vi=0;vi<vs.length;vi++){
+    var pf=vs[vi];
+    // Calculate income from puppet territories directly
+    var pinc=0;
+    for(var id in S){
+      if(S[id].own===pf){
+        var _bonus=(FAC[pf]&&FAC[pf].incBonus)||0.8;
+        pinc+=Math.floor(S[id].eco*_bonus);
+      }
+    }
+    // Also add fac bonuses
+    for(var fid in _fac){if(S[fid]&&S[fid].own===pf)pinc+=_fac[fid]*5;}
+    var _pr=_puppetRate[pf]||4;
+    var vinc=Math.floor(pinc/_pr);
+    if(vinc>0){money+=vinc;_total+=vinc;}
+  }
+  return _total;
+}
 function saveGame(){try{var _modsToSave=_loadedMods.map(function(m){return{id:m.id,name:m.name};});
 var d={pl:player,mo2:money,tu:turn,yr2:yr,mo3:mo,sc:currentScenario,rel:rel,wc:wCaps,fi:_firedEvents,ideo:ideology,mp:manpower,gc:_govChange,mods:_modsToSave,tr:{},pr:_puppetRate};for(var id in S)d.tr[id]={o:S[id].own,e:S[id].eco,i:S[id].u.i||0,t:S[id].u.t||0,a:S[id].u.a||0};localStorage.setItem('warcmd_v1',JSON.stringify(d));addLog('[SAVE] Turn'+turn+' \u4fdd\u5b58\u5b8c\u4e86','lt');var sb=document.getElementById('save-btn');if(sb){var ot=sb.textContent;sb.textContent='SAVED!';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.textContent=ot;},1500);}}catch(e){addLog('[SAVE\u5931\u6557] '+e,'lw');}}
 function loadGame(){try{var raw=localStorage.getItem('warcmd_v1');if(!raw){addLog('\u30bb\u30fc\u30d6\u30c7\u30fc\u30bf\u306a\u3057','lw');return;}var d=JSON.parse(raw);player=d.pl;money=d.mo2;turn=d.tu;yr=d.yr2;mo=d.mo3;currentScenario=d.sc||'1936';rel=d.rel||{};wCaps=d.wc||{};_firedEvents=d.fi||{};
@@ -3021,7 +3042,8 @@ function opPuppetCreate_byFac(f){
   for(var id in S)if(S[id].own===f){S[id].own=pv;if(S[id].el)S[id].el.setAttribute('fill',fcol(pv));}
   if(!FAC[pv])FAC[pv]={n:pn,en:pn,sn:pv.toUpperCase().slice(0,4),
     c:(FAC[f]&&FAC[f].c)||'#3c8050',r:(FAC[f]&&FAC[f].r)||'EUROPE',
-    d:'傀帴国家',cap:(FAC[f]&&FAC[f].cap)||[700,150],m:300};
+    d:'傀帴国家',cap:(FAC[f]&&FAC[f].cap)||[700,150],m:300,
+    incBonus:(FAC[f]&&FAC[f].incBonus)||0.8};
   rel[rk(player,pv)]='puppet';
   if(!_puppets[player])_puppets[player]=[];
   if(_puppets[player].indexOf(pv)<0)_puppets[player].push(pv);_puppetRate[pv]=4;
