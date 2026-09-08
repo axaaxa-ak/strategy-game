@@ -610,7 +610,7 @@ var TF=(function(){
   t["Araucanía"]='cl';t["Aysén"]='cl';t["Arica_y_Tarapacá"]='cl';
   t["Trøndelag"]='no';t["Gävleborg"]='se';t["Värmland"]='se';
   t["Östergötland"]='se';t["Södermanland"]='se';t["Västerbotten"]='se';
-  t["Skåne"]='se';t["Bohusl��n"]='se';t["Jämtland"]='se';
+  t["Skåne"]='se';t["Bohuslän"]='se';t["Jämtland"]='se';
   t["Småland"]='se';t["Västergötland"]='se';
   t["Häme"]='fi';t["Åland_Islands"]='fi';
   t["Kraków"]='pl';t["Lwów"]='pl';t["Białystok"]='pl';
@@ -654,7 +654,7 @@ var FAC={
   au:{n:'オーストラリア連邦',sn:'AUS',c:'#1e40af',r:'OCEANIA',d:'英連邦の若き大陸国家。広大な土地と資源を活かし太平洋の覇権を目指せ。',cap:[1200,420],m:1500,incBonus:1.2},
   ca:{n:'カナダ自治領',sn:'CAN',c:'#dc2626',r:'AMERICAS',d:'英連邦の北米大国。豊富な資源と広大な国土を持つ多民族国家。',cap:[290,140],m:1600,incBonus:1.2},
   nz:{n:'ニュージーランド',sn:'NZL',c:'#2563eb',r:'OCEANIA',d:'英連邦の南太平洋国家。太平洋の要衝として自国の利益を守れ。',cap:[1335,440],m:900,incBonus:1.1},
-  za:{n:'南アフリカ連邦',sn:'ZAF',c:'#166534',r:'AFRICA',d:'英連邦の一員ながら独自性を持���南アフリカ。金とダイヤモンドで繁栄を築け。',cap:[770,390],m:1200,incBonus:1.1},
+  za:{n:'南アフリカ連邦',sn:'ZAF',c:'#166534',r:'AFRICA',d:'英連邦の一員ながら独自性を持つ南アフリカ。金とダイヤモンドで繁栄を築け。',cap:[770,390],m:1200,incBonus:1.1},
   pl:{n:'ポーランド共和国',sn:'POL',c:'#e11d48',r:'EUROPE',d:'東西の大国に挟まれたポーランド。ドイツとソ連の圧力に抗い独立を守れ。',cap:[781,127],m:1300,incBonus:1.4},
   cz:{n:'チェコスロバキア',sn:'CZE',c:'#b91c1c',r:'EUROPE',d:'ズデーテンを抱えるドイツの次の標的。民主主義の砦として欧州の平和を守れ。',cap:[768,135],m:1500,incBonus:1.6},
   at:{n:'オーストリア',sn:'AUT',c:'#c2410c',r:'EUROPE',d:'ナチス・ドイツの統合圧力に抗う共和国。独立を維持できるか。',cap:[770,148],m:1100,incBonus:1.4},
@@ -665,7 +665,7 @@ var FAC={
   gr:{n:'ギリシャ',sn:'GRC',c:'#1d4ed8',r:'EUROPE',d:'古代文明の後継国家。地中海とバルカンを舞台に大国間で外交を展開せよ。',cap:[820,170],m:800,incBonus:1.1},
   se:{n:'スウェーデン王国',sn:'SWE',c:'#1e40af',r:'EUROPE',d:'厳正中立を保つ北欧の強国。鉄鋼と工業力で繁栄しながら戦争を避け続けよ。',cap:[738,100],m:1400,incBonus:1.6},
   no:{n:'ノルウェー王国',sn:'NOR',c:'#c0392b',r:'EUROPE',d:'フィヨルドの国ノルウェー。海運と漁業で繁栄する北欧王国。中立を守れ。',cap:[718,100],m:1100,incBonus:1.4},
-  dk:{n:'デンマーク王国',sn:'DNK',c:'#e74c3c',r:'EUROPE',d:'グリーンランドを持つ北欧小国。外交の巧み���で生き残りを図れ。',cap:[728,108],m:1000,incBonus:1.5},
+  dk:{n:'デンマーク王国',sn:'DNK',c:'#e74c3c',r:'EUROPE',d:'グリーンランドを持つ北欧小国。外交の巧みさで生き残りを図れ。',cap:[728,108],m:1000,incBonus:1.5},
   fi:{n:'フィンランド共和国',sn:'FIN',c:'#1e40af',r:'EUROPE',d:'ソ連と国境を接するフィンランド。冬戦争を前に意志の力で独立を守れ。',cap:[795,98],m:900,incBonus:1.4},
   ee:{n:'エストニア共和国',sn:'EST',c:'#0369a1',r:'EUROPE',d:'バルト海に面したエストニア。ソ連の脅威に抗し民主主義を守れ。',cap:[800,107],m:700,incBonus:1.3},
   lv:{n:'ラトビア共和国',sn:'LAT',c:'#9f1239',r:'EUROPE',d:'バルト三国の中央ラトビア。ドイツとソ連に挟まれて独立を守れ。',cap:[793,112],m:700,incBonus:1.3},
@@ -679,7 +679,7 @@ var FAC={
   lu:{n:'ルクセンブルク大公国',sn:'LUX',c:'#dc2626',r:'EUROPE',d:'欧州の小さな大公国。鉄鋼産業で繁栄しながら大国に囲まれて生き残れ。',cap:[724,132],m:700,incBonus:1.8},
   ic:{n:'アイスランド',sn:'ISL',c:'#0284c7',r:'EUROPE',d:'北大西洋の孤島。デンマークと緩やかな連合を保ちながら独自の道を歩め。',cap:[580,80],m:600,incBonus:1.0},
   us:{n:'アメリカ合衆国',sn:'USA',c:'#1565c0',r:'AMERICAS',d:'孤立主義の超大国。膨大な経済力と軍事力を持ちながら、いつ国際舞台に立つかが鍵だ。',cap:[400,170],m:5500,incBonus:2.5},
-  br:{n:'ブラジル連邦��和国',sn:'BRA',c:'#15803d',r:'AMERICAS',d:'南米最大の国家。コーヒーと天然資源を武器に南米の覇権を握れ。',cap:[517,377],m:1500,incBonus:1.1},
+  br:{n:'ブラジル連邦共和国',sn:'BRA',c:'#15803d',r:'AMERICAS',d:'南米最大の国家。コーヒーと天然資源を武器に南米の覇権を握れ。',cap:[517,377],m:1500,incBonus:1.1},
   ar:{n:'アルゼンチン共和国',sn:'ARG',c:'#74acdf',r:'AMERICAS',d:'南米南部の農業大国。肉と小麦の輸出で繁栄し南米のリーダーを目指せ。',cap:[474,413],m:1400,incBonus:1.2},
   mx:{n:'メキシコ合衆国',sn:'MEX',c:'#16a34a',r:'AMERICAS',d:'カルデナス大統領が改革を推進するメキシコ。石油国有化で米国との摩擦を乗り越えよ。',cap:[270,237],m:1000,incBonus:1.0},
   cl:{n:'チリ共和国',sn:'CHL',c:'#dc2626',r:'AMERICAS',d:'アンデス沿いの細長い国。硝石と銅の資源国として太平洋覇権を目指せ。',cap:[400,440],m:900,incBonus:1.1},
@@ -1083,6 +1083,8 @@ function processSVG(txt){
       else if(lid.match(/new_guinea|papua|solomon|fiji|tonga|gilbert|ellice|new_hebrides/))own='au';
       else if(lid.match(/new_caledonia|tahiti|french_polynesia/))own='fr';
       else if(lid.match(/new_zealand/))own='nz';
+      // South America - Brazil
+      else if(lid.match(/amazonas|maranhao|ceara|pernambuco|bahia|minas_gerais|sao_paulo|rio_de_janeiro|parana|santa_catarina|rio_grande_do_sul|mato_grosso|goias|paraiba|alagoas|sergipe|espirito_santo|piaui|roraima|amapa|tocantins|acre|distrito_federal|para_norte/))own='br';
       // Default: closest major power by region - just neutral
       else own='uk';
     }
@@ -1157,7 +1159,7 @@ function buildAdjChunked(ids,onDone){
 // ── Fog of War ──
 function getVis(){
   var vis={};
-  for(var id in S){var t=S[id];if(t.own===player||isAlly(player,t.own))vis[id]=1;}
+  for(var id in S){var t=S[id];if(t.own===player||isAlly(player,t.own)||getRel(player,t.own)==='puppet')vis[id]=1;}
   for(var id in vis){var nbrs=adjOf(id);for(var i=0;i<nbrs.length;i++)vis[nbrs[i]]=1;}
   return vis;
 }
@@ -1288,7 +1290,7 @@ function updPanel(id){
   else tg='<span class="tag tn">NEUTRAL</span>';
   if(!isOwn&&vis[id]&&isEnc(id))tg+='<span class="tag te">ENCIRCLED</span>';
   var _ovr=getOverlord(t.own);
-  if(_ovr){var _ovrN=(FAC[_ovr]&&FAC[_ovr].n)||_ovr;tg+='<span class="tag" style="color:#a855f7;border-color:#7c3aed;background:rgba(168,85,247,.1)">傀儡('+_ovrN+')</span>';}
+  if(_ovr){var _ovrN=(FAC[_ovr]&&FAC[_ovr].n)||_ovr;tg+='<span class="tag" style="color:#a855f7;border-color:#7c3aed;background:rgba(168,85,247,.1)">傀儁('+_ovrN+')</span>';}
   if(!isVis&&!isOwn)tg+='<span class="tag tf">FOG OF WAR</span>';
   if(pt)pt.innerHTML=tg;
   var h='<div class="sg">'+
@@ -1306,6 +1308,7 @@ function updPanel(id){
       '<button class="btn'+(curUnit==='a'?' on':'')+'" onclick="G.setU(\'a\')">[A] 砲兵<br><span style="color:var(--ac)">Y30x3</span><br><span style="font-size:6.5px">Rng:1</span></button>'+
       '</div>'+
       '<button class="ab" onclick="G.recruit()">+ 部隊を生産・招集</button>'+
+      '<div class="sd">DISBAND / 解体</div>'+'<select id="dbd-t" style="font-size:8px"><option value="i">歩兵</option><option value="t">戦車</option><option value="a">航空</option></select>'+'<input type="number" id="dbd-q" value="1" min="1" style="width:36px;font-size:8px"/>'+'<button class="ab" onclick="G.disbandUnit()">解体実行</button>'+
       '<div class="sd">ORDERS / 命令</div>'+
       '<button class="ab r'+(atkMode==='assault'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'assault\',\''+id+'\')">[ASSAULT] 歩兵突撃 Rng:2</button>'+
       '<button class="ab r'+(atkMode==='tankrush'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'tankrush\',\''+id+'\')">[TANK RUSH] 機甲突破 Rng:3</button>'+
@@ -1875,9 +1878,9 @@ function nextTurn(){
     var _pop=Math.max(0,Math.floor((_gt.eco+_facBonus)*(_gt.own===player?0.04:0.03)));
     if(_pop>0)_gt.u.i=(_gt.u.i||0)+_pop;
   }
-  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+' | 定期増員完了','lai');
+  var _pInc=_puppetIncome();
+  addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+(_pInc>0?' | 貢納+'+_pInc:'')+' | 定期増員完了','lai');
   checkHistEvents();
-  _puppetIncome();
   _usedAir={};
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
 }
@@ -2473,7 +2476,7 @@ var HIST_EVENTS=[
    effects:['\u30ed\u30b7\u30a2\uff1a+300\u8cc7\u91d1\u30fb\u6b27\u7c73\u3068\u306e\u95a2\u4fc2\u60aa\u5316'],
    apply:function(){if(player==='su')money+=300;_approval['uk']=Math.max(-50,(_approval['uk']||0)-30);_approval['us']=Math.max(-50,(_approval['us']||0)-30);_approval['de']=Math.max(-50,(_approval['de']||0)-20);}},
 
-// ════════���═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 //  1453 SCENARIO (FALL OF BYZANTIUM)
 // ════════════════════════════════════════════════════════════════
   {yr:1453,mo:5,id:'constantinople_falls',sc:'1453',
@@ -2532,9 +2535,9 @@ function showDiplomScreen(){
     var rl={war:'[WAR] 战争',allied:'[ALLY] 同盟',puppet:'[PUP] 傀帴',
       peace:'― 中立',hostile:'[HST] 敵対'}[r]||r;
     var _othOvr=getOverlord(fid);
-    if(isOurPuppet)rl='[PUP] 傀儡(自国)';
+    if(isOurPuppet)rl='[PUP] 傀儁(自国)';
     else if(isOurOverlord)rl='[OVL] 宗主国';
-    else if(_othOvr)rl='[PUP] 傀儡('+((FAC[_othOvr]&&FAC[_othOvr].sn)||_othOvr)+')'
+    else if(_othOvr)rl='[PUP] 傀儁('+((FAC[_othOvr]&&FAC[_othOvr].sn)||_othOvr)+')'
     var apv=_approval[fid]||0;
     var apvColor=apv>=0?'#4cd870':'#e05060';
     var alRate=Math.round(_diplSuccessRate('alliance',fid)*100);
@@ -2572,7 +2575,7 @@ function showDiplomScreen(){
   },20);
 }
 function execAir(fid,tid){var at=S[fid],df=S[tid];if(!at||!df||at.own!==player)return;var ok=false;var nbrs=adjOf(fid);for(var i=0;i<nbrs.length;i++)if(nbrs[i]===tid){ok=true;break;}if(!ok){addLog('\u822a\u7a7a\u652f\u63f4\u5c04\u7a0b\u5916','lw');return;}if(!(at.u.a>0)){addLog('\u822a\u7a7a\u30e6\u30cb\u30c3\u30c8\u306a\u3057','lw');return;}if(_usedAir[fid]){addLog('\u672c\u30bf\u30fc\u30f3\u4f7f\u7528\u6e08\u307f','lw');return;}_usedAir[fid]=1;var use=Math.max(1,Math.floor((at.u.a||0)*(sendPct/100)));var dmg=Math.max(1,Math.floor(use*2.5*(0.7+Math.random()*0.6)));df.u.i=Math.max(0,(df.u.i||0)-Math.floor(dmg*0.7));df.u.t=Math.max(0,(df.u.t||0)-Math.floor(dmg*0.2));addLog('[\u822a\u7a7a\u652f\u63f4] '+at.name+'\u2192'+df.name+' \u30c0\u30e1\u30fc\u30b8'+dmg,'lt');cancelAtk();if(sel)updPanel(sel);updTroopLabels();}
-function _puppetIncome(){for(var m in _puppets){var vs=_puppets[m];for(var vi=0;vi<vs.length;vi++){var _pr=_puppetRate[vs[vi]]||4;var vinc=Math.floor(incOf(vs[vi])/_pr);if(vinc>0&&player===m)money+=vinc;}}}
+function _puppetIncome(){var _total=0;for(var m in _puppets){var vs=_puppets[m];for(var vi=0;vi<vs.length;vi++){var _pr=_puppetRate[vs[vi]]||4;var vinc=Math.floor(incOf(vs[vi])/_pr);if(vinc>0&&player===m){money+=vinc;_total+=vinc;}}}return _total;}
 function saveGame(){try{var _modsToSave=_loadedMods.map(function(m){return{id:m.id,name:m.name};});
 var d={pl:player,mo2:money,tu:turn,yr2:yr,mo3:mo,sc:currentScenario,rel:rel,wc:wCaps,fi:_firedEvents,ideo:ideology,mp:manpower,gc:_govChange,mods:_modsToSave,tr:{},pr:_puppetRate};for(var id in S)d.tr[id]={o:S[id].own,e:S[id].eco,i:S[id].u.i||0,t:S[id].u.t||0,a:S[id].u.a||0};localStorage.setItem('warcmd_v1',JSON.stringify(d));addLog('[SAVE] Turn'+turn+' \u4fdd\u5b58\u5b8c\u4e86','lt');var sb=document.getElementById('save-btn');if(sb){var ot=sb.textContent;sb.textContent='SAVED!';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.textContent=ot;},1500);}}catch(e){addLog('[SAVE\u5931\u6557] '+e,'lw');}}
 function loadGame(){try{var raw=localStorage.getItem('warcmd_v1');if(!raw){addLog('\u30bb\u30fc\u30d6\u30c7\u30fc\u30bf\u306a\u3057','lw');return;}var d=JSON.parse(raw);player=d.pl;money=d.mo2;turn=d.tu;yr=d.yr2;mo=d.mo3;currentScenario=d.sc||'1936';rel=d.rel||{};wCaps=d.wc||{};_firedEvents=d.fi||{};
@@ -2884,7 +2887,7 @@ function processGovChange(){
   }
 }
 
-// ════════════════════════════════════���═══════════════════════════
+// ════════════════════════════════════════════════════════════════
 //  MANPOWER SYSTEM
 // ════════════════════════════════════════════════════════════════
 function calcMpGain(){
@@ -2920,13 +2923,13 @@ function showMpBreakdown(){
   for(var _pid in S){if(S[_pid].own!==player)continue;
     pmaint+=Math.floor((S[_pid].u.i||0)*0.05+(S[_pid].u.t||0)*0.3+(S[_pid].u.a||0)*0.2);}
   pmaint=Math.round(pmaint*ideoMaintMult());
-  var net=inc-pmaint;
+  var _pInc=0;for(var vi=0;vi<(_puppets[player]||[]).length;vi++){var _pr=_puppetRate[(_puppets[player]||[])[vi]]||4;_pInc+=Math.floor(incOf((_puppets[player]||[])[vi])/_pr);}var net=inc-pmaint+_pInc;
   var govDebt=(_govChange&&_govChange.phase===2)?Math.round(inc*0.50):0;
   document.getElementById('econ-content').innerHTML=
     '<div style="font-size:9px;color:var(--ac);letter-spacing:2px;margin-bottom:8px">収入内訳</div>'+
     '<div class="econ-row"><span class="econ-label">領土基礎収入</span><span class="econ-val pos">+Y'+raw_inc+'</span></div>'+
     (ideo_inc?'<div class="econ-row"><span class="econ-label">思想補正</span><span class="econ-val pos">+Y'+ideo_inc+'</span></div>':'')+
-    '<div class="econ-row"><span class="econ-label">軍事維持費</span><span class="econ-val neg">-Y'+pmaint+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">軍事維持費</span><span class="econ-val neg">-Y'+pmaint+'</span></div>'+(_pInc?'<div class="econ-row"><span class="econ-label">傀儁貢納</span><span class="econ-val pos">+Y'+_pInc+'</span></div>':'')+
     (govDebt?'<div class="econ-row"><span class="econ-label">政情不安ペナルティ</span><span class="econ-val neg">-Y'+govDebt+'</span></div>':'')+
     '<div class="econ-total"><span>純収入/T</span><span style="color:'+(net>=0?'#4cd870':'#e05060')+'">'+((net>=0?'+':'')+net)+'</span></div>'+
     '<div style="font-size:9px;color:var(--ac);letter-spacing:2px;margin:12px 0 8px">人的資源内訳</div>'+
@@ -3059,7 +3062,7 @@ function loadMod(mod){
   // Remove existing mod with same id
   _loadedMods=_loadedMods.filter(function(m){return m.id!==mod.id;});
   _loadedMods.push(mod);
-  addLog('[MOD] "'+mod.name+'" を読み込みました','lk');
+  addLog('[MOD] "'+mod.name+'" を読み��みました','lk');
   refreshModList();
   // Add to SCENARIOS if it has year/month
   injectModScenario(mod);
@@ -3379,6 +3382,8 @@ function setAtk(mode,fid){
 }
 
 function setPuppetRate(f,rate){_puppetRate[f]=rate;addLog('[貢納率] '+((FAC[f]&&FAC[f].n)||f)+' の貢納率を 1/'+rate+' に設定','lt');if(sel)updPanel(sel);}
+function disband(ut,qty){if(!sel||!S[sel]||S[sel].own!==player)return;qty=parseInt(qty)||0;if(qty<1)return;var have=S[sel].u[ut]||0;if(qty>have)qty=have;if(qty<1){addLog('兵力不足','lw');return;}S[sel].u[ut]-=qty;var refund=Math.floor(qty*{i:50,t:250,a:150}[ut]/10);money+=refund;addLog('[解体] '+S[sel].name+' '+ut.toUpperCase()+'x'+qty+' (還付 Y'+refund+')','lt');updPanel(sel);updTB();updTroopLabels();}
+function disbandUnit(){if(!sel||!S[sel]||S[sel].own!==player)return;var dt=document.getElementById('dbd-t');var dq=document.getElementById('dbd-q');if(!dt||!dq)return;disband(dt.value,dq.value);}
 return{
   setU:setU,recruit:recruit,
   setAtk:setAtk,cancelAtk:cancelAtk,
@@ -3394,7 +3399,7 @@ return{
   selectScen:selectScen,closeEvModal:closeEvModal,
   buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,
   buildShip:buildShip,recruitAll:recruitAll,
-  opPuppetCreate:opPuppetCreate,setPuppetRate:setPuppetRate,requestAllyWar:requestAllyWar,
+  opPuppetCreate:opPuppetCreate,setPuppetRate:setPuppetRate,disbandUnit:disbandUnit,requestAllyWar:requestAllyWar,
   showDiplomScreen:showDiplomScreen,
   saveGame:saveGame,loadGame:loadGame,
   loadMod:loadMod,removeMod:removeMod,showNationPanel:showNationPanel,modToggle:modToggle,modLoadFile:modLoadFile,
