@@ -348,7 +348,7 @@ button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:tr
   <div class="tbs"><div class="tl">INCOME</div><div class="tv" id="tb-i" style="color:#68d888">+0</div></div>
   <div class="tbs"><div class="tl">TERR</div><div class="tv" id="tb-t">0</div></div>
   <div class="tbs"><div class="tl">DATE</div><div class="tv" id="tb-d">1936.01</div></div>
-  <div class="tbs"><div class="tl" id="tb-ideo" onclick="G.showIdeoPopup()" style="cursor:pointer;color:var(--ac)">IDEO</div></div>
+  <div class="tbs"><div class="tl">MP</div><div class="tv" id="tb-mp" style="color:#a0d8ef;cursor:pointer" onclick="G.showMpBreakdown()">5000</div></div><div class="tbs"><div class="tl" id="tb-ideo" onclick="G.showIdeoPopup()" style="cursor:pointer;color:var(--ac)">IDEO</div></div>
   <div class="tbs end" id="tb-w"></div>
 </div>
 <div id="sp">
@@ -368,7 +368,7 @@ button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:tr
 <button id="sp-tog" onclick="G.togglePanel()">▲ PANEL</button>
 <div id="mind">TARGET SELECTION MODE</div>
 <button id="nxt" onclick="G.nextTurn()">NEXT TURN &#9654;</button>
-<div id="mp-bar" style="position:fixed;left:12px;bottom:132px">人的資源: ...</div>
+
 <button style="position:fixed;left:12px;bottom:102px;background:rgba(200,162,72,.12);border:1px solid rgba(200,162,72,.3);color:var(--ac);padding:4px 12px;font-family:var(--hd);font-size:7px;letter-spacing:2px;cursor:pointer" onclick="G.showVictoryPanel()">🏆 VICTORY</button>
 <button id="save-btn" onclick="G.saveGame()">SAVE</button>
 <button id="load-btn" onclick="G.loadGame()">LOAD</button>
@@ -1308,7 +1308,6 @@ function updPanel(id){
       '<button class="btn'+(curUnit==='a'?' on':'')+'" onclick="G.setU(\'a\')">[A] 砲兵<br><span style="color:var(--ac)">Y30x3</span><br><span style="font-size:6.5px">Rng:1</span></button>'+
       '</div>'+
       '<button class="ab" onclick="G.recruit()">+ 部隊を生産・招集</button>'+
-      '<div class="sd">DISBAND / 解体</div>'+'<select id="dbd-t" style="font-size:8px"><option value="i">歩兵</option><option value="t">戦車</option><option value="a">航空</option></select>'+'<input type="number" id="dbd-q" value="1" min="1" style="width:36px;font-size:8px"/>'+'<button class="ab" onclick="G.disbandUnit()">解体実行</button>'+
       '<div class="sd">ORDERS / 命令</div>'+
       '<button class="ab r'+(atkMode==='assault'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'assault\',\''+id+'\')">[ASSAULT] 歩兵突撃 Rng:2</button>'+
       '<button class="ab r'+(atkMode==='tankrush'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'tankrush\',\''+id+'\')">[TANK RUSH] 機甲突破 Rng:3</button>'+
@@ -1722,11 +1721,10 @@ function updTB(){
   // Manpower display
   var ideEl=document.getElementById('tb-ideo');
   if(ideEl&&IDEO_DEFS[ideology])ideEl.textContent=IDEO_DEFS[ideology].icon+' '+IDEO_DEFS[ideology].name.slice(0,4)+(_govChange?' *':'');
-  var mpEl=document.getElementById('mp-bar');
+  var mpEl=document.getElementById('tb-mp');
   if(mpEl){
     var mpGain=calcMpGain();
-    mpEl.textContent='MP: '+manpower+' (+'+mpGain+'/T)';
-    mpEl.onclick=function(){G.showMpBreakdown();};
+    mpEl.textContent=manpower;
     mpEl.style.color=manpower<1000?'#e05060':manpower<3000?'#f0d060':'#a0d8ef';
   }
   var tt=document.getElementById('tb-t');if(tt)tt.textContent=cntOf(player);
@@ -1881,6 +1879,7 @@ function nextTurn(){
   var _pInc=_puppetIncome();
   addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+(_pInc>0?' | 貢納+'+_pInc:'')+' | 定期増員完了','lai');
   checkHistEvents();
+  processGovChange();
   _usedAir={};
   aiTurn();updTB();if(sel)updPanel(sel);applyFoW();updTroopLabels();
 }
@@ -2325,7 +2324,7 @@ var HIST_EVENTS=[
    effects:['\u65e5\u672c\uff1a\u5168\u5730\u57df\u5175\u529b\u534a\u6e1b\u30fb\u964d\u4f0f','\u7c73\u56fd\uff1a+800\u8cc7\u91d1\u30fb\u521d\u306e\u6838\u5927\u56fd'],
    apply:function(){for(var id in S)if(S[id].own==='jp'){S[id].u.i=Math.floor((S[id].u.i||0)/2);S[id].u.t=0;}if(player==='us')money+=800;}},
 
-// ════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════���═══════════
 //  1939 SCENARIO (BLITZKRIEG)
 // ════════════════════════════════════════════════════════════════
   {yr:1939,mo:9,id:'poland_falls_39',sc:'1939',
@@ -2822,18 +2821,24 @@ function ideoFactCost(){
 
 function showIdeoPopup(){
   var d=IDEO_DEFS[ideology]||IDEO_DEFS.neutral;
-  var changeCost=Math.max(150,Math.round(incOf(player)*3*(ideology==='neutral'?0.5:1)));
-  var html='<div style="font-family:var(--hd);font-size:12px;color:var(--ac);margin-bottom:10px">'+
-    d.name+' '+d.icon+'</div>'+
-    '<div style="font-size:8px;color:var(--dm);line-height:2;margin-bottom:10px">'+d.desc+'</div>'+
-    '<div style="font-size:7px;color:var(--dm);margin-bottom:10px">'+
-    (_govChange?'移行中 残り'+_govChange.turnsLeft+'ターン ':'政権は安定中')+'</div>'+
-    '<div style="font-size:8px;color:var(--dm);margin-bottom:8px">政権交代コスト: Y'+changeCost+'</div>'+
-    '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  var changeCost=Math.max(ideology==='neutral'?75:150,Math.round(incOf(player)*3*(ideology==='neutral'?0.5:1)));
+  var html='<div style="font-family:var(--hd);font-size:13px;color:'+d.color+';margin-bottom:4px">'+d.icon+' '+d.name+'</div>';
+  html+='<div style="font-size:8px;color:var(--dm);line-height:2;margin-bottom:8px">'+d.desc+'</div>';
+  if(_govChange){
+    html+='<div style="font-size:8px;color:#f0c050;margin-bottom:10px;padding:6px 8px;background:rgba(240,192,80,.1);border:1px solid rgba(240,192,80,.3);border-radius:4px">⚠ 政権移行中 — 残り'+_govChange.turnsLeft+'ターン ('+IDEO_DEFS[_govChange.target].name+'へ)</div>';
+  }else{
+    html+='<div style="font-size:8px;color:#68d888;margin-bottom:10px;padding:6px 8px;background:rgba(104,216,136,.08);border:1px solid rgba(104,216,136,.2);border-radius:4px">✓ 政権は安定中 — 下記から選択して移行可能</div>';
+  }
+  html+='<div style="font-size:8px;color:var(--dm);margin-bottom:10px">政権交代コスト: <span style="color:#f0c050;font-weight:bold">Y'+changeCost+'</span> — 6ターンで完了</div>';
+  html+='<div style="font-size:7px;color:var(--ac);letter-spacing:1px;margin-bottom:6px">AVAILABLE IDEOLOGIES</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:6px">';
   Object.keys(IDEO_DEFS).forEach(function(k){
     if(k===ideology)return;
     var dd=IDEO_DEFS[k];
-    html+='<button class="ideo-btn" onclick="G.startGovChange(\''+k+'\')">'+(dd.icon)+' '+dd.name+'</button>';
+    html+='<button class="ideo-btn" onclick="G.startGovChange(\''+k+'\')" style="display:flex;flex-direction:column;align-items:flex-start;padding:8px;text-align:left;border:1px solid '+dd.color+'33">';
+    html+='<span style="font-size:10px;color:'+dd.color+';font-weight:bold">'+dd.icon+' '+dd.name+'</span>';
+    html+='<span style="font-size:7px;color:var(--dm);margin-top:3px;line-height:1.6">'+dd.desc+'</span>';
+    html+='</button>';
   });
   html+='</div>';
   var mt=document.getElementById('m-t'),ms=document.getElementById('m-s'),mb=document.getElementById('m-b');
@@ -2843,18 +2848,7 @@ function showIdeoPopup(){
   var mbt=document.getElementById('m-btns');if(mbt)mbt.innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';
   document.getElementById('m-r').style.display='none';
   document.getElementById('modal').classList.add('open');
-  setTimeout(function(){
-    var mb=document.getElementById('m-btns');if(!mb)return;
-    var bl=mb.querySelectorAll('button');
-    for(var i=0;i<bl.length;i++)(function(b){
-      var s=b.getAttribute('onclick');if(!s)return;
-      b.removeAttribute('onclick');
-      var fn=new Function(s);
-      function run(e){e.stopPropagation();if(e.cancelable)e.preventDefault();try{fn();}catch(x){}}
-      b.addEventListener('click',run);
-      b.addEventListener('touchend',run,{passive:false});
-    })(bl[i]);
-  },20);
+  _bindAllBtns();
 }
 
 function startGovChange(target){
@@ -3062,7 +3056,7 @@ function loadMod(mod){
   // Remove existing mod with same id
   _loadedMods=_loadedMods.filter(function(m){return m.id!==mod.id;});
   _loadedMods.push(mod);
-  addLog('[MOD] "'+mod.name+'" を読み��みました','lk');
+  addLog('[MOD] "'+mod.name+'" を読み込みました','lk');
   refreshModList();
   // Add to SCENARIOS if it has year/month
   injectModScenario(mod);
@@ -3382,8 +3376,78 @@ function setAtk(mode,fid){
 }
 
 function setPuppetRate(f,rate){_puppetRate[f]=rate;addLog('[貢納率] '+((FAC[f]&&FAC[f].n)||f)+' の貢納率を 1/'+rate+' に設定','lt');if(sel)updPanel(sel);}
-function disband(ut,qty){if(!sel||!S[sel]||S[sel].own!==player)return;qty=parseInt(qty)||0;if(qty<1)return;var have=S[sel].u[ut]||0;if(qty>have)qty=have;if(qty<1){addLog('兵力不足','lw');return;}S[sel].u[ut]-=qty;var refund=Math.floor(qty*{i:50,t:250,a:150}[ut]/10);money+=refund;addLog('[解体] '+S[sel].name+' '+ut.toUpperCase()+'x'+qty+' (還付 Y'+refund+')','lt');updPanel(sel);updTB();updTroopLabels();}
-function disbandUnit(){if(!sel||!S[sel]||S[sel].own!==player)return;var dt=document.getElementById('dbd-t');var dq=document.getElementById('dbd-q');if(!dt||!dq)return;disband(dt.value,dq.value);}
+function _bindAllBtns(){
+  setTimeout(function(){
+    var modal=document.getElementById('modal');
+    if(!modal)return;
+    var bl=modal.querySelectorAll('button[onclick]');
+    for(var i=0;i<bl.length;i++)(function(b){
+      var s=b.getAttribute('onclick');if(!s)return;
+      b.removeAttribute('onclick');
+      var fn=new Function(s);
+      function run(e){e.stopPropagation();if(e.cancelable)e.preventDefault();try{fn();}catch(x){}}
+      b.addEventListener('click',run);
+      b.addEventListener('touchend',run,{passive:false});
+    })(bl[i]);
+    var sl=modal.querySelector('#dbd-slider');
+    if(sl)sl.addEventListener('input',function(){G.updateDisbandQty(sl.value);});
+  },20);
+}
+var _dbdType='i';
+function showDisbandPanel(){
+  if(!sel||!S[sel]||S[sel].own!==player)return;
+  _dbdType='i';
+  _renderDisbandPanel();
+}
+function _renderDisbandPanel(){
+  var t=S[sel];if(!t)return;
+  var max=t.u[_dbdType]||0;
+  var types=[['i','歩兵'],['t','戦車'],['a','航空']];
+  var html='<div style="display:flex;gap:4px;margin-bottom:10px">';
+  for(var ti=0;ti<types.length;ti++){
+    var ut=types[ti][0],un=types[ti][1];
+    html+='<button class="btn'+(_dbdType===ut?' on':'')+'" onclick="G.setDisbandType(\''+ut+'\')" style="flex:1;padding:6px;font-size:8px">'+un+' ('+(t.u[ut]||0)+')</button>';
+  }
+  html+='</div>';
+  if(max>0){
+    html+='<div style="font-size:8px;color:var(--dm);margin-bottom:6px">解体数量: <span id="dbd-qty" style="color:var(--fg);font-weight:bold">1</span> / '+max+'</div>';
+    html+='<input type="range" min="0" max="'+max+'" value="1" id="dbd-slider" style="width:100%;accent-color:#e05060"/>';
+    html+='<div style="font-size:8px;color:#68d888;margin-top:6px">還付予想: Y<span id="dbd-refund">5</span></div>';
+  }else{
+    html+='<div style="font-size:8px;color:var(--dm);text-align:center;padding:10px">この兵種の部隊はありません</div>';
+  }
+  var mt=document.getElementById('m-t'),ms=document.getElementById('m-s'),mb=document.getElementById('m-b');
+  if(!mt||!ms||!mb)return;
+  mt.textContent='解体 / DISBAND';
+  ms.textContent=t.name+'の部隊を解体';
+  mb.innerHTML=html;
+  document.getElementById('m-r').style.display='none';
+  var mbt=document.getElementById('m-btns');
+  if(mbt)mbt.innerHTML=max>0?'<button class="mb ok" onclick="G.execDisband()">解体実行</button><button class="mb cl" onclick="G.closeModal()">キャンセル</button>':'<button class="mb cl" onclick="G.closeModal()">閉じる</button>';
+  document.getElementById('modal').classList.add('open');
+  _bindAllBtns();
+}
+function setDisbandType(t){_dbdType=t;_renderDisbandPanel();}
+function updateDisbandQty(v){
+  var el=document.getElementById('dbd-qty');if(el)el.textContent=v;
+  var refund=Math.floor((parseInt(v)||0)*{i:50,t:250,a:150}[_dbdType]/10);
+  var r=document.getElementById('dbd-refund');if(r)r.textContent=refund;
+}
+function execDisband(){
+  if(!sel||!S[sel]||S[sel].own!==player){closeModal();return;}
+  var slider=document.getElementById('dbd-slider');
+  var qty=slider?parseInt(slider.value)||0:0;
+  if(qty<1){closeModal();return;}
+  var have=S[sel].u[_dbdType]||0;
+  if(qty>have)qty=have;
+  if(qty<1){closeModal();return;}
+  S[sel].u[_dbdType]-=qty;
+  var refund=Math.floor(qty*{i:50,t:250,a:150}[_dbdType]/10);
+  money+=refund;
+  addLog('[解体] '+S[sel].name+' '+{i:'歩兵',t:'戦車',a:'航空'}[_dbdType]+'x'+qty+' (還付 Y'+refund+')','lt');
+  closeModal();
+  updPanel(sel);updTB();updTroopLabels();
+}
 return{
   setU:setU,recruit:recruit,
   setAtk:setAtk,cancelAtk:cancelAtk,
@@ -3399,7 +3463,7 @@ return{
   selectScen:selectScen,closeEvModal:closeEvModal,
   buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,
   buildShip:buildShip,recruitAll:recruitAll,
-  opPuppetCreate:opPuppetCreate,setPuppetRate:setPuppetRate,disbandUnit:disbandUnit,requestAllyWar:requestAllyWar,
+  opPuppetCreate:opPuppetCreate,setPuppetRate:setPuppetRate,showDisbandPanel:showDisbandPanel,setDisbandType:setDisbandType,updateDisbandQty:updateDisbandQty,execDisband:execDisband,requestAllyWar:requestAllyWar,
   showDiplomScreen:showDiplomScreen,
   saveGame:saveGame,loadGame:loadGame,
   loadMod:loadMod,removeMod:removeMod,showNationPanel:showNationPanel,modToggle:modToggle,modLoadFile:modLoadFile,
