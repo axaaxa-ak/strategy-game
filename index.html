@@ -1255,9 +1255,6 @@ function onClick(id){
     if(tOwn===player&&id!==atkFrom){cancelAtk();selTerr(id);return;}
     if(atkMode==='airstrike'||atkMode==='bombard'){execAir(atkFrom,id);return;}
     if(hl[id]==='atk'){showAM(atkFrom,id,atkMode);return;}
-    // Island fallback: if target has no adj (island), allow from any adjacent sea territory
-    var _nb2=adjOf(id);
-    if(_nb2.length===0&&hl[id]!=='mov'){showAM(atkFrom,id,atkMode);return;}
     addLog('陴接領土をタップしてください','lw');
     return;
   }
@@ -1588,11 +1585,9 @@ function _execD(type,f){
     addLog('[独立保障] '+fn+' 好感度+12','lt');
   }else if(type==='puppet'){
     if(success){
-      if(!confirm('「'+fn+'」を傀帴国化しますか？\n属国化後は必ず守る必要があります。')){addLog('傀帴化キャンセル','lai');return;}
       opPuppetCreate_byFac(f);
       _approval[f]=Math.max(-100,(_approval[f]||0)-20);
-      _approval[f]=100;  // 傀儡化直後は好感度MAX
-      addLog('[傀帴化成功] '+fn+'を属国化！ 好感度100','lk');
+      addLog('[傀帴化成功] '+fn+'を属国化！','lk');
     }else{
       _approval[f]=Math.max(-100,(_approval[f]||0)-10);
       addLog('[傀帴化失敗] '+fn+' 好感度-10','lw');
@@ -2879,7 +2874,6 @@ function showIdeoPopup(){
 
 function startGovChange(target){
   closeModal();
-  if(!confirm(IDEO_DEFS[target].name+'への政権交代を開始しますか？\n6ターン後に完了します。移行期間中は全辞定に-50%デバフがあります。'))return;
   if(_govChange){addLog('政権交代は進行中です','lw');return;}
   var cost=Math.max(ideology==='neutral'?75:150,Math.round(incOf(player)*3*(ideology==='neutral'?0.5:1)));
   if(money<cost){addLog('政権交代コスト: Y'+cost+' 不足','lw');return;}
@@ -3376,14 +3370,7 @@ function recruit(){
   if(!sel||!S[sel]||S[sel].own!==player)return;
   var u=UC[curUnit];if(!u)return;
   if(money<u.c){addLog('資金不足 Y'+u.c+'必要','lw');return;}
-  // Manpower cost: infantry=10MP, tank=5MP, air=3MP per unit
-  var mpCost={i:10,t:5,a:3}[curUnit]||5;
-  var totalMpCost=mpCost*u.b;
-  if(typeof manpower!=='undefined'&&manpower<totalMpCost){
-    addLog('MP不足 '+totalMpCost+'MP必要 (現在:'+manpower+')','lw');return;
-  }
   money-=u.c;
-  if(typeof manpower!=='undefined')manpower-=totalMpCost;
   S[sel].u[curUnit]=(S[sel].u[curUnit]||0)+u.b;
   if(!_newU[sel])_newU[sel]={i:0,t:0,a:0};
   _newU[sel][curUnit]=(_newU[sel][curUnit]||0)+u.b;
@@ -3527,20 +3514,10 @@ function applyCustomize(fid){
   }
   if(colEl&&colEl.value){
     FAC[fid].c=colEl.value;
-    // Recolor ALL territories owned by this faction
-    for(var _cid in S){
-      if(S[_cid].own===fid&&S[_cid].el){
-        S[_cid].el.setAttribute('fill',colEl.value);
-        S[_cid].el.setAttribute('stroke-opacity','1');
-      }
-    }
-    // Also check puppet sub-factions
-    if(_puppets&&_puppets[fid]){
-      _puppets[fid].forEach(function(pf){
-        FAC[pf].c=colEl.value;
-        for(var _cid in S)if(S[_cid].own===pf&&S[_cid].el)S[_cid].el.setAttribute('fill',colEl.value);
-      });
-    }
+    // Recolor all territories
+    for(var id in S)if(S[id].own===fid&&S[id].el)S[id].el.setAttribute('fill',colEl.value);
+    // Recolor new puppet territories
+    if(fid===player)document.documentElement.style.setProperty('--pc',colEl.value);
   }
   addLog('[外観変更] '+(FAC[fid].n||fid),'lai');
   closeModal();updTB();if(sel)updPanel(sel);
