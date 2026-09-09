@@ -1,20 +1,39 @@
-const CACHE_NAME = 'game-cache-v1';
-// オフラインで使いたいファイルを一覧で指定
-const FILES_TO_CACHE = [
+const CACHE_NAME = 'game-assets-v1';
+
+// 必須の最低限ファイル（起動に必要なもの）
+const INITIAL_FILES = [
   './',
   './index.html'
 ];
 
-// インストール時にファイルを端末に保存
 self.addEventListener('install', (e) => {
+  self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(INITIAL_FILES))
   );
 });
 
-// オフライン時は保存したキャッシュから読み込む
+self.addEventListener('activate', (e) => {
+  e.waitUntil(clients.claim());
+});
+
+// 通信（fetch）を横取りして、成功した画像を動的にキャッシュへ保存する
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((response) => response || fetch(e.request))
+    caches.match(e.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse; // キャッシュがあればそれを返す
+      }
+      return fetch(e.request).then((networkResponse) => {
+        // 取得に成功したらキャッシュに保存しながら返す
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      });
+    })
   );
 });
