@@ -3587,5 +3587,11 @@ return{
 <input type="file" id="mod-file-input" accept=".json" style="display:none" multiple>
 <div id="mod-drop" onclick="G.modToggle()">&#128196; MOD</div>
 <div id="mod-list"></div>
-<div id="naval-info"></div></body>
+<div id="naval-info"></div>
+  <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+</script>
+</body>
 </html>
