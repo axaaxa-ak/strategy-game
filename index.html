@@ -1712,10 +1712,12 @@ function updTB(){
   _pmaint=Math.round(_pmaint*ideoMaintMult());
   var net=inc-_pmaint;
   var ti=document.getElementById('tb-i');
+  var _pinc2=0;if(_puppets&&_puppets[player]){_puppets[player].forEach(function(pf){for(var _pi2 in S)if(S[_pi2].own===pf){var _pb=(FAC[pf]&&FAC[pf].incBonus)||0.8;_pinc2+=Math.floor(S[_pi2].eco*_pb);}for(var _fi2 in _fac)if(S[_fi2]&&S[_fi2].own===pf)_pinc2+=_fac[_fi2]*5;_pinc2=Math.floor(_pinc2/(_puppetRate&&_puppetRate[pf]||4));});}
+  var netTotal=net+_pinc2;
   if(ti){
-    ti.textContent=(net>=0?'+':'')+net;
+    ti.textContent=(netTotal>=0?'+':'')+netTotal+(_pinc2>0?' (貢納+'+_pinc2+')':'');
     ti.onclick=function(){G.showMpBreakdown();};
-    ti.title='収入:Y'+inc+' 維持費:-Y'+_pmaint+' (タップで内訳)';
+    ti.title='自国純収入:Y'+net+' 傀帴貢納:Y'+_pinc2+' (タップで内訳)';
     ti.style.cursor='pointer';
     ti.style.color=net>0?'#68d888':net<0?'#e05060':'var(--dm)';}
   // Manpower display
@@ -3470,6 +3472,46 @@ function execDisband(){
   closeModal();
   updPanel(sel);updTB();updTroopLabels();
 }
+function showCustomizePanel(){
+  var facs=[player];
+  if(_puppets&&_puppets[player])facs=facs.concat(_puppets[player]);
+  var rows=facs.map(function(fid){
+    var f=FAC[fid]||{};
+    return '<div style="margin-bottom:10px;padding:8px;background:rgba(255,255,255,.04);border-radius:4px">'
+      +'<div style="font-size:9px;color:'+(f.c||'#888')+';margin-bottom:4px">'+(f.n||fid)+'</div>'
+      +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+      +'<input id="cn_'+fid+'" value="'+(f.n||fid)+'" style="background:#0a1828;border:1px solid var(--b2);color:var(--tx);padding:4px 8px;font-family:var(--hd);font-size:8px;width:120px">'
+      +'<input type="color" id="cc_'+fid+'" value="'+(f.c||'#888888')+'" style="width:36px;height:28px;border:none;background:none;cursor:pointer">'
+      +'<button class="btn" onclick="G.applyCustomize(\''+fid+'\')">APPLY</button>'
+      +'</div></div>';
+  }).join('');
+  document.getElementById('m-t').textContent='CUSTOMIZE';
+  document.getElementById('m-s').textContent='国家名・カラー変更';
+  document.getElementById('m-r').style.display='none';
+  document.getElementById('m-b').innerHTML='<div style="max-height:60vh;overflow-y:auto">'+rows+'</div>';
+  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()">CLOSE</button>';
+  document.getElementById('modal').classList.add('open');
+}
+function applyCustomize(fid){
+  var nameEl=document.getElementById('cn_'+fid);
+  var colEl=document.getElementById('cc_'+fid);
+  if(!FAC[fid])return;
+  if(nameEl&&nameEl.value.trim()){
+    FAC[fid].n=nameEl.value.trim();
+    FAC[fid].en=nameEl.value.trim();
+    FAC[fid].sn=nameEl.value.trim().slice(0,4).toUpperCase();
+  }
+  if(colEl&&colEl.value){
+    FAC[fid].c=colEl.value;
+    // Recolor all territories
+    for(var id in S)if(S[id].own===fid&&S[id].el)S[id].el.setAttribute('fill',colEl.value);
+    // Recolor new puppet territories
+    if(fid===player)document.documentElement.style.setProperty('--pc',colEl.value);
+  }
+  addLog('[外観変更] '+(FAC[fid].n||fid),'lai');
+  closeModal();updTB();if(sel)updPanel(sel);
+}
+
 return{
   setU:setU,recruit:recruit,
   setAtk:setAtk,cancelAtk:cancelAtk,
@@ -3488,7 +3530,7 @@ return{
   opPuppetCreate:opPuppetCreate,setPuppetRate:setPuppetRate,showDisbandPanel:showDisbandPanel,setDisbandType:setDisbandType,updateDisbandQty:updateDisbandQty,execDisband:execDisband,requestAllyWar:requestAllyWar,
   showDiplomScreen:showDiplomScreen,
   saveGame:saveGame,loadGame:loadGame,
-  loadMod:loadMod,removeMod:removeMod,showNationPanel:showNationPanel,modToggle:modToggle,modLoadFile:modLoadFile,
+  loadMod:loadMod,removeMod:removeMod,showNationPanel:showNationPanel,showCustomizePanel:showCustomizePanel,applyCustomize:applyCustomize,modToggle:modToggle,modLoadFile:modLoadFile,
   execNavalMove:execNavalMove,isSeaRoute:isSeaRoute,
   showIdeoPopup:showIdeoPopup,startGovChange:startGovChange,
   showMpBreakdown:showMpBreakdown,showVictoryPanel:showVictoryPanel,
