@@ -651,7 +651,7 @@ var FAC={
   fr:{n:'フランス共和国',sn:'FRA',c:'#0284c7',r:'EUROPE',d:'自由・平等・博愛の共和国。広大な植民地帝国を保ちながらドイツの脅威に備えよ。',cap:[709,137],m:2800,incBonus:1.7},
   bi:{n:'英領インド',en:'British India',sn:'BRI',c:'#b45309',r:'ASIA',d:'英国が支配する南アジアの定。数百万の兵を持つ。',cap:[975,235],m:2200,incBonus:1.4},
   uk:{n:'大英帝国',sn:'GBR',c:'#1e3a5f',r:'EUROPE',d:'日の沈まない帝国。インド・オーストラリア・アフリカを束ねる世界最大の帝国を守れ。',cap:[700,128],m:3800,incBonus:1.5},
-  au:{n:'オーストラリア連邦',sn:'AUS',c:'#1e40af',r:'OCEANIA',d:'英連邦の若き大陸国家。広大な土地と資源を活かし太平洋の覇権を目指せ。',cap:[1200,420],m:1500,incBonus:1.2},
+  au:{n:'オーストラリア連邦',sn:'AUS',c:'#1e40af',r:'OCEANIA',d:'英��邦の若き大陸国家。広大な土地と資源を活かし太平洋の覇権を目指せ。',cap:[1200,420],m:1500,incBonus:1.2},
   ca:{n:'カナダ自治領',sn:'CAN',c:'#dc2626',r:'AMERICAS',d:'英連邦の北米大国。豊富な資源と広大な国土を持つ多民族国家。',cap:[290,140],m:1600,incBonus:1.2},
   nz:{n:'ニュージーランド',sn:'NZL',c:'#2563eb',r:'OCEANIA',d:'英連邦の南太平洋国家。太平洋の要衝として自国の利益を守れ。',cap:[1335,440],m:900,incBonus:1.1},
   za:{n:'南アフリカ連邦',sn:'ZAF',c:'#166534',r:'AFRICA',d:'英連邦の一員ながら独自性を持つ南アフリカ。金とダイヤモンドで繁栄を築け。',cap:[770,390],m:1200,incBonus:1.1},
@@ -711,7 +711,7 @@ var FAC={
 };
 var REGIONS=['EUROPE','ASIA','AMERICAS','AFRICA','OCEANIA'];
 var RELS_1936=[
-  ['it','et','war'],['mk','cn','war'],['mg','cn','war'],
+  ['it','et','war'],
   ['uk','fr','allied'],['uk','au','allied'],['uk','ca','allied'],
   ['uk','nz','allied'],['uk','za','allied'],
   ['su','mo','allied'],['su','cc','allied'],
@@ -1244,6 +1244,7 @@ function openPanelMobile(){var sp=document.getElementById('sp'),tog=document.get
 function onClick(id){
   if(!S[id])return;
   var tOwn=S[id].own;
+  if(_negMode){_negToggle(id);return;}
   if(atkMode){
     var isMv=atkMode==='move'||atkMode==='move_i'||atkMode==='move_t'||atkMode==='move_a';
     if(isMv){
@@ -1309,6 +1310,8 @@ function updPanel(id){
       '<button class="btn'+(curUnit==='a'?' on':'')+'" onclick="G.setU(\'a\')">[A] 砲兵<br><span style="color:var(--ac)">Y30x3</span><br><span style="font-size:6.5px">Rng:1</span></button>'+
       '</div>'+
       '<button class="ab" onclick="G.recruit()">+ 部隊を生産・招集</button>'+
+      '<div style="display:flex;gap:4px;margin:4px 0"><button class="btn" style="flex:1;font-size:7px" onclick="G.setRecruitMult(1)">x1</button><button class="btn" style="flex:1;font-size:7px" onclick="G.setRecruitMult(2)">x2</button><button class="btn" style="flex:1;font-size:7px" onclick="G.setRecruitMult(5)">x5</button><button class="btn" style="flex:1;font-size:7px" onclick="G.setRecruitMult(10)">x10</button></div>'+
+      '<div style="font-size:7px;color:var(--ac);text-align:center;margin:2px 0">徴兵倍率: x'+_recruitMult+' | MP:'+manpower+'</div>'+
       '<button class="ab" onclick="G.showDisbandPanel()" style="color:#e05060">✕ 部隊解体</button>'+
       '<div class="sd">ORDERS / 命令</div>'+
       '<button class="ab r'+(atkMode==='assault'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'assault\',\''+id+'\')">[ASSAULT] 歩兵突撃 Rng:2</button>'+
@@ -1371,18 +1374,31 @@ function updPanel(id){
 }// ── Move ──
 function execMove(fid,tid){
   var at=S[fid],dt=S[tid];if(!at||!dt)return;
+  if(!hl[tid]||hl[tid]!=='mov'){addLog('移動範囲外','lw');return;}
   if(dt.own!==player&&getRel(player,dt.own)!=='allied'&&getRel(player,dt.own)!=='puppet'){addLog('自軍か同盟国のみ移動可','lw');return;}
   // Check if this is a sea route
   var _isSea=_seaMov&&_seaMov[tid]>0;
   var _seaShips=_isSea?(_seaMov[tid]||1):0;
 
-  var pp2=sendPct/100;var si=0,st=0,sa=0;
-  if(atkMode==='move_i'||atkMode==='move')si=Math.max(0,Math.floor((at.u.i||0)*pp2));
-  else if(atkMode==='move_t')st=Math.max(0,Math.floor((at.u.t||0)*pp2));
-  else if(atkMode==='move_a')sa=Math.max(0,Math.floor((at.u.a||0)*pp2));
-  at.u.i=Math.max(0,(at.u.i||0)-si);at.u.t=Math.max(0,(at.u.t||0)-st);at.u.a=Math.max(0,(at.u.a||0)-sa);
-  dt.u.i=(dt.u.i||0)+si;dt.u.t=(dt.u.t||0)+st;dt.u.a=(dt.u.a||0)+sa;
-  addLog('[移動] '+at.name+' → '+dt.name+' [I]'+si+' [T]'+st+' [A]'+sa,'lt');
+  showMoveModal(fid,tid);
+}
+function showMoveModal(fid,tid){
+  _mvFrom=fid;_mvTo=tid;
+  var at=S[fid],dt=S[tid];if(!at||!dt)return;
+  var _isSea=_seaMov&&_seaMov[tid]>0;
+  var _need=_isSea?(_seaMov[tid]||1):0;
+  if(_isSea&&(_ships[fid]||0)<_need){addLog('Not enough ships','lw');return;}
+  document.getElementById('m-t').textContent='MOVE ORDER';
+  document.getElementById('m-s').textContent=at.name+' → '+dt.name+(_isSea?' (ship'+_need+')':'');
+  document.getElementById('m-r').style.display='none';
+  var maxI=at.u.i||0,maxT=at.u.t||0,maxA=at.u.a||0;
+  document.getElementById('m-b').innerHTML='<div class="mi">'+at.name+' → <b>'+dt.name+'</b></div><div class="sd">SEND FORCES</div><div class="sr"><span class="sl2">INF</span><input type="range" min="0" max="'+maxI+'" step="'+Math.max(1,Math.floor(maxI/20))+'" value="'+Math.floor(maxI/2)+'" id="mv-i" oninput="G._mvUpd()"><span class="sv2" id="mv-iv">'+Math.floor(maxI/2)+'</span></div><div class="sr"><span class="sl2">TNK</span><input type="range" min="0" max="'+maxT+'" step="'+Math.max(1,Math.floor(maxT/10))+'" value="'+Math.floor(maxT/2)+'" id="mv-t" oninput="G._mvUpd()"><span class="sv2" id="mv-tv">'+Math.floor(maxT/2)+'</span></div><div class="sr"><span class="sl2">AIR</span><input type="range" min="0" max="'+maxA+'" step="'+Math.max(1,Math.floor(maxA/10))+'" value="'+Math.floor(maxA/2)+'" id="mv-a" oninput="G._mvUpd()"><span class="sv2" id="mv-av">'+Math.floor(maxA/2)+'</span></div><div id="mv-sum" style="font-size:8px;color:var(--ac);margin:5px 0"></div>';
+  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()">CANCEL</button><button class="mb ok" onclick="G._mvExec()">CONFIRM MOVE</button>';
+  document.getElementById('modal').classList.add('open');_mvUpd();
+  setTimeout(function(){var mb=document.getElementById('m-btns');if(!mb)return;[].forEach.call(mb.querySelectorAll('button'),function(b){if(b._td)return;b._td=true;var oc=b.getAttribute('onclick');if(!oc)return;b.removeAttribute('onclick');oc=oc.replace(/\\'/g,"'");var fn=(function(s){return function(){try{(new Function('G',s))(G);}catch(e){};};})(oc);b.addEventListener('click',fn);b.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();fn();},{passive:false});});var sls=document.querySelectorAll('#m-b input[type=range]');[].forEach.call(sls,function(sl){sl.addEventListener('input',function(){_mvUpd();});});},30);
+}
+function _mvUpd(){var si=+(document.getElementById('mv-i')||{value:0}).value;var st=+(document.getElementById('mv-t')||{value:0}).value;var sa=+(document.getElementById('mv-a')||{value:0}).value;var vi=document.getElementById('mv-iv');if(vi)vi.textContent=si;var vt=document.getElementById('mv-tv');if(vt)vt.textContent=st;var va=document.getElementById('mv-av');if(va)va.textContent=sa;var sm=document.getElementById('mv-sum');if(sm)sm.innerHTML='MOVE: [I]'+si+' [T]'+st+' [A]'+sa;}
+function _mvExec(){closeModal();var fid=_mvFrom,tid=_mvTo;if(!fid||!tid)return;var at=S[fid],dt=S[tid];if(!at||!dt)return;var si=+(document.getElementById('mv-i')||{value:0}).value;var st=+(document.getElementById('mv-t')||{value:0}).value;var sa=+(document.getElementById('mv-a')||{value:0}).value;if(si+st+sa<1){addLog('No units selected','lw');return;}var _isSea=_seaMov&&_seaMov[tid]>0;if(_isSea){var _need=_seaMov[tid]||1;if((_ships[fid]||0)<_need){addLog('Not enough ships','lw');return;}_ships[fid]-=_need;}at.u.i=Math.max(0,(at.u.i||0)-si);at.u.t=Math.max(0,(at.u.t||0)-st);at.u.a=Math.max(0,(at.u.a||0)-sa);dt.u.i=(dt.u.i||0)+si;dt.u.t=(dt.u.t||0)+st;dt.u.a=(dt.u.a||0)+sa;addLog('[移動] '+at.name+' → '+dt.name+' [I]'+si+' [T]'+st+' [A]'+sa,'lt');
   cancelAtk();updTB();updPanel(sel);updTroopLabels();
 }
 // ── Attack Modal ──
@@ -1648,27 +1664,19 @@ function opNeg(tid){
   var f=S[tid]&&S[tid].own;if(!f)return;
   if(_usedDiplo[f]){addLog('今ターンは既に'+((FAC[f]&&FAC[f].n)||f)+'へ外交行動済み','lw');return;}
   var fn=(FAC[f]&&FAC[f].n)||f;
-  var myIds=[],theirIds=[];
+  _negMode={faction:f,give:{},take:{}};
+  cancelAtk();clearHL();hl={};
   for(var id in S){
-    if(S[id].own===player)myIds.push(id);
-    else if(S[id].own===f)theirIds.push(id);
+    if(S[id].own===player){hl[id]='neggive';S[id].el.classList.add('hm');}
+    else if(S[id].own===f){hl[id]='negtake';S[id].el.classList.add('ha');}
   }
-  var html='<div class="mi">'+fn+'との領土交渉</div>'+
-    '<div class="mc2">'+
-    '<div><div class="mch">提供（自国）</div>'+
-    '<select class="tsel" id="neg-give" size="4" multiple style="height:80px">';
-  myIds.slice(0,15).forEach(function(id){html+='<option value="'+id+'">'+S[id].name+'</option>';});
-  html+='</select></div><div><div class="mch">要求（相手）</div>'+
-    '<select class="tsel" id="neg-take" size="4" multiple style="height:80px">';
-  theirIds.slice(0,15).forEach(function(id){html+='<option value="'+id+'">'+S[id].name+'</option>';});
-  html+='</select></div></div>';
+  var mi=document.getElementById('movind');
+  if(mi){mi.textContent='GIVE&TAKE: 青=提供 赤=要求 タップで選択';mi.classList.add('on');}
   document.getElementById('m-t').textContent='GIVE & TAKE';
-  document.getElementById('m-s').textContent=fn+' との領土交渉';
-  document.getElementById('m-b').innerHTML=html;
+  document.getElementById('m-s').textContent=fn+' の領土をタップで選択';
   document.getElementById('m-r').style.display='none';
-  document.getElementById('m-btns').innerHTML=
-    '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
-    '<button class="mb ok" onclick="G._execNeg(\''+f+'\')">PROPOSE</button>';
+  document.getElementById('m-b').innerHTML='<div class="mi">地図上で領土をタップして選択</div><div id="neg-status" style="font-size:8px;color:var(--ac);margin:8px 0"></div>';
+  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G._negCancel()">CANCEL</button><button class="mb ok" onclick="G._execNeg(\''+f+'\')">PROPOSE</button>';
   document.getElementById('modal').classList.add('open');
   setTimeout(function(){
     var mb=document.getElementById('m-btns');if(!mb)return;
@@ -1684,16 +1692,40 @@ function opNeg(tid){
     });
   },30);
 }
+function _negCancel(){_negMode=null;clearHL();hl={};cancelAtk();closeModal();updTroopLabels();}
+function _negToggle(id){
+  if(!_negMode||!S[id])return;
+  var f=_negMode.faction;
+  if(S[id].own===player){_negMode.give[id]=!_negMode.give[id];if(_negMode.give[id])S[id].el.classList.add('hn');else S[id].el.classList.remove('hn');}
+  else if(S[id].own===f){_negMode.take[id]=!_negMode.take[id];if(_negMode.take[id])S[id].el.classList.add('hn');else S[id].el.classList.remove('hn');}
+  _negUpdStatus();
+}
+function _negUpdStatus(){
+  if(!_negMode)return;
+  var giveIds=Object.keys(_negMode.give).filter(function(k){return _negMode.give[k];});
+  var takeIds=Object.keys(_negMode.take).filter(function(k){return _negMode.take[k];});
+  var giveVal=0,takeVal=0;
+  giveIds.forEach(function(id){giveVal+=(_fac[id]||0)+1;});
+  takeIds.forEach(function(id){takeVal+=(_fac[id]||0)+1;});
+  var apv=_approval[_negMode.faction]||0;
+  var beneficial=takeVal>=giveVal;
+  var chance=beneficial?1.0:Math.max(0.1,Math.min(0.9,(apv/100)*0.5+0.3+(takeVal-giveVal)*0.05));
+  var st=document.getElementById('neg-status');
+  if(st)st.innerHTML='提供:'+giveIds.length+'領 ('+giveVal+'val) | 要求:'+takeIds.length+'領 ('+takeVal+'val) | 成功率:'+Math.round(chance*100)+'%'+(beneficial?' (必受)':'');
+  _negMode._chance=chance;_negMode._beneficial=beneficial;
+}
 function _execNeg(f){
   closeModal();_usedDiplo[f]=1;var fn=(FAC[f]&&FAC[f].n)||f;
-  var giveEl=document.getElementById('neg-give'),takeEl=document.getElementById('neg-take');
-  var give=[],take=[];
-  if(giveEl)for(var i=0;i<giveEl.options.length;i++)if(giveEl.options[i].selected)give.push(giveEl.options[i].value);
-  if(takeEl)for(var i=0;i<takeEl.options.length;i++)if(takeEl.options[i].selected)take.push(takeEl.options[i].value);
-  var gn=give.length,tn=take.length;var chance=gn>=tn?0.65:0.35;
-  if(Math.random()<chance){
-    give.forEach(function(id){if(S[id]){S[id].own=f;S[id].el.setAttribute('fill',fcol(f));}});
-    take.forEach(function(id){if(S[id]){S[id].own=player;S[id].el.setAttribute('fill',fcol(player));}});
+  var giveIds=_negMode?Object.keys(_negMode.give).filter(function(k){return _negMode.give[k];}):[];
+  var takeIds=_negMode?Object.keys(_negMode.take).filter(function(k){return _negMode.take[k];}):[];
+  var gn=giveIds.length,tn=takeIds.length;
+  if(gn+tn===0){addLog('領土が選択されていません','lw');_negMode=null;return;}
+  var chance=_negMode?(_negMode._chance||0.5):0.5;
+  var beneficial=_negMode?_negMode._beneficial:false;
+  _negMode=null;clearHL();hl={};cancelAtk();
+  if(beneficial||Math.random()<chance){
+    giveIds.forEach(function(id){if(S[id]){S[id].own=f;S[id].el.setAttribute('fill',fcol(f));}});
+    takeIds.forEach(function(id){if(S[id]){S[id].own=player;S[id].el.setAttribute('fill',fcol(player));}});
     addLog('[交渉成立] '+fn+'との領土交換 (+'+tn+' -'+gn+')','lk');
     applyFoW();updTB();
   }else{addLog('[交渉決裂] '+fn+'は拒否した','lw');}
@@ -1884,6 +1916,20 @@ function nextTurn(){
   }
   var _pInc=_puppetIncome();
   addLog('[Turn '+turn+'] '+yr+'年'+mo+'月 — 収入+'+inc+(_pInc>0?' | 貢納+'+_pInc:'')+' | 定期増員完了','lai');
+  manpower+=calcMpGain();
+  if(player==='cn'&&yr>=1939){
+    for(var id in S){
+      if(S[id].own!=='cn')continue;
+      var _nb=adjOf(id);
+      for(var _ni=0;_ni<_nb.length;_ni++){
+        if(S[_nb[_ni]]&&S[_nb[_ni]].own==='cc'&&Math.random()<0.08){
+          S[id].own='cc';S[id].el.setAttribute('fill',fcol('cc'));
+          addLog('[\u5171\u7523\u515a\u62e1\u5927] '+S[id].name+'\u304c\u8d64\u5316','lw');
+          break;
+        }
+      }
+    }
+  }
   checkHistEvents();
   processGovChange();
   _usedAir={};_usedDiplo={};
@@ -1937,6 +1983,16 @@ function aiTurn(){
       }
     }
     // -- AI 攻撃: 戦争中の全敵国を対象 (AI vs AI + AI vs Player) --
+    var _aiFrontShort=false;
+    frontIds.forEach(function(id){if((S[id].u.i||0)<5)_aiFrontShort=true;});
+    if(!_aiFrontShort&&incOf(f)>200&&Math.random()<0.3){
+      var _lowFac=ids.filter(function(id){return (_fac[id]||0)<5;});
+      if(_lowFac.length){
+        var _bid=_lowFac[Math.floor(Math.random()*_lowFac.length)];
+        var _aiCost=200+Math.floor((_fac[_bid]||0)/10)*10;
+        if(FAC[f]&&FAC[f].m&&FAC[f].m>_aiCost){FAC[f].m-=_aiCost;_fac[_bid]=(_fac[_bid]||0)+1;}
+      }
+    }
     var candidates=[];
     ids.forEach(function(fid){
       var ft=S[fid];if(!((ft.u.i||0)+(ft.u.t||0)>3))return;
@@ -1945,11 +2001,11 @@ function aiTurn(){
         var tgtOwn=nt.own;
         if(tgtOwn===f)return;
         if(isAlly(f,tgtOwn)||getRel(f,tgtOwn)==='puppet')return;
-        // Attack if at war, or if neutral weak territory (expansion)
         var atWar=isWar(f,tgtOwn);
         var weakNeutral=(tgtOwn.indexOf('nt_')===0)&&((nt.u.i||0)+(nt.u.t||0)<5);
         if(!atWar&&!weakNeutral)return;
-        var score=cAtk(ft.u)/Math.max(1,cDef(nt.u));
+        var _facBonus=(_fac[nid]||0)*2;
+        var score=cAtk(ft.u)/Math.max(1,cDef(nt.u))+_facBonus*0.1;
         candidates.push({fid:fid,tid:nid,score:score,atWar:atWar});
       });
     });
@@ -1999,15 +2055,29 @@ function aiTurn(){
     });
 
     // -- AI 移動 (前線強化 + 積極展開) --
+    frontIds.forEach(function(id){
+      var _fi=_fac[id]||0;var _nb=adjOf(id);
+      var _enemyNear=_nb.some(function(nid){return S[nid]&&S[nid].own!==f&&!isAlly(f,S[nid].own)&&isWar(f,S[nid].own);});
+      if(_enemyNear&&_fi>=5){
+        var _need=Math.floor(_fi*0.5);
+        if((S[id].u.i||0)<_need){S[id].u.i=(S[id].u.i||0)+Math.max(1,Math.floor(_fi*0.1*fBonus));}
+      }
+    });
     var moveChance=isAggressive?0.7:0.35;
     var moveTimes=isAggressive?3:1;
     if(Math.random()<moveChance&&frontIds.length){
       var interior=ids.filter(function(id){
         return !adjOf(id).some(function(nid){return S[nid]&&S[nid].own!==f&&!isAlly(f,S[nid].own);});
       });
+      var _safeBorders=ids.filter(function(id){
+        var _nb=adjOf(id);var _hasEnemy=false,_hasOther=false;
+        for(var bi=0;bi<_nb.length;bi++){if(!S[_nb[bi]])continue;if(S[_nb[bi]].own!==f){if(isWar(f,S[_nb[bi]].own))_hasEnemy=true;else _hasOther=true;}}
+        return !_hasEnemy&&_hasOther;
+      });
+      var _sources=interior.concat(_safeBorders);
       for(var mi=0;mi<moveTimes;mi++){
-        if(!interior.length||!frontIds.length)break;
-        var src=interior[Math.floor(Math.random()*interior.length)];
+        if(!_sources.length||!frontIds.length)break;
+        var src=_sources[Math.floor(Math.random()*_sources.length)];
         var dst=frontIds[Math.floor(Math.random()*frontIds.length)];
         var mvPct=isAggressive?0.6:0.4;
         var mv=Math.floor((S[src].u.i||0)*mvPct);
@@ -2214,6 +2284,11 @@ var HIST_EVENTS=[
    body:'\u30c9\u30a4\u30c4\u7a7a\u8ecd\u304c\u30b9\u30da\u30a4\u30f3\u306e\u30b2\u30eb\u30cb\u30ab\u3092\u7206\u6483\u3002\u7d71\u5408\u7684\u822a\u7a7a\u653b\u6483\u306e\u6642\u4ee3\u304c\u59cb\u307e\u308b\u3002',
    effects:['\u30c9\u30a4\u30c4\uff1a\u822a\u7a7a\u90e8\u968a\u5f37\u5316'],
    apply:function(){for(var id in S)if(S[id].own==='de')S[id].u.a=(S[id].u.a||0)+2;}},
+  {yr:1937,mo:6,id:'united_front',sc:'1936',
+   title:'\u4e2d\u83ef\u7d71\u4e00\u6226\u7dda\u7d50\u6210',date:'1937\u5e746\u6708',
+   body:'\u65e5\u672c\u306e\u8105\u5a01\u306b\u5bfe\u3057\u3001\u4e2d\u83ef\u6c11\u56fd\u3068\u4e2d\u56fd\u5171\u7523\u515a\u304c\u505c\u6226\u5354\u5b9a\u3092\u7d50\u3073\u3001\u7d71\u4e00\u6226\u7dda\u3092\u5f62\u6210\u3057\u305f\u3002',
+   effects:['\u4e2d\u83ef\u6c11\u56fd\u3068\u5171\u7523\u515a\u304c\u540c\u76df\u5316'],
+   apply:function(){setRel('cn','cc','allied');}},
   {yr:1937,mo:7,id:'marco_polo',sc:'1936',
    title:'\u76e7\u6e9d\u6a4b\u4e8b\u4ef6\u30fb\u65e5\u4e2d\u6218\u4e89\u52c3\u767a',date:'1937\u5e747\u6708',
    body:'\u5317\u4eac\u90ca\u5916\u3067\u65e5\u4e2d\u4e21\u8ecd\u304c\u885d\u7a81\u3002\u5168\u9762\u7684\u306a\u65e5\u4e2d\u6218\u4e89\u304c\u59cb\u307e\u3063\u305f\u3002',
@@ -2518,11 +2593,12 @@ function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return
   g.appendChild(c);});}
 function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');if(!t||!ms||!b)return;t.textContent='HOW TO PLAY';ms.textContent='\u9059\u3073\u65b9';b.innerHTML='<div class="mi" style="font-size:8px;line-height:2">\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u2192\u56fd\u5bb6\u9078\u629e<br>\u9818\u571f\u30bf\u30c3\u30d7\u3067\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>ASSAULT/TANK RUSH\u2192\u653b\u6483<br>\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u767a\u751f</div>';var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');}
 
-function buildFactory(id){if(!id||!S[id]||S[id].own!==player)return;if(money<200){addLog('\u5de5\u5834Y200\u4e0d\u8db3','lw');return;}money-=200;_fac[id]=(_fac[id]||0)+1;addLog('[\u5de5\u5834\u5efa\u8a2d] '+S[id].name+' '+_fac[id]+'\u57fa','lt');updTB();if(sel)updPanel(sel);}
-function buildFactoryAll(){var cnt=0;for(var id in S){if(S[id].own!==player||money<200)continue;money-=200;_fac[id]=(_fac[id]||0)+1;cnt++;}if(cnt)addLog('[\u4e00\u62ec\u5de5\u5834] '+cnt+'\u7b87\u6240','lt');else addLog('\u8cc7\u91d1\u4e0d\u8db3','lw');updTB();}
+function buildFactory(id){if(!id||!S[id]||S[id].own!==player)return;var cur=_fac[id]||0;var cost=200+Math.floor(cur/10)*10;if(money<cost){addLog('Y'+cost+' needed','lw');return;}money-=cost;_fac[id]=cur+1;addLog('[Factory] '+S[id].name+' '+_fac[id]+'base Y'+cost,'lt');updTB();if(sel)updPanel(sel);}
+function _buildFactoryOld(){if(!id||!S[id]||S[id].own!==player)return;if(money<200){}
+function buildFactoryAll(){var cnt=0;for(var id in S){if(S[id].own!==player)continue;var cur=_fac[id]||0;var cost=200+Math.floor(cur/10)*10;if(money<cost)continue;money-=cost;_fac[id]=cur+1;cnt++;}if(cnt)addLog('[\u4e00\u62ec\u5de5\u5834] '+cnt+'\u7b87\u6240','lt');else addLog('\u8cc7\u91d1\u4e0d\u8db3','lw');updTB();}
 function buildShip(id){if(!id||!S[id]||S[id].own!==player)return;if(money<150){addLog('\u9020\u8239Y150\u4e0d\u8db3','lw');return;}money-=150;_ships[id]=(_ships[id]||0)+1;addLog('[\u9020\u8239] '+S[id].name+' '+_ships[id]+'\u96bb','lt');updTB();if(sel)updPanel(sel);updTroopLabels();}
 function recruitAll(ut){var c={i:100,t:500,a:300}[ut]||100,a={i:10,t:2,a:3}[ut]||10,cnt=0;for(var id in S){if(S[id].own!==player||money<c)continue;var nb=adjOf(id);var b=false;for(var ni=0;ni<nb.length;ni++)if(S[nb[ni]]&&S[nb[ni]].own!==player){b=true;break;}if(!b)continue;money-=c;S[id].u[ut]=(S[id].u[ut]||0)+a;cnt++;}if(cnt)addLog('[\u4e00\u62ec\u5f34\u5175] '+ut.toUpperCase()+'x'+a+'x'+cnt,'lk');else addLog('\u4e0d\u53ef','lw');updTB();if(sel)updPanel(sel);updTroopLabels();}
-function opPuppetCreate(tid){if(!tid||!S[tid]||S[tid].own!==player)return;var pv='pv_'+tid.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5);var pn=S[tid].name+'\u72ec\u7acb\u56fd';S[tid].own=pv;if(!FAC[pv])FAC[pv]={n:pn,en:pn,sn:pv.toUpperCase().slice(0,4),c:'#3c8050',r:'EUROPE',d:'\u5080\u5e34',cap:[700,150],m:300};S[tid].el.setAttribute('fill',fcol(pv));rel[rk(player,pv)]='puppet';for(var _rk2 in rel){var _pp2=_rk2.split('-');if((_pp2[0]===pv||_pp2[1]===pv)&&_pp2[0]!==player&&_pp2[1]!==player)delete rel[_rk2];}if(!_puppets[player])_puppets[player]=[];_puppets[player].push(pv);_puppetRate[pv]=4;addLog('[\u5080\u5e34\u56fd] '+pn,'lt');applyFoW();updTB();if(sel)updPanel(sel);}
+function opPuppetCreate(tid){if(!tid||!S[tid]||S[tid].own!==player)return;if(!confirm('\u5080\u5e34\u56fd\u3092\u4f5c\u6210\u3057\u307e\u3059\u304b\uff1f\n\u5080\u5e34\u56fd\u306f\u5b97\u4e3b\u56fd\u306e\u540c\u76df\u56fd\u3068\u306a\u308a\u3001\u53ce\u5165\u306e\u4e00\u90e8\u3092\u732b\u7d0d\u3057\u307e\u3059\u3002'))return;var pv='pv_'+tid.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5);var pn=S[tid].name+'\u72ec\u7acb\u56fd';S[tid].own=pv;if(!FAC[pv])FAC[pv]={n:pn,en:pn,sn:pv.toUpperCase().slice(0,4),c:'#3c8050',r:'EUROPE',d:'\u5080\u5e34',cap:[700,150],m:300};S[tid].el.setAttribute('fill',fcol(pv));rel[rk(player,pv)]='allied';_approval[pv]=100;for(var _rk2 in rel){var _pp2=_rk2.split('-');if((_pp2[0]===pv||_pp2[1]===pv)&&_pp2[0]!==player&&_pp2[1]!==player)delete rel[_rk2];}if(!_puppets[player])_puppets[player]=[];_puppets[player].push(pv);_puppetRate[pv]=4;addLog('[\u5080\u5e34\u56fd] '+pn,'lt');applyFoW();updTB();if(sel)updPanel(sel);}
 function requestAllyWar(ef){var al=[];for(var pr in rel)if(rel[pr]==='allied'){var pp=pr.split('-');if(pp[0]===player)al.push(pp[1]);else if(pp[1]===player)al.push(pp[0]);}if(!al.length){addLog('\u540c\u76df\u56fd\u306a\u3057','lw');return;}var j=[];al.forEach(function(a){var wk=rk(a,ef);if(!_jwar[wk]&&Math.random()<0.65){rel[wk]='war';_jwar[wk]=1;j.push((FAC[a]&&FAC[a].sn)||a);}});if(j.length)addLog('[\u53c2\u6226\u8981\u8acb] '+j.join(',')+'\u304c\u53c2\u6226\uff01','lk');else addLog('[\u53c2\u6226\u8981\u8acb\u5931\u6557]','lw');}
 function showDiplomScreen(){
   if(!document.getElementById('dipl-style')){
@@ -2784,6 +2860,9 @@ var ideology='neutral';        // 'democracy','fascism','communism','neutral'
 var _govChange=null;           // {target,turnsLeft,phase} or null
 var manpower=5000;             // Human resources
 var _mpPerTurn=0;              // Cached MP gain
+var _recruitMult=1;            // Recruitment multiplier
+var _mvFrom=null,_mvTo=null;   // Move modal state
+var _negMode=null;             // GIVE&TAKE map tap mode
 
 // ════════════════════════════════════════════════════════════════
 //  IDEOLOGY SYSTEM
@@ -2874,7 +2953,8 @@ function showIdeoPopup(){
 
 function startGovChange(target){
   closeModal();
-  if(_govChange){addLog('政権交代は進行中です','lw');return;}
+  if(!confirm(IDEO_DEFS[target].name+'へ政権移行しますか？\n外交関係がリセットされ、数ターン間は不安定になります。'))return;
+  if(_govChange){addLog('政権交代中','lw');return;}
   var cost=Math.max(ideology==='neutral'?75:150,Math.round(incOf(player)*3*(ideology==='neutral'?0.5:1)));
   if(money<cost){addLog('政権交代コスト: Y'+cost+' 不足','lw');return;}
   money-=cost;
@@ -2914,7 +2994,7 @@ function calcMpGain(){
 }
 
 function calcMpCost(ut,count){
-  var base={i:1000,t:300,a:150}[ut]||1000;
+  var base={i:100,t:50,a:30}[ut]||100;
   var cost=base;
   // Fascism reduces MP cost by 20%
   if(ideology==='fascism')cost=Math.round(cost*0.80);
@@ -2942,7 +3022,7 @@ function showMpBreakdown(){
   var govDebt=(_govChange&&_govChange.phase===2)?Math.round(inc*0.50):0;
   document.getElementById('econ-content').innerHTML=
     '<div style="font-size:9px;color:var(--ac);letter-spacing:2px;margin-bottom:8px">収入内訳</div>'+
-    '<div class="econ-row"><span class="econ-label">工場収入</span><span class="econ-val pos">+Y'+raw_inc+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">領土基礎収入</span><span class="econ-val pos">+Y'+raw_inc+'</span></div>'+
     (ideo_inc?'<div class="econ-row"><span class="econ-label">思想補正</span><span class="econ-val pos">+Y'+ideo_inc+'</span></div>':'')+
     '<div class="econ-row"><span class="econ-label">軍事維持費</span><span class="econ-val neg">-Y'+pmaint+'</span></div>'+(_pInc?'<div class="econ-row"><span class="econ-label">傀儁貢納</span><span class="econ-val pos">+Y'+_pInc+'</span></div>':'')+
     (govDebt?'<div class="econ-row"><span class="econ-label">政情不安ペナルティ</span><span class="econ-val neg">-Y'+govDebt+'</span></div>':'')+
@@ -3037,6 +3117,7 @@ function showVictoryPanel(){
 }
 
 function opPuppetCreate_byFac(f){
+  if(!confirm('傀帴化しますか？\n傀帴国は同盟国となり、収入の一部を猫納します。'))return;
   var pv='pv_'+f.slice(0,5);
   var pn=(FAC[f]&&FAC[f].n)||f;
   for(var id in S)if(S[id].own===f){S[id].own=pv;if(S[id].el)S[id].el.setAttribute('fill',fcol(pv));}
@@ -3044,7 +3125,8 @@ function opPuppetCreate_byFac(f){
     c:(FAC[f]&&FAC[f].c)||'#3c8050',r:(FAC[f]&&FAC[f].r)||'EUROPE',
     d:'傀帴国家',cap:(FAC[f]&&FAC[f].cap)||[700,150],m:300,
     incBonus:(FAC[f]&&FAC[f].incBonus)||0.8};
-  rel[rk(player,pv)]='puppet';
+  rel[rk(player,pv)]='allied';_approval[pv]=100;
+  for(var _rk3 in rel){var _pp3=_rk3.split('-');if((_pp3[0]===pv||_pp3[1]===pv)&&_pp3[0]!==player&&_pp3[1]!==player)delete rel[_rk3];}
   if(!_puppets[player])_puppets[player]=[];
   if(_puppets[player].indexOf(pv)<0)_puppets[player].push(pv);_puppetRate[pv]=4;
   applyFoW();updTB();if(sel)updPanel(sel);
@@ -3369,7 +3451,22 @@ function cancelAtk(){atkMode=null;atkFrom=null;clearHL();var mi=document.getElem
 function recruit(){
   if(!sel||!S[sel]||S[sel].own!==player)return;
   var u=UC[curUnit];if(!u)return;
-  if(money<u.c){addLog('資金不足 Y'+u.c+'必要','lw');return;}
+  var qty=u.b*_recruitMult;
+  var totalCost=u.c*_recruitMult;
+  var mpCost=calcMpCost(curUnit,qty);
+  if(money<totalCost){addLog('Y'+totalCost+' needed','lw');return;}
+  if(manpower<mpCost){addLog('Manpower shortage ('+mpCost+')','lw');return;}
+  money-=totalCost;manpower-=mpCost;
+  S[sel].u[curUnit]=(S[sel].u[curUnit]||0)+qty;
+  if(!_newU[sel])_newU[sel]={i:0,t:0,a:0};
+  _newU[sel][curUnit]=(_newU[sel][curUnit]||0)+qty;
+  addLog('[Recruit] '+S[sel].name+' '+u.n+'x'+qty+' Y'+totalCost+' MP'+mpCost,'lt');
+  updPanel(sel);updTB();
+}
+function _recruitOld(){
+  if(!sel||!S[sel]||S[sel].own!==player)return;
+  var u=UC[curUnit];if(!u)return;
+  if(money<addLog('資金不足 Y'+u.c+'必要','lw');return;}
   money-=u.c;
   S[sel].u[curUnit]=(S[sel].u[curUnit]||0)+u.b;
   if(!_newU[sel])_newU[sel]={i:0,t:0,a:0};
@@ -3389,25 +3486,22 @@ function setAtk(mode,fid){
   _effI=Math.max(1,Math.floor((_sa.u.i||0)*0.85));
   _effT=Math.floor((_sa.u.t||0)*0.85);
   _effA=Math.floor((_sa.u.a||0)*0.85);
-  // Build target set via reach()
-  var atkSet={},movSet={},rng=(mode==='tankrush'?3:mode==='airstrike'?6:2);
-  var res=reach(fid,rng);
+  var atkSet={},movSet={},rng=(mode==='tankrush'?3:mode==='airstrike'?6:mode==='move'?4:2);
+  var useNaval=(mode==='assault'||mode==='tankrush'||mode==='move'||mode==='move_i'||mode==='move_t'||mode==='move_a');
+  var res=useNaval?reachWithNaval(fid,rng,true):reach(fid,rng);
   atkSet=res.atk||{};movSet=res.mov||{};
   _seaMov=res.seaMov||{};
-  // Fallback: if ADJ empty, mark ALL enemies as attackable
-  if(!Object.keys(atkSet).length){
-    for(var tid in S){
-      if(!S[tid]||tid===fid)continue;
-      var tr=getRel(player,S[tid].own);
-      if(S[tid].own!==player&&tr!=='allied'&&tr!=='puppet')atkSet[tid]=1;
-      else if(tid!==fid)movSet[tid]=1;
-    }
+  if(!Object.keys(atkSet).length&&!Object.keys(movSet).length){
+    var _nbs=adjOf(fid);
+    for(var ni=0;ni<_nbs.length;ni++){var _nt=S[_nbs[ni]];if(!_nt)continue;var _tr=getRel(player,_nt.own);if(_nt.own!==player&&_tr!=='allied'&&_tr!=='puppet')atkSet[_nbs[ni]]=1;else if(_nbs[ni]!==fid)movSet[_nbs[ni]]=1;}
+    var _sn=seaNbrs(fid);
+    for(var si=0;si<_sn.length;si++){var _st=S[_sn[si]];if(!_st)continue;var _sr=getRel(player,_st.own);if(_st.own!==player&&_sr!=='allied'&&_sr!=='puppet')atkSet[_sn[si]]=1;else if(_sn[si]!==fid)movSet[_sn[si]]=1;}
   }
   for(var id in atkSet)if(S[id]){hl[id]='atk';S[id].el.classList.add('ha');}
   for(var id in movSet)if(S[id]&&!hl[id]){hl[id]='mov';S[id].el.classList.add('hm');}
   var mi=document.getElementById('movind');
   var lbl={move:'移動',move_i:'歩兵移動',move_t:'戦車移動',move_a:'航空移動',assault:'連合攻撃',tankrush:'戦車究極',airstrike:'空袭',bombard:'砂砲'}[mode]||mode;
-  if(mi){mi.textContent=lbl+' — ['+S[fid].name+'] タップで攻撃・移動先選択';mi.classList.add('on');}
+  if(mi){mi.textContent=lbl+' — ['+S[fid].name+'] タップで選択';mi.classList.add('on');}
 }
 
 function setPuppetRate(f,rate){_puppetRate[f]=rate;addLog('[貢納率] '+((FAC[f]&&FAC[f].n)||f)+' の貢納率を 1/'+rate+' に設定','lt');if(sel)updPanel(sel);}
@@ -3523,9 +3617,9 @@ function applyCustomize(fid){
   closeModal();updTB();if(sel)updPanel(sel);
 }
 
-function changeNationColor(color){FAC[player].c=color;updTB();applyFoW();if(sel)updPanel(sel);addLog('[国家色変更] '+color,'lt');}
-function changeNationName(name){if(!name||!name.trim())return;FAC[player].n=name.trim();FAC[player].en=name.trim();updTB();if(sel)updPanel(sel);addLog('[国家名変更] '+name.trim(),'lt');}
-function changePuppetColor(pid,color){if(!FAC[pid])return;FAC[pid].c=color;applyFoW();if(sel)updPanel(sel);addLog('[傀帴色変更] '+color,'lt');}
+function changeNationColor(color){FAC[player].c=color;for(var id in S)if(S[id].own===player&&S[id].el)S[id].el.setAttribute('fill',color);updTB();applyFoW();if(sel)updPanel(sel);addLog('[国旗色変更] '+color,'lt');}
+function changeNationName(name){if(!name||!name.trim())return;FAC[player].n=name.trim();FAC[player].en=name.trim();updTB();if(sel)updPanel(sel);addLog('[国名変更] '+name.trim(),'lt');}
+function changePuppetColor(pid,color){if(!FAC[pid])return;FAC[pid].c=color;for(var id in S)if(S[id].own===pid&&S[id].el)S[id].el.setAttribute('fill',color);applyFoW();if(sel)updPanel(sel);addLog('[傀帴色変更] '+color,'lt');}
 function changePuppetName(pid,name){if(!FAC[pid]||!name||!name.trim())return;FAC[pid].n=name.trim();FAC[pid].en=name.trim();if(sel)updPanel(sel);addLog('[傀帴名変更] '+name.trim(),'lt');}
 return{
   setU:setU,recruit:recruit,
@@ -3545,7 +3639,7 @@ return{
   opPuppetCreate:opPuppetCreate,setPuppetRate:setPuppetRate,showDisbandPanel:showDisbandPanel,setDisbandType:setDisbandType,updateDisbandQty:updateDisbandQty,execDisband:execDisband,requestAllyWar:requestAllyWar,
   showDiplomScreen:showDiplomScreen,
   saveGame:saveGame,loadGame:loadGame,
-  loadMod:loadMod,removeMod:removeMod,showNationPanel:showNationPanel,changeNationColor:changeNationColor,changeNationName:changeNationName,changePuppetColor:changePuppetColor,changePuppetName:changePuppetName,showCustomizePanel:showCustomizePanel,applyCustomize:applyCustomize,modToggle:modToggle,modLoadFile:modLoadFile,
+  loadMod:loadMod,removeMod:removeMod,showNationPanel:showNationPanel,changeNationColor:changeNationColor,changeNationName:changeNationName,changePuppetColor:changePuppetColor,changePuppetName:changePuppetName,_mvUpd:_mvUpd,_mvExec:_mvExec,_negCancel:_negCancel,_negToggle:_negToggle,setRecruitMult:function(v){_recruitMult=Math.max(1,Math.min(10,Math.round(+v)));updPanel(sel);},showCustomizePanel:showCustomizePanel,applyCustomize:applyCustomize,modToggle:modToggle,modLoadFile:modLoadFile,
   execNavalMove:execNavalMove,isSeaRoute:isSeaRoute,
   showIdeoPopup:showIdeoPopup,startGovChange:startGovChange,
   showMpBreakdown:showMpBreakdown,showVictoryPanel:showVictoryPanel,
