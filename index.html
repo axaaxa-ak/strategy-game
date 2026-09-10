@@ -1,7 +1,5 @@
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
 
-<!DOCTYPE html>
+  log.scrollTop=log.scrollHeight;<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -1666,19 +1664,27 @@ function opNeg(tid){
   var f=S[tid]&&S[tid].own;if(!f)return;
   if(_usedDiplo[f]){addLog('今ターンは既に'+((FAC[f]&&FAC[f].n)||f)+'へ外交行動済み','lw');return;}
   var fn=(FAC[f]&&FAC[f].n)||f;
-  _negMode={faction:f,give:{},take:{}};
-  cancelAtk();clearHL();hl={};
+  var myIds=[],theirIds=[];
   for(var id in S){
-    if(S[id].own===player){hl[id]='neggive';S[id].el.classList.add('hm');}
-    else if(S[id].own===f){hl[id]='negtake';S[id].el.classList.add('ha');}
+    if(S[id].own===player)myIds.push(id);
+    else if(S[id].own===f)theirIds.push(id);
   }
-  var mi=document.getElementById('movind');
-  if(mi){mi.textContent='GIVE&TAKE: 青=提供 赤=要求 タップで選択';mi.classList.add('on');}
+  var html='<div class="mi">'+fn+'との領土交渉</div>'+
+    '<div class="mc2">'+
+    '<div><div class="mch">提供（自国）</div>'+
+    '<select class="tsel" id="neg-give" size="4" multiple style="height:80px">';
+  myIds.slice(0,15).forEach(function(id){html+='<option value="'+id+'">'+S[id].name+'</option>';});
+  html+='</select></div><div><div class="mch">要求（相手）</div>'+
+    '<select class="tsel" id="neg-take" size="4" multiple style="height:80px">';
+  theirIds.slice(0,15).forEach(function(id){html+='<option value="'+id+'">'+S[id].name+'</option>';});
+  html+='</select></div></div>';
   document.getElementById('m-t').textContent='GIVE & TAKE';
-  document.getElementById('m-s').textContent=fn+' の領土をタップで選択';
+  document.getElementById('m-s').textContent=fn+' との領土交渉';
+  document.getElementById('m-b').innerHTML=html;
   document.getElementById('m-r').style.display='none';
-  document.getElementById('m-b').innerHTML='<div class="mi">地図上で領土をタップして選択</div><div id="neg-status" style="font-size:8px;color:var(--ac);margin:8px 0"></div>';
-  document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G._negCancel()">CANCEL</button><button class="mb ok" onclick="G._execNeg(\''+f+'\')">PROPOSE</button>';
+  document.getElementById('m-btns').innerHTML=
+    '<button class="mb cl" onclick="G.closeModal()">CANCEL</button>'+
+    '<button class="mb ok" onclick="G._execNeg(\''+f+'\')">PROPOSE</button>';
   document.getElementById('modal').classList.add('open');
   setTimeout(function(){
     var mb=document.getElementById('m-btns');if(!mb)return;
@@ -2596,7 +2602,7 @@ function _buildScenGrid(){var g=document.getElementById('scengrid');if(!g)return
 function showHowTo(){var t=document.getElementById('m-t'),ms=document.getElementById('m-s'),b=document.getElementById('m-b');if(!t||!ms||!b)return;t.textContent='HOW TO PLAY';ms.textContent='\u9059\u3073\u65b9';b.innerHTML='<div class="mi" style="font-size:8px;line-height:2">\u30e1\u30cb\u30e5\u30fc\u2192\u30b7\u30ca\u30ea\u30aa\u2192\u56fd\u5bb6\u9078\u629e<br>\u9818\u571f\u30bf\u30c3\u30d7\u3067\u30b3\u30de\u30f3\u30c9\u9078\u629e<br>ASSAULT/TANK RUSH\u2192\u653b\u6483<br>\u5de5\u5834\u5efa\u8a2d\u3067\u7d4c\u6e08\u529b\u30a2\u30c3\u30d7<br>\u30bf\u30fc\u30f3\u9032\u884c\u3067\u6b74\u53f2\u30a4\u30d9\u30f3\u30c8\u767a\u751f</div>';var mb=document.getElementById('m-btns');if(mb)mb.innerHTML='<button class="mb ok" onclick="G.closeModal()">CLOSE</button>';document.getElementById('m-r').style.display='none';document.getElementById('modal').classList.add('open');}
 
 function buildFactory(id){if(!id||!S[id]||S[id].own!==player)return;var cur=_fac[id]||0;var cost=200+Math.floor(cur/10)*10;if(money<cost){addLog('Y'+cost+' needed','lw');return;}money-=cost;_fac[id]=cur+1;addLog('[Factory] '+S[id].name+' '+_fac[id]+'base Y'+cost,'lt');updTB();if(sel)updPanel(sel);}
- function _buildFactoryOld(){if(!id||!S[id]||S[id].own!==player)return;if(money<200){}}
+function _buildFactoryOld(){if(!id||!S[id]||S[id].own!==player)return;if(money<200){}}
 function buildFactoryAll(){var cnt=0;for(var id in S){if(S[id].own!==player)continue;var cur=_fac[id]||0;var cost=200+Math.floor(cur/10)*10;if(money<cost)continue;money-=cost;_fac[id]=cur+1;cnt++;}if(cnt)addLog('[\u4e00\u62ec\u5de5\u5834] '+cnt+'\u7b87\u6240','lt');else addLog('\u8cc7\u91d1\u4e0d\u8db3','lw');updTB();}
 function buildShip(id){if(!id||!S[id]||S[id].own!==player)return;if(money<150){addLog('\u9020\u8239Y150\u4e0d\u8db3','lw');return;}money-=150;_ships[id]=(_ships[id]||0)+1;addLog('[\u9020\u8239] '+S[id].name+' '+_ships[id]+'\u96bb','lt');updTB();if(sel)updPanel(sel);updTroopLabels();}
 function recruitAll(ut){var c={i:100,t:500,a:300}[ut]||100,a={i:10,t:2,a:3}[ut]||10,cnt=0;for(var id in S){if(S[id].own!==player||money<c)continue;var nb=adjOf(id);var b=false;for(var ni=0;ni<nb.length;ni++)if(S[nb[ni]]&&S[nb[ni]].own!==player){b=true;break;}if(!b)continue;money-=c;S[id].u[ut]=(S[id].u[ut]||0)+a;cnt++;}if(cnt)addLog('[\u4e00\u62ec\u5f34\u5175] '+ut.toUpperCase()+'x'+a+'x'+cnt,'lk');else addLog('\u4e0d\u53ef','lw');updTB();if(sel)updPanel(sel);updTroopLabels();}
@@ -2675,9 +2681,9 @@ function _puppetIncome(){
   return _total;
 }
 function saveGame(){try{var _modsToSave=_loadedMods.map(function(m){return{id:m.id,name:m.name};});
-var d={pl:player,mo2:money,tu:turn,yr2:yr,mo3:mo,sc:currentScenario,rel:rel,wc:wCaps,fi:_firedEvents,ideo:ideology,mp:manpower,gc:_govChange,mods:_modsToSave,tr:{},pr:_puppetRate};for(var id in S)d.tr[id]={o:S[id].own,e:S[id].eco,i:S[id].u.i||0,t:S[id].u.t||0,a:S[id].u.a||0};localStorage.setItem('warcmd_v1',JSON.stringify(d));addLog('[SAVE] Turn'+turn+' \u4fdd\u5b58\u5b8c\u4e86','lt');var sb=document.getElementById('save-btn');if(sb){var ot=sb.textContent;sb.textContent='SAVED!';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.textContent=ot;},1500);}}catch(e){addLog('[SAVE\u5931\u6557] '+e,'lw');}}
+var d={pl:player,mo2:money,tu:turn,yr2:yr,mo3:mo,sc:currentScenario,rel:rel,wc:wCaps,fi:_firedEvents,ideo:ideology,mp:manpower,gc:_govChange,mods:_modsToSave,tr:{},pr:_puppetRate,fac:_fac,pup:_puppets,shp:_ships};for(var id in S)d.tr[id]={o:S[id].own,e:S[id].eco,i:S[id].u.i||0,t:S[id].u.t||0,a:S[id].u.a||0};localStorage.setItem('warcmd_v1',JSON.stringify(d));addLog('[SAVE] Turn'+turn+' \u4fdd\u5b58\u5b8c\u4e86','lt');var sb=document.getElementById('save-btn');if(sb){var ot=sb.textContent;sb.textContent='SAVED!';setTimeout(function(){var s=document.getElementById('save-btn');if(s)s.textContent=ot;},1500);}}catch(e){addLog('[SAVE\u5931\u6557] '+e,'lw');}}
 function loadGame(){try{var raw=localStorage.getItem('warcmd_v1');if(!raw){addLog('\u30bb\u30fc\u30d6\u30c7\u30fc\u30bf\u306a\u3057','lw');return;}var d=JSON.parse(raw);player=d.pl;money=d.mo2;turn=d.tu;yr=d.yr2;mo=d.mo3;currentScenario=d.sc||'1936';rel=d.rel||{};wCaps=d.wc||{};_firedEvents=d.fi||{};
-    if(d.ideo)ideology=d.ideo;if(d.mp)manpower=d.mp;if(d.gc)_govChange=d.gc;if(d.pr)_puppetRate=d.pr;for(var id in d.tr){if(!S[id])continue;var td=d.tr[id];S[id].own=td.o;S[id].eco=td.e||S[id].eco;S[id].u.i=td.i;S[id].u.t=td.t;S[id].u.a=td.a;S[id].el.setAttribute('fill',fcol(S[id].own));}if(FAC[player]){var tn=document.getElementById('tb-n');if(tn){tn.textContent=FAC[player].n;tn.style.color=FAC[player].c;}
+    if(d.ideo)ideology=d.ideo;if(d.mp)manpower=d.mp;if(d.gc)_govChange=d.gc;if(d.pr)_puppetRate=d.pr;if(d.fac)_fac=d.fac;if(d.pup)_puppets=d.pup;if(d.shp)_ships=d.shp;for(var id in d.tr){if(!S[id])continue;var td=d.tr[id];S[id].own=td.o;S[id].eco=td.e||S[id].eco;S[id].u.i=td.i;S[id].u.t=td.t;S[id].u.a=td.a;S[id].el.setAttribute('fill',fcol(S[id].own));}if(FAC[player]){var tn=document.getElementById('tb-n');if(tn){tn.textContent=FAC[player].n;tn.style.color=FAC[player].c;}
   // Ideology tag
   var tb=document.getElementById('tb');
   if(tb){
@@ -2984,7 +2990,7 @@ function processGovChange(){
   }
 }
 
-// ══════════════════════════════════════��═════════════════════════
+// ════════════════════════════════════════════════════════════════
 //  MANPOWER SYSTEM
 // ════════════════════════════════════════════════════════════════
 function calcMpGain(){
@@ -3128,7 +3134,7 @@ function opPuppetCreate_byFac(f){
     d:'傀帴国家',cap:(FAC[f]&&FAC[f].cap)||[700,150],m:300,
     incBonus:(FAC[f]&&FAC[f].incBonus)||0.8};
   rel[rk(player,pv)]='allied';_approval[pv]=100;
-  for(var _rk3 in rel){var _pp3=_rk3.split('-');if((_pp3[0]===pv||_pp3[1]===pv)&&_pp3[0]!==player&&_pp3[1]!==player)delete rel[_rk3];}
+  for(var _rk3 in rel){var _pp3=_rk3.split('-');if((_pp3[0]===pv||_pp3[1]===pv)&&_pp3[0]!==player&&_pp3[1]!==player)delete rel[_pp3];}
   if(!_puppets[player])_puppets[player]=[];
   if(_puppets[player].indexOf(pv)<0)_puppets[player].push(pv);_puppetRate[pv]=4;
   applyFoW();updTB();if(sel)updPanel(sel);
