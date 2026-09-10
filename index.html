@@ -651,7 +651,7 @@ var FAC={
   fr:{n:'フランス共和国',sn:'FRA',c:'#0284c7',r:'EUROPE',d:'自由・平等・博愛の共和国。広大な植民地帝国を保ちながらドイツの脅威に備えよ。',cap:[709,137],m:2800,incBonus:1.7},
   bi:{n:'英領インド',en:'British India',sn:'BRI',c:'#b45309',r:'ASIA',d:'英国が支配する南アジアの定。数百万の兵を持つ。',cap:[975,235],m:2200,incBonus:1.4},
   uk:{n:'大英帝国',sn:'GBR',c:'#1e3a5f',r:'EUROPE',d:'日の沈まない帝国。インド・オーストラリア・アフリカを束ねる世界最大の帝国を守れ。',cap:[700,128],m:3800,incBonus:1.5},
-  au:{n:'オーストラリア連邦',sn:'AUS',c:'#1e40af',r:'OCEANIA',d:'英��邦の若き大陸国家。広大な土地と資源を活かし太平洋の覇権を目指せ。',cap:[1200,420],m:1500,incBonus:1.2},
+  au:{n:'オーストラリア連邦',sn:'AUS',c:'#1e40af',r:'OCEANIA',d:'英連邦の若き大陸国家。広大な土地と資源を活かし太平洋の覇権を目指せ。',cap:[1200,420],m:1500,incBonus:1.2},
   ca:{n:'カナダ自治領',sn:'CAN',c:'#dc2626',r:'AMERICAS',d:'英連邦の北米大国。豊富な資源と広大な国土を持つ多民族国家。',cap:[290,140],m:1600,incBonus:1.2},
   nz:{n:'ニュージーランド',sn:'NZL',c:'#2563eb',r:'OCEANIA',d:'英連邦の南太平洋国家。太平洋の要衝として自国の利益を守れ。',cap:[1335,440],m:900,incBonus:1.1},
   za:{n:'南アフリカ連邦',sn:'ZAF',c:'#166534',r:'AFRICA',d:'英連邦の一員ながら独自性を持つ南アフリカ。金とダイヤモンドで繁栄を築け。',cap:[770,390],m:1200,incBonus:1.1},
@@ -2982,7 +2982,7 @@ function processGovChange(){
   }
 }
 
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════��═════════════════════════
 //  MANPOWER SYSTEM
 // ════════════════════════════════════════════════════════════════
 function calcMpGain(){
@@ -3466,7 +3466,7 @@ function recruit(){
 function _recruitOld(){
   if(!sel||!S[sel]||S[sel].own!==player)return;
   var u=UC[curUnit];if(!u)return;
-  if(money<addLog('資金不足 Y'+u.c+'必要','lw');return;}
+  if(money<u.c){addLog('資金不足 Y'+u.c+'必要','lw');return;}
   money-=u.c;
   S[sel].u[curUnit]=(S[sel].u[curUnit]||0)+u.b;
   if(!_newU[sel])_newU[sel]={i:0,t:0,a:0};
