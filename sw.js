@@ -1,7 +1,6 @@
-// バージョン名を変更（書き換えたらここを v2, v3 と変えると確実に再キャッシュされる）
-const CACHE_NAME = 'game-static-v1';
+// ★アプデ時はここを 'v2', 'v3' と更新する
+const CACHE_NAME = 'v2';
 
-// 【重要】ゲームで使う画像をすべてここに正確なパスで書き並べる
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -9,29 +8,27 @@ const STATIC_ASSETS = [
   './MapChart_Map.svg',
 ];
 
-// インストール時にリストのファイルを全件一括キャッシュ
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[SW] 全アセットの一括キャッシュを開始します');
-      // addAllは1つでもパス間違い（404エラー等）があると全体が失敗するため厳密に動作する
       return cache.addAll(STATIC_ASSETS);
     }).then(() => {
-      console.log('[SW] キャッシュ完了！オフライン準備が整いました');
+      console.log('[SW] キャッシュ完了！');
     }).catch((err) => {
-      console.error('[SW] キャッシュに失敗しました。パスが間違っている可能性があります:', err);
+      console.error('[SW] キャッシュ失敗:', err);
     })
   );
 });
 
-// 有効化処理
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('[SW] 古いキャッシュを破棄:', key);
             return caches.delete(key);
           }
         })
@@ -40,15 +37,27 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// ネットワーク優先ではなく「キャッシュ完全優先」で返却
+// ★ここを変更：index.html だけはオンライン時に必ずサーバーから最新を取得する
 self.addEventListener('fetch', (e) => {
+  if (e.request.mode === 'navigate' || e.request.url.endsWith('index.html')) {
+    e.respondWith(
+      fetch(e.request).then((networkResponse) => {
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(e.request, networkResponse.clone());
+          return networkResponse;
+        });
+      }).catch(() => {
+        // オフラインの時だけキャッシュから出す
+        return caches.match(e.request);
+      })
+    );
+    return;
+  }
+
+  // 画像などは今まで通りキャッシュ優先で爆速読み込み
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse; // オフラインでもキャッシュから即座に返す
-      }
-      // キャッシュにない場合のみネットワークを見に行く
-      return fetch(e.request);
+      return cachedResponse || fetch(e.request);
     })
   );
 });
