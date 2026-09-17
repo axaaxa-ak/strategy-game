@@ -1,8 +1,7 @@
 // ★アプデ時はここを 'v2', 'v3' と更新する
-const CACHE_NAME = 'v2.1 ';
+const CACHE_NAME = 'v2 ';
 
 const STATIC_ASSETS = [
-  './',
   './index.html',
   './sw.js',
   './MapChart_Map.svg',
