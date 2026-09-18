@@ -1,5 +1,6 @@
 // ★アプデ時はここを 'v2', 'v3' と更新する
-const CACHE_NAME = 'v2 ';
+const CACHE_NAME = 'v2.
+3 ';
 
 const STATIC_ASSETS = [
   './index.html',
