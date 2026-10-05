@@ -1,4 +1,4 @@
-const CACHE_NAME = 'v2.777777'; // v5に更新
+const CACHE_NAME = 'v7'; // v7に更新
 
 const STATIC_ASSETS = [
   './',
@@ -10,10 +10,23 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] 全アセットの一括キャッシュを開始します');
-      return cache.addAll(STATIC_ASSETS);
-    }).catch((err) => console.error('[SW] キャッシュ失敗:', err))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      console.log('[SW] 個別キャッシュ処理を開始します');
+      for (const asset of STATIC_ASSETS) {
+        try {
+          // 普通の cache.add(asset) だと iOS WebKit が SVG 等で拒絶する場合があるため、
+          // fetch で生データを取得し、Response を再構築してキャッシュに叩き込む
+          const response = await fetch(asset, { cache: 'no-cache' });
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          
+          // レスポンスのクローンを作成して保存
+          await cache.put(asset, response.clone());
+          console.log(`[SW] キャッシュ成功: ${asset}`);
+        } catch (err) {
+          console.error(`[SW] ★キャッシュ失敗: ${asset}`, err);
+        }
+      }
+    })
   );
 });
 
@@ -32,17 +45,17 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // ★最優先ルール：URLに「MapChart_Map.svg」が含まれているなら、リクエストモードに関係なく即座にキャッシュを返す
+  // 1. URLに「MapChart_Map.svg」が含まれていれば、クエリ(?v=...)等に関わらず絶対キャッシュから返す
   if (url.pathname.includes('MapChart_Map.svg')) {
     e.respondWith(
-      caches.match('./MapChart_Map.svg').then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        // 万が一相対パスで見つからなければクエリ無視で全体検索
-        return caches.match(e.request, { ignoreSearch: true });
-      }).then((response) => {
-        if (response) return response;
+      caches.open(CACHE_NAME).then(async (cache) => {
+        const cached = await cache.match('./MapChart_Map.svg');
+        if (cached) return cached;
+        
+        // パスそのもので見つからなければクエリ無視で検索
+        const cachedIgnoreSearch = await cache.match(e.request, { ignoreSearch: true });
+        if (cachedIgnoreSearch) return cachedIgnoreSearch;
+
         // それでも無ければネットワークへ
         return fetch(e.request);
       })
@@ -50,7 +63,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // HTML（トップページ遷移）のみオンライン優先
+  // 2. HTML(トップページ遷移)のみオンライン優先
   if (e.request.mode === 'navigate' && url.pathname.endsWith('index.html')) {
     e.respondWith(
       fetch(e.request).then((networkResponse) => {
@@ -63,7 +76,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // その他すべての静的ファイル
+  // 3. その他すべての静的ファイルはキャッシュ優先
   e.respondWith(
     caches.match(e.request, { ignoreSearch: true }).then((cachedResponse) => {
       return cachedResponse || fetch(e.request);
