@@ -1,29 +1,28 @@
-const CACHE_NAME = 'v7'; // v7に更新
+const CACHE_NAME = 'v8';
 
-const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './sw.js',
-  './MapChart_Map.svg'
+// スコープの絶対ベースURLを取得（例: https://axaaxa-ak.github.io/strategy-game/）
+const BASE_URL = self.registration.scope;
+
+const ASSETS_TO_CACHE = [
+  new URL('./', BASE_URL).href,
+  new URL('./index.html', BASE_URL).href,
+  new URL('./sw.js', BASE_URL).href,
+  new URL('./MapChart_Map.svg', BASE_URL).href
 ];
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('[SW] 個別キャッシュ処理を開始します');
-      for (const asset of STATIC_ASSETS) {
+      console.log('[SW] 絶対URLによる確実な一括キャッシュを開始します');
+      for (const url of ASSETS_TO_CACHE) {
         try {
-          // 普通の cache.add(asset) だと iOS WebKit が SVG 等で拒絶する場合があるため、
-          // fetch で生データを取得し、Response を再構築してキャッシュに叩き込む
-          const response = await fetch(asset, { cache: 'no-cache' });
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-          
-          // レスポンスのクローンを作成して保存
-          await cache.put(asset, response.clone());
-          console.log(`[SW] キャッシュ成功: ${asset}`);
+          const response = await fetch(url, { cache: 'no-cache' });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          await cache.put(url, response.clone());
+          console.log(`[SW] キャッシュ成功: ${url}`);
         } catch (err) {
-          console.error(`[SW] ★キャッシュ失敗: ${asset}`, err);
+          console.error(`[SW] キャッシュ失敗: ${url}`, err);
         }
       }
     })
@@ -45,25 +44,30 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // 1. URLに「MapChart_Map.svg」が含まれていれば、クエリ(?v=...)等に関わらず絶対キャッシュから返す
+  // 1. 地図SVGへのリクエスト（クエリやリクエストモードを問わずすべてキャッチ）
   if (url.pathname.includes('MapChart_Map.svg')) {
     e.respondWith(
       caches.open(CACHE_NAME).then(async (cache) => {
-        const cached = await cache.match('./MapChart_Map.svg');
-        if (cached) return cached;
+        // 保存済みのキャッシュ一覧から MapChart_Map.svg を探す
+        const requests = await cache.keys();
+        const svgRequest = requests.find(r => r.url.includes('MapChart_Map.svg'));
         
-        // パスそのもので見つからなければクエリ無視で検索
-        const cachedIgnoreSearch = await cache.match(e.request, { ignoreSearch: true });
-        if (cachedIgnoreSearch) return cachedIgnoreSearch;
+        if (svgRequest) {
+          const cachedResponse = await cache.match(svgRequest);
+          if (cachedResponse) return cachedResponse;
+        }
 
-        // それでも無ければネットワークへ
+        // 万が一見つからなければ通常検索
+        const fallback = await cache.match(e.request, { ignoreSearch: true });
+        if (fallback) return fallback;
+
         return fetch(e.request);
       })
     );
     return;
   }
 
-  // 2. HTML(トップページ遷移)のみオンライン優先
+  // 2. HTML（トップページ）はオンライン時ネットワーク優先
   if (e.request.mode === 'navigate' && url.pathname.endsWith('index.html')) {
     e.respondWith(
       fetch(e.request).then((networkResponse) => {
@@ -76,7 +80,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // 3. その他すべての静的ファイルはキャッシュ優先
+  // 3. その他すべてはキャッシュ優先
   e.respondWith(
     caches.match(e.request, { ignoreSearch: true }).then((cachedResponse) => {
       return cachedResponse || fetch(e.request);
