@@ -1,4 +1,4 @@
-const CACHE_NAME = '2.707609090 '; // バージョンを v4 に更新
+const CACHE_NAME = 'v2.777777'; // v5に更新
 
 const STATIC_ASSETS = [
   './',
@@ -32,8 +32,26 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // 1. HTML(ページ遷移)のみオンライン優先
-  if (e.request.mode === 'navigate' || url.pathname.endsWith('index.html')) {
+  // ★最優先ルール：URLに「MapChart_Map.svg」が含まれているなら、リクエストモードに関係なく即座にキャッシュを返す
+  if (url.pathname.includes('MapChart_Map.svg')) {
+    e.respondWith(
+      caches.match('./MapChart_Map.svg').then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // 万が一相対パスで見つからなければクエリ無視で全体検索
+        return caches.match(e.request, { ignoreSearch: true });
+      }).then((response) => {
+        if (response) return response;
+        // それでも無ければネットワークへ
+        return fetch(e.request);
+      })
+    );
+    return;
+  }
+
+  // HTML（トップページ遷移）のみオンライン優先
+  if (e.request.mode === 'navigate' && url.pathname.endsWith('index.html')) {
     e.respondWith(
       fetch(e.request).then((networkResponse) => {
         return caches.open(CACHE_NAME).then((cache) => {
@@ -45,22 +63,10 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // 2. SVGや画像、その他アセットはキャッシュ優先
+  // その他すべての静的ファイル
   e.respondWith(
-    // ★ ignoreSearch: true を指定して ?v=xxxx などのクエリパラメータを無視して検索させる
     caches.match(e.request, { ignoreSearch: true }).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse; // クエリ無視でキャッシュが見つかればそれを返す
-      }
-      return fetch(e.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      });
+      return cachedResponse || fetch(e.request);
     })
   );
 });
