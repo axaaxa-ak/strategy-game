@@ -1,4 +1,4 @@
-const CACHE_NAME = '2.7076'; // バージョンを v4 に更新
+const CACHE_NAME = '2.707609090 '; // バージョンを v4 に更新
 
 const STATIC_ASSETS = [
   './',
