@@ -1,19 +1,19 @@
-const CACHE_NAME = '2.7'; // バージョンを v3 に上げる
+const CACHE_NAME = '2.7076'; // バージョンを v4 に更新
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './sw.js',
-  './MapChart_Map.svg' // 大文字小文字・パスが100%合っているか要確認
+  './MapChart_Map.svg'
 ];
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] キャッシュ開始');
+      console.log('[SW] 全アセットの一括キャッシュを開始します');
       return cache.addAll(STATIC_ASSETS);
-    }).catch((err) => console.error('[SW] キャッシュ失敗。パスを確認してください:', err))
+    }).catch((err) => console.error('[SW] キャッシュ失敗:', err))
   );
 });
 
@@ -40,19 +40,19 @@ self.addEventListener('fetch', (e) => {
           cache.put(e.request, networkResponse.clone());
           return networkResponse;
         });
-      }).catch(() => caches.match(e.request))
+      }).catch(() => caches.match(e.request, { ignoreSearch: true }))
     );
     return;
   }
 
-  // 2. SVGや画像、その他アセットは「何が何でもキャッシュ優先」
+  // 2. SVGや画像、その他アセットはキャッシュ優先
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
+    // ★ ignoreSearch: true を指定して ?v=xxxx などのクエリパラメータを無視して検索させる
+    caches.match(e.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) {
-        return cachedResponse; // キャッシュがあれば絶対それを返す
+        return cachedResponse; // クエリ無視でキャッシュが見つかればそれを返す
       }
       return fetch(e.request).then((networkResponse) => {
-        // キャッシュになかった場合は取得してキャッシュに追加
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
