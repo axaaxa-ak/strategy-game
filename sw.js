@@ -1,4 +1,4 @@
-const CACHE_NAME = 'v8';
+const CACHE_NAME = 'v333333';
 
 // スコープの絶対ベースURLを取得（例: https://axaaxa-ak.github.io/strategy-game/）
 const BASE_URL = self.registration.scope;
