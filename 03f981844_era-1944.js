@@ -1,0 +1,31 @@
+/* Eucronia 1944 era data — generated v3.5 */
+window.__ERAS__=window.__ERAS__||{};
+window.__ERAS__["1944"]={
+scenario:{id:'1944',yr:1944,mo:6,color:'#7c0a02',name:'\u795e\u3005\u306e\u9ec4\u660f',nameEn:'TWILIGHT OF GODS 1944',desc:'1944\u5e746\u6708\u3002D\u30c7\u30a4\u4e0a\u9678\u3002\u65e5\u72ec\u306f\u9632\u885b\u306e\u9650\u754c\u3002',overrides:{Sicilia:'uk',Normandy:'uk',Campania:'uk',Marshall_Islands:'us',Saipan:'us'},relations:[['de','uk','war'],['de','su','war'],['jp','us','war'],['uk','us','allied'],['su','uk','allied']]},
+events:[{yr:1944,mo:8,id:'paris_liberation',sc:'1944',
+   title:'\u30d1\u30ea\u89e3\u653e',date:'1944\u5e748\u6708',
+   body:'\u9023\u5408\u56fd\u8ecd\u304c\u30d1\u30ea\u306b\u5165\u57ce\u3002\u30d5\u30e9\u30f3\u30b9\u306e\u9769\u547d\u7684\u89e3\u653e\u3002',
+   effects:['\u4ed8\uff1a+300\u8cc7\u91d1\u30fb\u58eb\u6c17\u9ad8\u63da'],
+   apply:function(){if(player==='fr'||player==='uk')money+=300;for(var id in S)if(S[id].own==='fr')S[id].u.i+=2;}},
+{yr:1944,mo:10,id:'battle_leyte',sc:'1944',
+   title:'\u30ec\u30a4\u30c6\u6e7e\u6d77\u6220',date:'1944\u5e7410\u6708',
+   body:'\u5927\u6226\u6700\u5927\u306e\u6d77\u6230\u3002\u65e5\u672c\u6d77\u8ecd\u306f\u5927\u6253\u6483\u3092\u53d7\u3051\u308b\u3002',
+   effects:['\u7c73\u56fd\uff1a\u30d5\u30a3\u30ea\u30d4\u30f3\u5236\u6d77\u6a29\u78ba\u4fdd','\u65e5\u672c\uff1a\u6d77\u8ecd\u6e1b\u5f71'],
+   apply:function(){for(var id in S)if(S[id].own==='jp')S[id].u.a=Math.max(0,Math.floor((S[id].u.a||0)*0.5));if(player==='us')money+=400;}},
+{yr:1944,mo:12,id:'ardennes',sc:'1944',
+   title:'\u30d0\u30eb\u30b8\u306e\u6220\u3044',date:'1944\u5e7412\u6708',
+   body:'\u30c9\u30a4\u30c4\u304c\u6700\u5f8c\u306e\u53cd\u6483\u3002\u9023\u5408\u56fd\u306f\u4e00\u6642\u82e6\u6226\u3059\u308b\u3002',
+   effects:['\u30c9\u30a4\u30c4\uff1a+200\u8cc7\u91d1\u30fb\u897f\u90e8\u5f37\u5316'],
+   apply:function(){for(var id in S)if(S[id].own==='de')S[id].u.i++;if(player==='de')money+=200;}},
+{yr:1945,mo:2,id:'yalta',sc:'1944',
+   title:'\u30e4\u30eb\u30bf\u4f1a\u8ac7',date:'1945\u5e742\u6708',
+   body:'\u30eb\u30fc\u30ba\u30d9\u30eb\u30c8\u30fb\u30c1\u30e3\u30fc\u30c1\u30eb\u30fb\u30b9\u30bf\u30fc\u30ea\u30f3\u304c\u6226\u5f8c\u4e16\u754c\u79e9\u5e8f\u3092\u4ea4\u6e09\u3002',
+   effects:['\u82f1\u7c73\u30bd\uff1a+500\u8cc7\u91d1\u3001\u6226\u5f8c\u59cb\u52d5'],
+   apply:function(){if(player==='us'||player==='uk'||player==='su')money+=500;}},
+{yr:1945,mo:4,id:'berlin_44',sc:'1944',
+   title:'\u30d9\u30eb\u30ea\u30f3\u9677\u4f0f',date:'1945\u5e744\u6708',
+   body:'\u30bd\u9023\u8ecd\u304c\u30d9\u30eb\u30ea\u30f3\u306b\u7a81\u5165\u3002\u30c9\u30a4\u30c4\u7b2c\u4e09\u5e1d\u56fd\u6ec5\u4ea1\u3002',
+   effects:['\u30bd\u9023\uff1a+500\u8cc7\u91d1','\u30c9\u30a4\u30c4\uff1a\u5175\u529b\u5d29\u58ca'],
+   apply:function(){if(player==='su')money+=500;for(var id in S)if(S[id].own==='de'){S[id].u.i=Math.floor((S[id].u.i||0)/3);S[id].u.t=0;}}}],
+condEvents:[]
+};
