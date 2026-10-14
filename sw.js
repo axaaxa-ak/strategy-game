@@ -1,89 +1,11 @@
-const CACHE_NAME = 'v333333';
-
-// スコープの絶対ベースURLを取得（例: https://axaaxa-ak.github.io/strategy-game/）
-const BASE_URL = self.registration.scope;
-
-const ASSETS_TO_CACHE = [
-  new URL('./', BASE_URL).href,
-  new URL('./index.html', BASE_URL).href,
-  new URL('./sw.js', BASE_URL).href,
-  new URL('./MapChart_Map.svg', BASE_URL).href
-];
-
-self.addEventListener('install', (e) => {
-  self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('[SW] 絶対URLによる確実な一括キャッシュを開始します');
-      for (const url of ASSETS_TO_CACHE) {
-        try {
-          const response = await fetch(url, { cache: 'no-cache' });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          await cache.put(url, response.clone());
-          console.log(`[SW] キャッシュ成功: ${url}`);
-        } catch (err) {
-          console.error(`[SW] キャッシュ失敗: ${url}`, err);
-        }
-      }
-    })
-  );
-});
-
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', (e) => {
-  const url = new URL(e.request.url);
-
-  // 1. 地図SVGへのリクエスト（クエリやリクエストモードを問わずすべてキャッチ）
-  if (url.pathname.includes('MapChart_Map.svg')) {
-    e.respondWith(
-      caches.open(CACHE_NAME).then(async (cache) => {
-        // 保存済みのキャッシュ一覧から MapChart_Map.svg を探す
-        const requests = await cache.keys();
-        const svgRequest = requests.find(r => r.url.includes('MapChart_Map.svg'));
-        
-        if (svgRequest) {
-          const cachedResponse = await cache.match(svgRequest);
-          if (cachedResponse) return cachedResponse;
-        }
-
-        // 万が一見つからなければ通常検索
-        const fallback = await cache.match(e.request, { ignoreSearch: true });
-        if (fallback) return fallback;
-
-        return fetch(e.request);
-      })
-    );
-    return;
-  }
-
-  // 2. HTML（トップページ）はオンライン時ネットワーク優先
-  if (e.request.mode === 'navigate' && url.pathname.endsWith('index.html')) {
-    e.respondWith(
-      fetch(e.request).then((networkResponse) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(e.request, networkResponse.clone());
-          return networkResponse;
-        });
-      }).catch(() => caches.match(e.request, { ignoreSearch: true }))
-    );
-    return;
-  }
-
-  // 3. その他すべてはキャッシュ優先
-  e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then((cachedResponse) => {
-      return cachedResponse || fetch(e.request);
-    })
-  );
-});
+/* Eucronia offline cache */
+const CACHE='eucronia-v1';
+const CORE=['./','index.html','MapChart_Map.svg','era-1936.js','era-1939.js','era-1944.js','era-1914.js','era-2000.js','era-1453.js','era-free.js','https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap'];
+self.addEventListener('install',function(e){e.waitUntil((async function(){var c=await caches.open(CACHE);for(var i=0;i<CORE.length;i++){try{await c.add(new Request(CORE[i],{cache:'reload'}));}catch(err){}}await self.skipWaiting();})());});
+self.addEventListener('activate',function(e){e.waitUntil((async function(){var ks=await caches.keys();await Promise.all(ks.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));await self.clients.claim();})());});
+self.addEventListener('fetch',function(e){var req=e.request;if(req.method!=='GET')return;e.respondWith((async function(){var cache=await caches.open(CACHE);
+ if(req.mode==='navigate'){try{var res=await fetch(req);if(res&&res.ok)cache.put(req,res.clone());return res;}catch(err){var nav=(await cache.match(req,{ignoreSearch:true}))||(await cache.match('index.html',{ignoreSearch:true}));return nav||new Response('offline',{status:503});}}
+ var hit=await cache.match(req,{ignoreSearch:true});
+ if(hit){fetch(req).then(function(r){if(r&&(r.ok||r.type==='opaque'))cache.put(req,r);}).catch(function(){});return hit;}
+ try{var r2=await fetch(req);if(r2&&(r2.ok||r2.type==='opaque'))cache.put(req,r2.clone());return r2;}catch(err2){return new Response('',{status:503});}
+})());});
