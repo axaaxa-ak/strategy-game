@@ -570,6 +570,34 @@ button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:tr
 </style>
 <style>
 .hz{stroke:#2ad0d0!important;stroke-width:1.6px!important;stroke-dasharray:2,3!important;vector-effect:non-scaling-stroke!important;pointer-events:visiblePainted!important}
+</style><style id="tut-style">
+#tutbox{position:fixed;left:280px;right:10px;bottom:86px;z-index:1200;
+  background:linear-gradient(180deg,rgba(9,21,31,.98),rgba(4,11,17,.98));
+  border:1px solid #c8a248;border-radius:6px;padding:10px 12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.65);color:#dbe8f2;font-family:var(--hd,sans-serif)}
+#tutbox .th{display:flex;justify-content:space-between;align-items:center;
+  font-size:9px;letter-spacing:2px;color:#f0d060}
+#tutbox .th span.tt{font-size:7px;letter-spacing:2px;color:#6d8496}
+#tutbox .tb2{font-size:9px;line-height:2;margin-top:7px;color:#c9dae6}
+#tutbox .tb2 b{color:#f0d060}
+#tutbox .tbtns{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
+#tutbox .tbtns button{background:rgba(255,255,255,.05);border:1px solid #2c4356;
+  color:#b8ccd8;font-family:inherit;font-size:8px;letter-spacing:1px;
+  padding:6px 14px;border-radius:3px;cursor:pointer}
+#tutbox .tbtns button.nx{border-color:#c8a248;color:#f0d060;background:rgba(200,162,72,.12)}
+#tutbox .tbtns button.nx:hover{background:rgba(200,162,72,.25)}
+.tut-hl{outline:2px solid #f0d060 !important;outline-offset:2px;border-radius:4px;
+  animation:tutp 1.15s ease-in-out infinite;position:relative;z-index:1101}
+.tut-hl-svg{stroke:#f0d060 !important;stroke-width:2.2px !important;
+  filter:drop-shadow(0 0 5px rgba(240,208,96,.9))}
+@keyframes tutp{
+  0%,100%{box-shadow:0 0 0 3px rgba(240,208,96,.16),0 0 8px rgba(240,208,96,.3)}
+  50%{box-shadow:0 0 0 5px rgba(240,208,96,.3),0 0 18px rgba(240,208,96,.65)}}
+@media(max-width:768px){
+  #tutbox{left:8px;right:8px;top:84px;bottom:auto;max-height:33vh;overflow-y:auto;padding:8px 10px}
+  #tutbox .tb2{font-size:8px;line-height:1.85}
+  #tutbox .tbtns{margin-top:7px}
+}
 </style>
 <script>
 window.__TF_1453__ = {"Hokkaido":"jp","Kita-Tohoku":"jp","Minami-Tohoku":"jp","Kanto":"jp","Koshinetsu":"jp","Hokuriku":"jp","Tokai":"jp","Kansai":"jp","Shikoku":"jp","Okinawa":"jp","San'in":"jp","San'yo":"jp","Kitakyūshū":"jp","Minami_Kyūshū":"jp","Hamgyong":"jk","Gangwon":"jk","Gyeonggi":"jk","Gyeongsang":"jk","Pyongan-Hwanghae":"jk","Chungcheong-Jeolla":"jk","Shanxi":"cn","Shandong":"cn","Henan":"cn","Hubei":"cn","Hunan":"cn","Jiangsu":"cn","Jiangxi":"cn","Zhejiang":"cn","Anhui":"cn","Fujian":"cn","Guangdong":"cn","Guangxi":"cn","Yunnan":"cn","Guizhou":"cn","Gansu":"cn","Qinghai":"cn","Ningxia":"cn","Hainan":"cn","Beiping":"cn","Nanjing":"cn","Shanghai":"cn","Wuhan":"cn","Chongqing":"cn","Chengdu":"cn","Guangzhou":"cn","Nanning":"cn","Jinan":"cn","Qingdao":"cn","Suzhou":"cn","Xian":"cn","Sichuan":"cn","Huangshan":"cn","Hebei":"cn","Heilungkiang":"mng","Kirin":"mng","Liaoning":"mng","Liaobei":"mng","Jehol":"mng","East_Hebei":"mng","Sungkiang":"mng","Hebei-Chahar":"mng","Ulaanbaatar":"mng","Khovd":"mng","Dornod":"mng","Khövsgöl":"mng","Chahar":"mng","Suiyuan":"mng","Xilingol":"mng","Ordos":"mng","Alxa":"mng","Pailingmiao":"mng","Hulunbuir":"mng","Gobi":"mng","Dzungaria":"mng","Taklamakan":"mng","Yarkand":"mng","Khotan":"mng","Urumqi":"mng","Dabancheng":"mng","Chamdo":"ti","Ngari":"ti","Shigatse":"ti","Nagqu":"ti","Golog":"ti","Moscow":"su","Yaroslavl":"su","Ivanovo":"su","Gorky":"su","Rzhev":"su","Smolensk":"su","Bryansk":"su","Orel":"su","Kursk":"su","Voronezh":"su","Saratov":"su","Penza":"su","Ryazan":"su","Tula":"su","Lipetsk":"su","Tambov":"su","Millerovo":"su","Kirov":"su","Ufa":"su","Orenburg":"su","Chelyabinsk":"su","Sverdlovsk":"su","Perm":"su","Zlatoust":"su","Magnitogorsk":"su","Kalinin":"su","Kaluga":"su","Engels_Marxstadt":"su","Belgorod":"su","Kazan":"kz","Novgorod":"nv","Leningrad":"nv","Pskov":"nv","Nevel":"nv","Tikhvin":"nv","Volkhov":"nv","Olonets":"nv","Crimea":"cr","Astrakhan":"cr","Murmansk":"unc","Arkhangelsk":"unc","Vologda":"unc","Onega":"unc","Kargopol":"unc","Kotlas":"unc","Syktyvkar":"unc","Pechora":"unc","Nenets":"unc","Tobolsk":"unc","Tyumen":"unc","Surgut":"unc","Omsk":"unc","Novosibirsk":"unc","Tomsk":"unc","Krasnoyarsk":"unc","Yeniseisk":"unc","Irkutsk":"unc","Chita":"unc","Yakutsk":"unc","Kolyma":"unc","Chukotka":"unc","Kamchatka":"unc","Magadan":"unc","Warszawa":"pl","Lodz":"pl","Lublin":"pl","Kielce":"pl","Gdynia":"pl","Katowice":"pl","Kraków":"pl","Lwów":"pl","Białystok":"pl","Stanisławów":"pl","Nowogródek":"pl","Wilejka":"pl","Polesie":"pl","Wołyn":"pl","Płock":"pl","Poznań":"pl","Minsk":"lt","Bobruysk":"lt","Gomel":"lt","Vitebsk":"lt","Mozyr":"lt","Kaunas":"lt","Klaipeda":"lt","Aukštaitija":"lt","Žemaitija":"lt","Sūduva":"lt","Vilnius":"lt","Wilno":"lt","Vidzeme":"lt","Latgale":"lt","Kurzeme":"lt","Zemgale":"lt","Rīga":"lt","Harju":"lt","Virumaa":"lt","Tartu":"lt","Saaremaa":"lt","Pärnu":"lt","Terra_Mariana":"lt","Kyiv":"lt","Zhytomyr":"lt","Vinnytsia":"lt","Poltava":"lt","Kharkov":"unc","Stalino":"unc","Dnipropetrovsk":"unc","Zaporozhe":"unc","Kherson":"unc","Mykolaiv":"unc","Odessa":"unc","Sumy":"unc","Cherkasy":"unc","Chernigov":"unc","Crimea_S":"cr","Serbia":"tr","Croatia":"hu","Bosnia":"tr","Herzegovina":"tr","Montenegro":"tr","Macedonia":"tr","Southern_Serbia":"tr","Dalmatia":"hu","Kosovo":"tr","Backa":"tr","Morava":"tr","Ljubljana":"unc","North_Slovenia":"unc","Sofia":"tr","Plovdiv":"tr","Burgas":"tr","Moesia":"tr","Varna":"tr","Attica":"tr","Central_Macedonia":"tr","Epirus":"tr","Thessaly":"tr","Crete":"it","Peloponnese":"tr","Aegean_Islands":"tr","Western_Macedonia":"tr","North_Transdanubia":"hu","South_Transdanubia":"hu","Northern_Hungary":"hu","Bács_Kiskun":"hu","Tiszántúl":"hu","Transylvania":"hu","North_Transylvania":"hu","Muntenia":"unc","Oltenia":"unc","Moldova":"unc","Bessarabia":"unc","Dobrudja":"tr","Northern_Dobruja":"tr","Bucovina":"lt","Crisana":"hu","Banat":"hu","West_Banat":"hu","Istanbul":"tr","Ankara":"tr","Bursa":"tr","Izmir":"tr","Kastamonu":"tr","Amasya":"tr","Samsun":"tr","Trabzon":"tr","Erzurum":"tr","Van":"tr","Hakkari":"aq","Mersin":"tr","Antalya":"tr","Afyon":"tr","Kayseri":"tr","Konya":"tr","Sivas":"tr","Malatya":"tr","Edirne":"tr","Izmit":"tr","Thrace":"tr","Tunceli":"aq","Diyarbakır":"aq","Cairo":"eg","Alexandria":"eg","Sinai":"eg","Eastern_Desert":"eg","Western_Desert":"eg","Suez":"eg","Aswan":"eg","Matrouh":"eg","Syria":"eg","Lebanon":"eg","Hatay":"eg","Damascus":"eg","Aleppo":"eg","Al_Qassim":"sa","Dammam":"sa","Asir_Makkah":"sa","Tabuk":"sa","Rub_al_Khali":"unc","Madinah":"eg","Nejd":"sa","Jawf":"sa","Najiran":"sa","Tehran":"ir","East_Azerbaijan":"aq","West_Azerbaijan":"aq","Gilan":"ir","Khorasan":"ir","North_Khorasan":"ir","South_Khorasan":"ir","Isfahan":"ir","Fars":"ir","Kerman":"ir","Khuzestan":"ir","Kurdistan":"aq","Lorestan":"ir","Hamadan":"ir","Zanjan":"ir","Semnan":"ir","Yazd":"ir","Bushehr":"ir","Sistan":"ir","Ilam":"ir","Baghdad":"aq","Mosul":"aq","Al_Basrah":"aq","Al_Anbar":"aq","Al_Hajara":"aq","Kabul":"af","Qandahar":"af","Herat":"ir","Maymanah":"af","Farah":"af","Qataghan":"af","Tashkent":"ir","Ashkhabad":"ir","Bukhara":"ir","Khiva":"ir","Tashauz":"ir","Navoi":"ir","Stalinabad":"ir","Alma_Ata":"mng","Kyzyl_Orda":"ir","Ayaguz":"mng","Pavlodar":"mng","Semipalatinsk":"mng","Karagandy":"unc","Guryev":"unc","Karakalpakstan":"unc","Akmolinsk":"unc","Kostanay":"unc","Delhi":"bi","East_Bengal":"bi","West_Bengal":"bi","Bihar":"bi","United_Provinces":"bi","Central_Provinces":"bi","Bombay":"vg","Madras_States":"vg","Northern_Madras":"vg","Southern_Madras":"vg","Orissa":"bi","East_Punjab":"bi","West_Punjab":"bi","Sind":"bi","Rajahsthan":"bi","Gujarat":"bi","Hyderabad":"vg","Mysore":"vg","Gwalior":"bi","Central_India":"bi","Kolhapur_and_Deccan":"vg","Assam":"bi","Manipur":"unc","Kashmir":"bi","Northern_Kashmir":"unc","Delhi_C":"bi","Siam":"th","Lanna":"th","Isan":"th","Sagaing":"unc","Irrawaddy":"unc","Mandalay":"unc","Pegu":"unc","Arakan":"unc","Magwe":"unc","Tenasserim":"unc","Federated_Shan_States":"unc","Malaya":"mj","Northern_Malay":"mj","Singapore":"mj","Sabah":"mj","Sarawak":"mj","Brunei":"mj","Java":"mj","Sumatra":"mj","Kalimantan":"mj","Interior_Borneo":"unc","Sulawesi":"mj","West_Papua":"unc","The_Moluccas":"mj","Aru_Islands":"unc","Lesser_Sunda_Islands":"mj","Manila":"unc","Eastern_Visayas":"unc","Northern_Mindanao":"unc","Western_Visayas":"unc","Davao":"unc","Bataan":"unc","Palawan":"unc","Zamboanga":"unc","Luzon":"unc","Shaanbei":"cn","Yan'an":"cn","Greater_London_Area":"uk","Yorkshire":"uk","East_Anglia":"uk","East_Midlands":"uk","West_Midlands":"uk","South_West_England":"uk","Wales":"uk","Northern_Ireland":"unc","Scottish_Highlands":"unc","Aberdeenshire":"unc","Lanark":"unc","Lothian":"unc","Cumbria":"uk","Lancashire":"uk","Sussex":"uk","Gloucestershire":"uk","Northumberland":"uk","Connaught":"ie","Leinster":"ie","Munster":"ie","Iceland":"dk","Ile_de_France":"fr","Normandy":"fr","Brittany":"fr","Poitou":"fr","Auvergne":"fr","Languedoc":"fr","Midi_Pyrenees":"fr","Limousin":"fr","Aquitaine":"fr","Loire":"fr","Bourgogne":"fr","Champagne":"fr","Franche_Comte":"fr","Alsace_Lorraine":"de","Picardy":"fr","Nord_Pas_de_Calais":"fr","Rhone":"fr","Var":"fr","Bouches_du_Rhone":"fr","Savoy":"de","Centre":"fr","Corsica":"it","Alpes":"fr","Brandenburg":"de","Sachsen":"de","Hannover":"de","Westfalen":"de","Rhineland":"de","Moselland":"de","Hessen":"de","Weser_Ems":"de","Holstein":"de","Schleswig":"de","Mecklenburg":"de","Vorpommern":"de","Hinterpommern":"de","Oberbayern":"de","Niederbayern":"de","Franken":"de","Baden":"de","Oberschlesien":"de","Niederschlesien":"de","Ermland_Masuren":"de","Danzig":"de","Thüringen":"de","Württemberg":"de","Königsberg":"de","Ostmark":"de","Tyrol":"de","Vorarlberg":"de","Burgenland":"hu","Steiermark_Kärnten":"de","Oberösterreich":"de","Niederösterreich":"de","Bohemia":"de","Moravia":"de","North_Sudetenland":"de","South_Sudetenland":"de","Eastern_Slovakia":"hu","Western_Slovakia":"hu","Southern_Slovakia":"hu","Podkarpatská_Rus":"hu","Tešínsko":"de","České_Slezsko":"de","Piemonte":"it","Lombardia":"it","Veneto":"it","Emilia_Romagna":"it","Toscana":"it","Lazio":"it","Campania":"it","Calabria":"it","Puglia":"it","Abruzzo":"it","Sardegna":"it","Sicilia":"it","Trentino":"it","Alto_Adige":"it","Litorale":"it","Istria":"it","Zara":"it","Dodecanese":"it","Asturias":"es","Galicia":"es","Burgos":"es","Salamanca":"es","Valladolid":"es","Ciudad_Real":"es","Murcia":"es","Sevilla":"es","Valencia":"es","Navarra":"es","Madrid":"es","Granada":"es","Extremadura":"es","Islas_Baleares":"es","Islas_Canarias":"es","León":"es","Western_Aragón":"es","Eastern_Aragón":"es","País_Vasco":"es","Cataluña":"es","Aragón":"es","Guadalajara":"es","Lisbon":"pt","Porto":"pt","Azores":"pt","Madeira":"pt","Guarda":"pt","Santarém":"pt","Beja":"pt","Swiss_Plateau":"ch","Eastern_Swiss_Alps":"ch","Western_Swiss_Alps":"ch","Jura_Mountains":"ch","Ticino":"ch","Dalarna":"dk","Norrbotten":"dk","Gotland":"dk","Ostergotland":"dk","Jamtland":"dk","Smaland":"dk","Finnmark":"dk","Nordland":"dk","Troms":"dk","Vestlandet":"dk","Opplandene":"dk","Oslofjord":"dk","Telemark":"dk","Agder":"dk","Helgeland":"dk","Trøndelag":"dk","Gävleborg":"dk","Värmland":"dk","Östergötland":"dk","Södermanland":"dk","Västerbotten":"dk","Skåne":"dk","Bohuslän":"dk","Jämtland":"dk","Småland":"dk","Västergötland":"dk","Jylland":"dk","Fyn":"dk","Sjaelland":"dk","Bornholm":"dk","Faroe_Islands":"dk","Greenland":"dk","Sønderjylland":"dk","Lappi":"dk","Oulu":"dk","Kuopio":"dk","Mikkeli":"dk","Uusimaa":"dk","Kymi":"dk","Vaasa":"dk","Turku":"dk","Karjala":"dk","Petsamo":"dk","Salla":"dk","Aland_Islands":"dk","Häme":"dk","Åland_Islands":"dk","Holland":"de","Friesland":"de","Brabant":"de","Antwerpen":"de","Wallonie":"de","Vlaanderen":"de","Ardennes":"de","Luxembourg":"de","Casablanca":"unc","Marrakech":"unc","Tlemcen":"unc","Tunisia":"unc","Constantine":"unc","Algiers":"unc","Tripolitania":"eg","Cyrenaica":"eg","Sirte":"eg","Libyan_Desert":"unc","Benghasi":"unc","Derna":"unc","El_Agheila":"unc","Mali":"ml","Senegal":"ml","Mauritania":"unc","Mauritanian_Desert":"unc","Guinea":"unc","Ivory_Coast":"unc","Dahomey":"unc","Togo":"unc","Kongo":"kg","Mutapa":"mt","Shewa":"et","Hararghe":"et","Sidamo":"et","Illubabor_Kaffa":"et","Welega":"et","Begemder":"et","Gojjam":"et","Wello":"et","Afar":"et","Bale":"et","Liberia":"unc","Mexico_City":"az","Sonora":"unc","Chihuahua":"unc","Jalisco":"az","Veracruz":"az","Baja_California":"unc","Tamaulipas":"az","Yucatan":"unc","Oaxaca":"az","Chiapas":"unc","Guerrero":"az","Coahuila":"unc","Durango":"unc","Guatemala":"unc","Honduras":"unc","El_Salvador":"unc","Nicaragua":"unc","Costa_Rica":"unc","Cuba":"unc","Haiti":"unc","Dominican_Republic":"unc","New_England":"unc","New_York":"unc","New_Jersey":"unc","Pennsylvania":"unc","Maryland":"unc","Virginia":"unc","West_Virginia":"unc","North_Carolina":"unc","South_Carolina":"unc","Georgia_US":"unc","Florida":"unc","Alabama":"unc","Mississippi":"unc","Tennessee":"unc","Kentucky":"unc","Ohio":"unc","Indiana":"unc","Michigan":"unc","Wisconsin":"unc","Illinois":"unc","Minnesota":"unc","Iowa":"unc","Missouri":"unc","Arkansas":"unc","Louisiana":"unc","Texas":"unc","Oklahoma":"unc","Kansas":"unc","Nebraska":"unc","South_Dakota":"unc","North_Dakota":"unc","Montana":"unc","Wyoming":"unc","Colorado":"unc","New_Mexico":"unc","Arizona":"unc","Utah":"unc","Idaho":"unc","Washington":"unc","Oregon":"unc","California":"unc","Nevada":"unc","Hawaii":"unc","Alaska":"unc","British_Columbia":"unc","Upper_British_Columbia":"unc","Alberta":"unc","Saskatchewan":"unc","Manitoba":"unc","Southern_Ontario":"unc","Districts_of_Ontario":"unc","Northern_Ontario":"unc","Ouest_du_Quebec":"unc","Saguenay":"unc","Nord_du_Quebec":"unc","Saint_Lawrence":"unc","Cote_Nord":"unc","Nova_Scotia":"unc","New_Brunswick":"unc","Newfoundland":"unc","Yukon_Territory":"unc","Northwest_Territories":"unc","Nunavut":"unc","Labrador":"unc","Vancouver_Island":"unc","Haida_Gwaii":"unc","Lima":"inc","Loreto":"unc","Ucayali":"unc","Arequipa":"inc","La_Paz":"inc","Paraguay":"unc","Chaco_Boreal":"unc","Montevideo":"unc","Ecuador":"inc","Pastaza":"unc","Buenos_Aires":"unc","Mendoza":"unc","Santa_Fe":"unc","Chaco_Austral":"unc","Rio_Negro":"unc","Santa_Cruz_AR":"unc","Formosa":"unc","Antofagasta":"unc","Atacama":"unc","Santiago":"unc","Cundinamarca":"unc","Meta":"unc","Zulia":"unc","Miranda":"unc","La_Paz_B":"inc","Santa_Cruz":"unc","Tacna_Moquegua":"inc","Córdoba":"unc","Tucumán":"unc","Entre_Ríos":"unc","Tierra_del_Fuego":"unc","Bolívar":"unc","Araucanía":"unc","Aysén":"unc","Arica_y_Tarapacá":"unc","São_Paulo":"unc","Paraná":"unc","Espírito_Santo":"unc","Goiás":"unc","Pará":"unc","Ceará":"unc","Maranhão":"unc","Amapá":"unc","Piauí":"unc","Bahia":"unc","Minas_Gerais":"unc","Rio_de_Janeiro":"unc","Santa_Catarina":"unc","Rio_Grande_do_Sul":"unc","New_South_Wales":"unc","Victoria":"unc","Queensland":"unc","South_Australia":"unc","Western_Australia":"unc","Northern_Territory":"unc","Tasmania":"unc","North_Queensland":"unc","Central_Australia":"unc","Southwest_Queensland":"unc","North_West_Australia":"unc","South_West_Australia":"unc","Papua":"unc","Kaiser_Wilhelmsland":"unc","Bismarck":"unc","Nauru":"unc","Solomon_Islands":"unc","North_Island":"unc","South_Island":"unc","Fiji":"unc","Cyprus":"eg","French_Somaliland":"unc","Malta":"it","Gibraltar":"unc"};
@@ -591,7 +619,7 @@ window.__RELS_1453__ = [["tr","eg","war"],["tr","hu","war"],["tr","aq","war"],["
   <div class="ld-s" id="lds">読み込み中...</div>
   <div id="ld-err"></div>
 </div>
-<div id="menu"><div class="menu-bg"></div><div class="menu-content"><div class="menu-title">Eucronia</div><div class="menu-sub">1936</div><div class="menu-ver">v3.9</div><div class="menu-line"></div><div class="menu-btns"><button class="menu-btn primary" onclick="G.showScenSel()"><span class="menu-btn-icon">&#9876;</span><span>START GAME<br><small>ゲーム開始</small></span></button><button class="menu-btn" id="menu-continue" onclick="G.continueGame()"><span class="menu-btn-icon">&#9654;</span><span>CONTINUE<br><small>続きから</small></span></button><button class="menu-btn" onclick="G.showSavePanel('load')"><span class="menu-btn-icon">&#128190;</span><span>LOAD / SAVE<br><small>セーブ管理</small></span></button><button class="menu-btn" onclick="G.showAchievements()"><span class="menu-btn-icon">&#127942;</span><span>ACHIEVEMENTS<br><small>实績・称号</small></span></button><button class="menu-btn" onclick="G.showHowTo()"><span class="menu-btn-icon">&#128214;</span><span>HOW TO PLAY</span></button></div></div></div><div id="scensel"><div class="scen-head"><div class="scen-title">SCENARIO SELECT</div></div><div class="scen-grid" id="scengrid"></div><div id="mod-drop" onclick="G.modToggle()" style="margin:8px auto 4px;display:block;width:min(90vw,400px);padding:10px;text-align:center;border:2px dashed rgba(200,162,72,.4);border-radius:6px;cursor:pointer;color:var(--ac);font-size:9px">📄 MOD JSONをドロップ / タップして選択</div>
+<div id="menu"><div class="menu-bg"></div><div class="menu-content"><div class="menu-title">Eucronia</div><div class="menu-sub">1936</div><div class="menu-ver">v3.9</div><div class="menu-line"></div><div class="menu-btns"><button class="menu-btn primary" onclick="G.showScenSel()"><span class="menu-btn-icon">&#9876;</span><span>START GAME<br><small>ゲーム開始</small></span></button><button class="menu-btn" id="menu-continue" onclick="G.continueGame()"><span class="menu-btn-icon">&#9654;</span><span>CONTINUE<br><small>続きから</small></span></button><button class="menu-btn" onclick="G.showSavePanel('load')"><span class="menu-btn-icon">&#128190;</span><span>LOAD / SAVE<br><small>セーブ管理</small></span></button><button class="menu-btn" onclick="G.showAchievements()"><span class="menu-btn-icon">&#127942;</span><span>ACHIEVEMENTS<br><small>实績・称号</small></span></button><button class="menu-btn" onclick="G.startTutorial()"><span class="menu-btn-icon">&#127891;</span><span>TUTORIAL<br><small>チュートリアル</small></span></button></div></div></div><div id="scensel"><div class="scen-head"><div class="scen-title">SCENARIO SELECT</div></div><div class="scen-grid" id="scengrid"></div><div id="mod-drop" onclick="G.modToggle()" style="margin:8px auto 4px;display:block;width:min(90vw,400px);padding:10px;text-align:center;border:2px dashed rgba(200,162,72,.4);border-radius:6px;cursor:pointer;color:var(--ac);font-size:9px">📄 MOD JSONをドロップ / タップして選択</div>
 <div style="margin:0 auto 6px;width:min(90vw,400px);display:flex;gap:6px">
   <button onclick="G.showModGuide()" style="flex:1;padding:7px;background:transparent;border:1px solid rgba(200,162,72,.4);border-radius:5px;color:var(--ac);font-size:9px;cursor:pointer">📖 MODガイド</button>
 </div><div id="mod-list"></div><button class="scen-back" onclick="G.showMenu()">&#9664; BACK</button></div><div id="evmodal"><div class="evbox"><div class="ev-badge">&#9888; HISTORICAL EVENT</div><div class="ev-title" id="ev-title"></div><div class="ev-date" id="ev-date"></div><div class="ev-body" id="ev-body"></div><div class="ev-effects" id="ev-effects"></div><button class="ev-btn" onclick="G.closeEvModal()">ACKNOWLEDGE &#9654;</button></div></div><div id="fsel">
@@ -1877,7 +1905,7 @@ function updPanel(id){
       '<button class="ab r'+(atkMode==='tankrush'&&atkFrom===id?' p':'')+'" onclick="G.setAtk(\'tankrush\',\''+id+'\')">[TANK RUSH] 機甲突破 Rng:3</button>'+
       ((S[id].u.a||0)>0?'<button class=\"ab r'+(atkMode==='airstrike'&&atkFrom===id?' p':'')+'\" onclick=\"G.setAtk(\'airstrike\',\''+id+'\')\">[AIRSTRIKE] 航空攻撃 Rng:6</button>':'')+((seaNbrs(id).length>0&&_fleetOf(player)>0)?'<button class=\"ab r\" onclick=\"G.setAtk(\'landing\',\''+id+'\')\">[上陸] CAP:'+(_fleetOf(player)*15)+'</button>':'')+
       (atkMode?'<button class="ab" onclick="G.cancelAtk()">[CANCEL] キャンセル</button>':'')+
-      '<div class="sd">BUILD</div>'+'<div class="bg2">'+'<button class="btn" onclick="G.buildFactory(\''+id+'\')">工場 Y200</button>'+'<button class="btn" onclick="G.buildShip(\''+id+'\')">造船 Y150</button>'+'</div>'+
+      '<div class="sd">BUILD</div>'+'<div class="bg2">'+'<button class="btn" onclick="G.buildFactory(\''+id+'\')">工場 Y'+(200+Math.floor((_fac[id]||0)/10)*10)+'</button>'+'<button class="btn" onclick="G.buildShip(\''+id+'\')">造船 Y150</button>'+'</div>'+
       '<div class="sd">BULK</div>'+'<div class="bg3">'+'<button class="btn" onclick="G.recruitAll(\'i\')">一括[I]</button>'+'<button class="btn" onclick="G.recruitAll(\'t\')">一括[T]</button>'+'<button class="btn" onclick="G.buildFactoryAll()">一括工場</button>'+'</div>'+
       '<button class="ab" onclick="G.opPuppetCreate(\''+id+'\')">傀帴国建設</button>';
       h+='<div class="sd">SYSTEM</div>'+'<div class="bg2" style="display:flex;flex-direction:column;gap:4px">'+'<button class="btn" onclick="G.showIdeoPopup()">'+(IDEO_DEFS[ideology]?IDEO_DEFS[ideology].icon+' ':'')+ideology.toUpperCase()+' 思想・政権交代</button>'+'<button class="btn" onclick="G.showVictoryPanel()">&#127942; 勝利条件進捗</button>'+'</div>';
@@ -1889,7 +1917,7 @@ function updPanel(id){
       h+='<button class="db" onclick="G.opD(\'alliance\',\''+id+'\')">同盟<br>ALLIANCE</button>'+
          '<button class="db" onclick="G.opD(\'aid\',\''+id+'\')">援助<br>AID</button>'+
          '<button class="db" onclick="G.opD(\'guarantee\',\''+id+'\')">独立保障<br>GUARANTEE</button>'+
-         '<button class="db" onclick="G.opD(\'puppet\',\''+id+'\')">傀儡化<br>PUPPET</button>';
+         '<button class="db" onclick="G.opD(\'puppet\',\''+id+'\')">傀儡化<br>PUPPET</button>'+'<button class="db war full" onclick="G.opDeclareWar(\''+id+'\')">宣戦布告<br>DECLARE WAR</button>';
     }else{
       h+='<button class="db" disabled>同盟</button>'+
          '<button class="db" disabled>援助</button>'+
@@ -3313,8 +3341,236 @@ function showNavyPanel(){
   _bindAllBtns();
 }
 
+
+// ════════════════════════════════════════════════════════════════
+//  チュートリアル本体 / 宣戦布告
+// ════════════════════════════════════════════════════════════════
+var _tutOn=false,_tutIdx=0,_tutHlEls=[];
+function _tutEnsureScenario(){
+  try{
+    for(var i=0;i<SCENARIOS.length;i++)if(SCENARIOS[i].id==='tutorial_eth')return;
+    SCENARIOS.push({
+      id:'tutorial_eth',yr:1935,mo:10,color:'#b45309',
+      name:'チュートリアル / エチオピア戦争',
+      nameEn:'ITALO-ETHIOPIAN WAR',
+      desc:'イタリア vs エチオピア。操作を覚えるための短い戦役。',
+      noEvents:true,
+      relations:[['it','et','war']],
+      overrides:{
+        Eritrea:'it',Somaliland:'it',Tigray:'it',
+        Shewa:'et',Hararghe:'et',Sidamo:'et',Illubabor_Kaffa:'et',
+        Welega:'et',Begemder:'et',Gojjam:'et',Wello:'et',Afar:'et',Bale:'et'
+      }
+    });
+  }catch(e){}
+}
+function _tutFindBtn(t){
+  var out=[],bs=document.querySelectorAll('#pc button');
+  for(var i=0;i<bs.length;i++){if((bs[i].textContent||'').indexOf(t)>=0)out.push(bs[i]);}
+  return out;
+}
+function _tutClearHl(){
+  for(var i=0;i<_tutHlEls.length;i++){
+    try{_tutHlEls[i].classList.remove('tut-hl');_tutHlEls[i].classList.remove('tut-hl-svg');}catch(e){}
+  }
+  _tutHlEls=[];
+}
+function _tutHl(els){
+  _tutClearHl();
+  if(!els)return;
+  var arr=[];
+  if(els.nodeType)arr=[els];
+  else for(var i=0;i<els.length;i++)arr.push(els[i]);
+  for(var k=0;k<arr.length;k++){
+    var el=arr[k];if(!el||!el.classList)continue;
+    var svg=!!(el.ownerSVGElement||el.tagName==='path'||el.tagName==='g');
+    el.classList.add(svg?'tut-hl-svg':'tut-hl');
+    _tutHlEls.push(el);
+  }
+  try{if(arr[0]&&arr[0].scrollIntoView)arr[0].scrollIntoView({block:'nearest'});}catch(e){}
+}
+function _tutSel(id){try{selTerr(id);updPanel(id);}catch(e){}}
+function _tutPickNeighbor(){
+  for(var id in S){
+    if(S[id].own!==player)continue;
+    var nb=adjOf(id);
+    for(var i=0;i<nb.length;i++){
+      var n=nb[i];
+      if(!S[n])continue;
+      if(S[n].own===player||S[n].own==='unc')continue;
+      if(getRel(player,S[n].own)==='war')continue;
+      return n;
+    }
+  }
+  return null;
+}
+
+var TUT_STEPS=[
+ {h:'STEP 1 / 9　ようこそ',
+  b:'あなたは<b>イタリア王国</b>を率います。目標は<b>エチオピア帝国を降伏させる</b>ことです。<br>説明は画面下の<b>このボックス</b>（ログとは別枠）で進みます。「次へ」で読み進めてください。',
+  setup:function(){try{_jumpToNation('et');}catch(e){}}},
+
+ {h:'STEP 2 / 9　画面の見方',
+  b:'上段は<b>国力</b>（国名・資金・収入・兵力）。下のログは行動の記録です。<br>右のパネルは<b>選んだ領土の情報</b>。地図はドラッグで移動、ピンチ／ホイールで拡大できます。',
+  target:function(){return document.getElementById('tb');}},
+
+ {h:'STEP 3 / 9　兵科（ユニット）',
+  b:'<b>[I] 歩兵</b>：安く数を作れる主力。攻撃1.0／防御1.5と<b>守りが固い</b>。<br><b>[T] 戦車</b>：攻撃4.0で突破力が高い。<b>機甲突破は戦車のみ</b>。<br><b>[A] 航空</b>：射程6で遠くまで届き、<b>迎撃</b>や<b>戦略爆撃</b>（工場・経済を破壊）も可能。',
+  target:function(){return _tutFindBtn('歩兵');},
+  setup:function(){_tutSel('Eritrea');}},
+
+ {h:'STEP 4 / 9　攻撃の基本',
+  b:'<b>自領土をタップ → [ASSAULT] → 隣接する敵領土をタップ</b>。<br>歩兵は射程2、戦車は射程3。戦力が上回るほど有利ですが、<b>防御側は地形と要塞</b>で固くなり、攻撃側は消耗します。<br>まずは<b>エリトリア</b>から南のエチオピアへ攻め込んでみましょう。',
+  target:function(){return _tutFindBtn('ASSAULT');},
+  setup:function(){_tutSel('Eritrea');}},
+
+ {h:'STEP 5 / 9　防御の基本',
+  b:'守る側は<b>歩兵を厚く</b>置くのが鉄則（防御1.5）。戦車は反撃用に後方へ。<br>敵に囲まれると<b>包囲（ENCIRCLED）</b>となり補給が断たれます。航空戦力は<b>迎撃</b>で敵機を削り、空襲から工場を守ります。',
+  target:function(){var e=document.querySelectorAll('#pc .sg');return e.length?e[0]:null;},
+  setup:function(){_tutSel('Tigray');}},
+
+ {h:'STEP 6 / 9　工場建設',
+  b:'<b>工場</b>は経済力（収入）を増やす設備です。1基ごとに収入+5、コストは<b>Y200から建てるほど10ずつ上昇</b>します（ボタンに現在の価格が出ます）。<br><b>一括工場</b>は<b>コストの安い領土から</b>優先して建てます。',
+  target:function(){return _tutFindBtn('工場 Y');}},
+
+ {h:'STEP 7 / 9　外交コマンド',
+  b:'他国の領土をタップすると外交コマンドが並びます。<br><b>同盟</b>／<b>援助</b>（好感度アップ）／<b>独立保障</b>／<b>傀儡化</b>／<b>宣戦布告</b>。<br>戦争中は<b>講和</b>で占領地を確定できます。成功率は<b>好感度</b>と国力差で変わります。',
+  target:function(){var b=_tutFindBtn('宣戦布告');return b.length?b:_tutFindBtn('同盟');},
+  setup:function(){var n=_tutPickNeighbor();_tutSel(n||'British_Somaliland');}},
+
+ {h:'STEP 8 / 9　ターン進行',
+  b:'<b>NEXT TURN</b>でターンが進み、AIが動きます。移動力は時代で変わり、1936年は<b>4</b>。<br>攻撃した部隊はそのターン行動済みになるので、攻める順番を意識しましょう。',
+  target:function(){return document.getElementById('nxt');}},
+
+ {h:'STEP 9 / 9　完了',
+  b:'以上で基本操作は終わりです。<br>エチオピアを降伏させれば勝利。メニュー → シナリオ選択で、いつでも別の国・別の時代を選べます。'}
+];
+
+function _tutBox(){
+  var b=document.getElementById('tutbox');
+  if(!b){b=document.createElement('div');b.id='tutbox';document.body.appendChild(b);}
+  b.style.display='block';
+  return b;
+}
+function _tutShow(){
+  if(!_tutOn)return;
+  var st=TUT_STEPS[_tutIdx];
+  if(!st){_tutEnd();return;}
+  _tutClearHl();
+  var box=_tutBox();
+  var last=_tutIdx===TUT_STEPS.length-1;
+  box.innerHTML='<div class="th"><span>'+st.h+'</span><span class="tt">TUTORIAL</span></div>'+
+    '<div class="tb2">'+st.b+'</div>'+
+    '<div class="tbtns">'+(_tutIdx>0?'<button id="tut-prev">戻る</button>':'')+
+    '<button id="tut-skip">スキップ</button>'+
+    '<button id="tut-next" class="nx">'+(last?'完了':'次へ')+'</button></div>';
+  var bp=document.getElementById('tut-prev');
+  if(bp)bp.onclick=function(ev){ev.preventDefault();_tutPrev();};
+  document.getElementById('tut-skip').onclick=function(ev){ev.preventDefault();_tutEnd();};
+  document.getElementById('tut-next').onclick=function(ev){ev.preventDefault();_tutNext();};
+  if(st.setup){try{st.setup();}catch(e){}}
+  if(st.target){
+    setTimeout(function(){
+      if(!_tutOn)return;
+      try{_tutHl(st.target());}catch(e){}
+    },120);
+  }
+}
+function _tutNext(){
+  _tutIdx++;
+  if(_tutIdx>=TUT_STEPS.length){_tutEnd();return;}
+  _tutShow();
+}
+function _tutPrev(){
+  if(_tutIdx<=0)return;
+  _tutIdx--;
+  _tutShow();
+}
+function _tutEnd(){
+  _tutOn=false;
+  _tutClearHl();
+  var b=document.getElementById('tutbox');
+  if(b&&b.parentNode)b.parentNode.removeChild(b);
+  try{addLog('[チュートリアル] 終了','lt');}catch(e){}
+}
+function startTutorial(){
+  _tutEnsureScenario();
+  try{if(typeof closeModal==='function')closeModal();}catch(e){}
+  var m=document.getElementById('menu');if(m)m.classList.add('off');
+  var ss=document.getElementById('scensel');if(ss)ss.classList.remove('on');
+  var fs=document.getElementById('fsel');if(fs)fs.classList.add('off');
+  _tutOn=true;_tutIdx=0;
+  try{selectScen('tutorial_eth');startGame('it');}catch(e){}
+  var box=_tutBox();
+  box.innerHTML='<div class="th"><span>読み込み中…</span><span class="tt">TUTORIAL</span></div>'+
+    '<div class="tb2">エチオピア戦争のマップを準備しています。しばらくお待ちください。</div>';
+  var n=0;
+  var t=setInterval(function(){
+    n++;
+    var ready=false;
+    try{
+      var ld=document.getElementById('ld');
+      ready=(!ld||!ld.classList.contains('on'))&&Object.keys(S).length>50;
+    }catch(e){}
+    if(ready&&n>4){clearInterval(t);setTimeout(_tutShow,350);}
+    if(n>200)clearInterval(t);
+  },250);
+}
+// ── 宣戦布告 ──
+function opDeclareWar(tid){
+  var t=S[tid];if(!t)return;
+  var f=t.own;
+  if(!f||f===player||f==='unc')return;
+  if(getRel(player,f)==='war'){addLog('既に戦争状態です','lw');return;}
+  var fn=(FAC[f]&&FAC[f].n)||f;
+  if(!confirm(fn+'に宣戦布告しますか？\n・即座に戦争状態になります\n・相手の同盟国も敵に回ります'))return;
+  rel[rk(player,f)]='war';
+  _approval[f]=Math.max(-100,(_approval[f]||0)-40);
+  addLog('[宣戦布告] '+fn+'に宣戦布告しました','lw');
+  try{
+    var al=[];
+    for(var pr in rel){
+      if(rel[pr]!=='allied')continue;
+      var pp=pr.split('-');
+      if(pp[0]===f)al.push(pp[1]);else if(pp[1]===f)al.push(pp[0]);
+    }
+    for(var i=0;i<al.length;i++){
+      var a=al[i];
+      if(!a||a===player||a==='unc')continue;
+      if(getRel(player,a)==='war')continue;
+      rel[rk(player,a)]='war';
+      addLog('[同盟参戦] '+((FAC[a]&&FAC[a].n)||a)+' も参戦','lw');
+    }
+  }catch(e){}
+  try{applyFoW();updTB();updTroopLabels();}catch(e){}
+  if(sel)updPanel(sel);
+}
+_tutEnsureScenario();
+
 function showGameMenu(){var h='<div class="mi" style="display:flex;flex-direction:column;gap:6px"><button class="ab" onclick="G.showUnitVisPanel()">ユニット表示変更</button><button class="ab" onclick="G.showNavyPanel()">海軍・海域</button><button class="ab" onclick="G.showAchievements()">実績・称号</button><button class="ab" onclick="G.showPuppetPanel()">傀儡国管理</button><button class="ab" onclick="G.showSavePanel(\'save\')">セーブ</button><button class="ab" onclick="G.showSavePanel(\'load\')">ロード</button><button class="ab" style="color:#e05060" onclick="G._backToMenu()">メインメニューに戻る</button></div>';document.getElementById('m-t').textContent='MENU';document.getElementById('m-s').textContent='メニュー';document.getElementById('m-r').style.display='none';document.getElementById('m-b').innerHTML=h;document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.closeModal()">閉じる</button>';document.getElementById('modal').classList.add('open');_bindAllBtns();}function _backToMenu(){closeModal();showMenu();}function showUnitVisPanel(){var html='<div class="mi" style="font-size:9px;line-height:2;margin-bottom:8px">各ユニット種別の表示ON/OFF</div>';['i','t','a'].forEach(function(ut){var nm={i:'歩兵',t:'戦車',a:'航空'}[ut];html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="font-size:9px">'+nm+'</span><button class="mb '+(_unitVis[ut]?'ok':'cl')+'" style="padding:4px 12px;font-size:8px" onclick="G._toggleUnitVis(\''+ut+'\')">'+(_unitVis[ut]?'表示中':'非表示')+'</button></div>';});document.getElementById('m-t').textContent='ユニット表示';document.getElementById('m-s').textContent='表示設定';document.getElementById('m-r').style.display='none';document.getElementById('m-b').innerHTML=html;document.getElementById('m-btns').innerHTML='<button class="mb cl" onclick="G.showGameMenu()">戻る</button>';document.getElementById('modal').classList.add('open');_bindAllBtns();}function _toggleUnitVis(ut){_unitVis[ut]=!_unitVis[ut];updTroopLabels();showUnitVisPanel();}
-function buildFactoryAll(){var cnt=0;for(var id in S){if(S[id].own!==player)continue;var cur=_fac[id]||0;var cost=200+Math.floor(cur/10)*10;if(money<cost)continue;money-=cost;_session.factories++;_achAddFactory();_fac[id]=cur+1;cnt++;_achAddFactory();}if(cnt)addLog('[\u4e00\u62ec\u5de5\u5834] '+cnt+'\u7b87\u6240','lt');else addLog('\u8cc7\u91d1\u4e0d\u8db3','lw');updTB();}
+function buildFactoryAll(){
+  var list=[];
+  for(var id in S){
+    if(S[id].own!==player)continue;
+    var cur=_fac[id]||0;
+    list.push({id:id,cur:cur,cost:200+Math.floor(cur/10)*10});
+  }
+  list.sort(function(a,b){return (a.cost-b.cost)||(a.cur-b.cur);});
+  var cnt=0;
+  for(var i=0;i<list.length;i++){
+    var it=list[i];
+    if(money<it.cost)continue;
+    money-=it.cost;
+    _fac[it.id]=it.cur+1;
+    _session.factories++;
+    _achAddFactory();
+    cnt++;
+  }
+  if(cnt)addLog('[\u4e00\u62ec\u5de5\u5834] '+cnt+'\u7b87\u6240\uff08\u5b89\u3044\u9806\uff09','lt');
+  else addLog('\u8cc7\u91d1\u4e0d\u8db3','lw');
+  updTB();
+  if(sel)updPanel(sel);
+}
 function buildShip(id){if(!id||!S[id]||S[id].own!==player)return;if(money<150){addLog('\u9020\u8239Y150\u4e0d\u8db3','lw');return;}money-=150;_fleetAdd(player,1);addLog('[\u9020\u8239] '+S[id].name+' '+_fleetOf(player)+'\u96bb','lt');updTB();if(sel)updPanel(sel);updTroopLabels();}
 function recruitAll(ut){var _at=0;for(var _aq in S)if(S[_aq].own===player)_at+=(S[_aq].u.i||0)+(S[_aq].u.t||0)+(S[_aq].u.a||0);if(_at>=_ecoOf(player)*8+300){addLog('[一括徴兵] 経済力の上限に達しています','lw');return;}var c={i:100,t:500,a:300}[ut]||100,a={i:10,t:2,a:3}[ut]||10,cnt=0;for(var id in S){if(S[id].own!==player||money<c)continue;var nb=adjOf(id);var b=false;for(var ni=0;ni<nb.length;ni++)if(S[nb[ni]]&&S[nb[ni]].own!==player){b=true;break;}if(!b)continue;money-=c;_addStack(id,player,ut,a,0,false);if(!_newU[id])_newU[id]={i:0,t:0,a:0};_newU[id][ut]=(_newU[id][ut]||0)+a;cnt++;_achAddRecruit(ut,a);_session.recruits+=a;}if(cnt)addLog('[\u4e00\u62ec\u5f34\u5175] '+ut.toUpperCase()+'x'+a+'x'+cnt,'lk');else addLog('\u4e0d\u53ef','lw');updTB();if(sel)updPanel(sel);updTroopLabels();}
 function opPuppetCreate(tid){if(!tid||!S[tid]||S[tid].own!==player)return;_session.puppets++;if(!confirm('\u5080\u5e34\u56fd\u3092\u4f5c\u6210\u3057\u307e\u3059\u304b\uff1f\n\u5080\u5e34\u56fd\u306f\u5b97\u4e3b\u56fd\u306e\u540c\u76df\u56fd\u3068\u306a\u308a\u3001\u53ce\u5165\u306e\u4e00\u90e8\u3092\u732b\u7d0d\u3057\u307e\u3059\u3002'))return;var pv='pv_'+tid.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5);var pn=S[tid].name+'\u72ec\u7acb\u56fd';S[tid].own=pv;if(!FAC[pv])FAC[pv]={n:pn,en:pn,sn:pv.toUpperCase().slice(0,4),c:'#3c8050',r:'EUROPE',d:'\u5080\u5e34',cap:[700,150],m:300};S[tid].el.setAttribute('fill',fcol(pv));rel[rk(player,pv)]='allied';_approval[pv]=100;for(var _rk2 in rel){var _pp2=_rk2.split('-');if((_pp2[0]===pv||_pp2[1]===pv)&&_pp2[0]!==player&&_pp2[1]!==player)delete rel[_rk2];}if(!_puppets[player])_puppets[player]=[];_puppets[player].push(pv);_puppetRate[pv]=4;if(confirm('この傀儡国をプレイ国家にしますか？'))playAs(pv);addLog('[\u5080\u5e34\u56fd] '+pn,'lt');applyFoW();updTB();if(sel)updPanel(sel);}
@@ -3498,12 +3754,41 @@ var TITLES=[
   {id:'conqueror',check:'conqueror',name:'征服者'},
   {id:'oceania',check:'oceania',name:'ビッグブラザー',hidden:true},
   {id:'eurasia',check:'eurasia',name:'社会主義という疫病',hidden:true},
+  {id:'x_reich',nation:'de',check:'custom',custom:'reich',name:'千年帝国',desc:'ドイツでベルリン・ウィーン・ロンドン・パリ・モスクワ・キエフ・ミンスク・レニングラード・スターリングラード・リガを領有する'},
+  {id:'x_crown',nation:'uk',check:'custom',custom:'crown',name:'輝きのない王冠',desc:'インド・カナダ・オーストラリア・NZ・マラヤ・南アフリカ・エジプトを独立させた状態で大戦に勝利する'},
+  {id:'x_elder',nation:'ca',check:'custom',custom:'elderDaughter',name:'大英帝国の長女',desc:'カナダでロンドンを解放する'},
+  {id:'x_catholic',nation:'fr',check:'custom',custom:'catholic',name:'カトリックの長女',desc:'フランスで1939年までにローマ（ラツィオ）を領有する'},
+  {id:'x_med',check:'custom',custom:'medEmpire',name:'地中海帝国',desc:'地中海に面する地域をすべて自国（または傀儡）にする'},
+  {id:'x_conq',check:'custom',custom:'conqueror100',name:'征服者',desc:'列強以外の国で全領土を自国と傀儡領にする'},
+  {id:'x_africa',nation:'li',check:'custom',custom:'africa',name:'アフリカの覇者',desc:'リベリアでアフリカを統一（諸島部を除く）'},
+  {id:'x_eurasia',nation:'mn',check:'custom',custom:'eurasia',name:'ユーラシアの覇者',desc:'モンゴルでユーラシアを統一'},
+  {id:'x_samerica',nation:'bo',check:'custom',custom:'southAmerica',name:'南米の覇者',desc:'ボリビアで南米を統一'},
+  {id:'x_latin',check:'custom',custom:'latinAmerica',name:'中南米の帝国',desc:'中南米の国で中南米を統一'},
+  {id:'x_balkan',nation:'bg',check:'custom',custom:'balkans',name:'バルカンのプロイセン',desc:'ブルガリアで1939年までにハンガリー・ユーゴ・ルーマニア・アルバニア・ギリシャ・トルコを領有する'},
+  {id:'x_poland',nation:'pl',check:'custom',custom:'poland',name:'下馬評を蹴飛ばせ！',desc:'ポーランドでドイツとソ連を降伏させ、両国の主要領土を領有する'},
+  {id:'x_hre',nation:'at',check:'custom',custom:'hre',name:'新生・神聖ローマ帝国',desc:'オーストリアでドイツとイタリアを領有する'},
+  {id:'x_islam',nation:'iq',check:'custom',custom:'islam',name:'イスラム帝国',desc:'イラクで1940年までに中東を統一する'},
+  {id:'x_imp1',check:'custom',custom:'world1945',name:'インポッシブル',hidden:true,desc:'1945年までに世界征服を達成する'},
+  {id:'x_imp2',nation:'tv',check:'custom',custom:'tannu',name:'中華…なんだって？',hidden:true,desc:'1942年までにタンヌ・トゥヴァで中国を統一する'},
+  {id:'x_imp3',nation:'pt',check:'custom',custom:'portugal',name:'理解拒否',hidden:true,desc:'ポルトガルで1937年までに英仏本土を領有し、さらに中国を統一する'},
+  {id:'x_imp4',check:'custom',custom:'fiume',name:'ダンヌンツィオに敬礼',hidden:true,desc:'フィウメのみを領有する国家で1937年までにイタリア全土を領有する'},
+  {id:'x_imp5',nation:'af',check:'custom',custom:'afghan',name:'「帝国」の墓場',hidden:true,desc:'アフガニスタンで1936年9月までにソ連に宣戦し降伏させる'},
+  {id:'x_imp6',nation:'de',check:'custom',custom:'desperate',name:'絶望的生存',hidden:true,desc:'ドイツで1936年4月から1945年まで領土を1つ以上保持し続ける'},
+  {id:'x_eu',check:'custom',custom:'eu',name:'欧州連合',desc:'欧州の領土をすべて領有する'},
+  {id:'x_chile',nation:'cl',check:'custom',custom:'chile',name:'チリは長い',desc:'チリで世界中の海岸領土を支配する'},
+  {id:'x_habs',nation:'ch',check:'custom',custom:'habsburg',name:'ハプスブルクの故郷',desc:'スイスでオーストリア=ハンガリー帝国を再興する'},
+  {id:'x_bhutan',nation:'bt',check:'custom',custom:'bhutan',name:'この世で最も幸せな惑星',desc:'ブータンで世界征服を達成する'},
+  {id:'x_mexico',nation:'mx',check:'custom',custom:'mexico',name:'楽園…?',desc:'メキシコで共産化し世界を征服する'},
+  {id:'x_ussr',nation:'su',check:'custom',custom:'world',name:'最悪の夢',desc:'ソ連で世界征服を達成する'},
+  {id:'x_usa',nation:'us',check:'custom',custom:'world',name:'自由の帝国',desc:'アメリカで世界征服を達成する'},
+  {id:'x_cuba',nation:'cu',check:'custom',custom:'cuba',name:'第三次世界大戦',hidden:true,desc:'キューバで共産化し、1945年以降にアメリカと戦う'},
+
 ];
-function _titleToast(name,desc){if(!document.getElementById('ttl-style')){var st=document.createElement('style');st.id='ttl-style';st.textContent='@keyframes ttlIn{0%{transform:translateY(-30px) scale(.9);opacity:0}60%{transform:translateY(4px) scale(1.03);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}@keyframes ttlGlow{0%,100%{box-shadow:0 0 12px rgba(200,162,72,.5),0 0 32px rgba(200,162,72,.25)}50%{box-shadow:0 0 22px rgba(255,215,100,.9),0 0 54px rgba(200,162,72,.5)}}@keyframes ttlOut{to{opacity:0;transform:translateY(-20px)}}#ttl-wrap{position:fixed;top:60px;left:50%;transform:translateX(-50%);width:min(92vw,380px);z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}.ttl-card{pointer-events:auto;cursor:pointer;text-align:center;padding:12px 14px;border:2px solid #c8a248;border-radius:6px;background:linear-gradient(135deg,#2e2208,#0b0f14);animation:ttlIn .5s ease-out,ttlGlow 1.6s ease-in-out infinite}.ttl-card.out{animation:ttlOut .4s forwards}.ttl-h{font-size:9px;letter-spacing:4px;color:#f0d060;margin-bottom:4px}.ttl-n{font-size:17px;font-weight:bold;color:#ffe08a;letter-spacing:2px;text-shadow:0 0 10px rgba(255,215,100,.7)}.ttl-d{font-size:9px;color:#b8ccd8;margin-top:4px}';document.head.appendChild(st);}var w=document.getElementById('ttl-wrap');if(!w){w=document.createElement('div');w.id='ttl-wrap';document.body.appendChild(w);}var c=document.createElement('div');c.className='ttl-card';c.innerHTML='<div class="ttl-h">🏅 称号獲得 / TITLE UNLOCKED</div><div class="ttl-n"></div><div class="ttl-d"></div>';c.querySelector('.ttl-n').textContent=name;c.querySelector('.ttl-d').textContent=desc||'';function rm(){if(!c.parentNode)return;c.classList.add('out');setTimeout(function(){if(c.parentNode)c.parentNode.removeChild(c);},400);}c.addEventListener('click',rm);c.addEventListener('touchend',function(e){e.preventDefault();rm();},{passive:false});w.appendChild(c);setTimeout(rm,6000);}
+function _titleToast(name,desc){if(!document.getElementById('ttl-style')){var st=document.createElement('style');st.id='ttl-style';st.textContent='@keyframes ttlIn{0%{transform:translateY(-30px) scale(.9);opacity:0}60%{transform:translateY(4px) scale(1.03);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}@keyframes ttlGlow{0%,100%{box-shadow:0 0 12px rgba(200,162,72,.5),0 0 32px rgba(200,162,72,.25)}50%{box-shadow:0 0 22px rgba(255,215,100,.9),0 0 54px rgba(200,162,72,.5)}}@keyframes ttlOut{to{opacity:0;transform:translateY(-20px)}}#ttl-wrap{position:fixed;top:60px;left:50%;transform:translateX(-50%);width:min(92vw,380px);z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}.ttl-card{pointer-events:auto;cursor:pointer;text-align:center;padding:12px 14px;border:2px solid #c8a248;border-radius:6px;background:linear-gradient(135deg,#2e2208,#0b0f14);animation:ttlIn .5s ease-out,ttlGlow 1.6s ease-in-out infinite}.ttl-card.out{animation:ttlOut .4s forwards}.ttl-h{font-size:9px;letter-spacing:4px;color:#f0d060;margin-bottom:4px}.ttl-n{font-size:17px;font-weight:bold;color:#ffe08a;letter-spacing:2px;text-shadow:0 0 10px rgba(255,215,100,.7)}.ttl-d{font-size:9px;color:#b8ccd8;margin-top:4px}';document.head.appendChild(st);}var w=document.getElementById('ttl-wrap');if(!w){w=document.createElement('div');w.id='ttl-wrap';document.body.appendChild(w);}var c=document.createElement('div');c.className='ttl-card';c.innerHTML='<div class="ttl-h">称号獲得 / TITLE UNLOCKED</div><div class="ttl-n"></div><div class="ttl-d"></div>';c.querySelector('.ttl-n').textContent=name;c.querySelector('.ttl-d').textContent=desc||'';function rm(){if(!c.parentNode)return;c.classList.add('out');setTimeout(function(){if(c.parentNode)c.parentNode.removeChild(c);},400);}c.addEventListener('click',rm);c.addEventListener('touchend',function(e){e.preventDefault();rm();},{passive:false});w.appendChild(c);setTimeout(rm,6000);}
 function _grantTitle(t){_ach.titles.push(t.name);addLog('[称号獲得] '+t.name,'lk');_titleToast(t.name,_titleDesc(t));}
 function _liveTitleCheck(){for(var i=0;i<TITLES.length;i++){var t=TITLES[i];if(t.session&&_ach.titles.indexOf(t.name)<0&&(_session[t.session]||0)>=(t.count||0)){_checkTitles(false);return;}}}
 function _checkTitles(won){var nation=_origNation||player;TITLES.forEach(function(t){if(_ach.titles.indexOf(t.name)>=0)return;if(t.nation){if(t.nation!==nation)return;var p=(_ach.plays[t.nation]||0);var s=(_ach.bestWinStreak[t.nation]||0);if(p>=(t.plays||0)&&(!t.streak||s>=(t.streak||0)))_grantTitle(t);}else if(t.session){if((_session[t.session]||0)>=(t.count||0))_grantTitle(t);}else if(t.check==='conqueror'){if(won){var _majors=['de','jp','it','su','uk','us','fr'];if(_majors.indexOf(nation)<0){var _total=0,_mine=0;for(var id in S){_total++;if(S[id].own===nation||isAlly(nation,S[id].own)||getRel(nation,S[id].own)==='puppet')_mine++;}if(_total>0&&_mine>=_total*0.95)_grantTitle(t);}}}else if(t.check==='oceania'){if(won){var _allMine=true;for(var id in S){if(S[id].own===nation||isAlly(nation,S[id].own))continue;var _r=(FAC[S[id].own]||{}).r;if(_r==='OCEANIA'||_r==='ASIA'){if(S[id].own.indexOf('nt_')!==0){_allMine=false;break;}}}if(_allMine)_grantTitle(t);}}});_saveAch();}
-function _titleDesc(t){if(!t)return'';if(t.nation)return (FAC[t.nation]?FAC[t.nation].n:t.nation)+'で'+(t.plays||1)+'回プレイ'+(t.streak?('・連勝'+t.streak+'回'):'');var _sn={recruits:'累計徴兵',surrenders:'累計降伏(勝利)',puppets:'累計傀儡化',factories:'累計工場建設',nameChanges:'累計国名変更',ideoChanges:'累計思想変更',kills:'累計撃破'}[t.session]||t.session;if(t.session)return _sn+(t.count||1)+'達成';if(t.check==='conqueror')return '小国で全領土の95%を支配して勝利';if(t.check==='oceania')return 'オセアニア・アジアを完全支配';if(t.check==='eurasia')return 'ユーラシア大陸を完全支配';return'';}function _showTitleInfo(nm){
+function _titleDesc(t){if(!t)return'';if(t.desc)return t.desc;if(t.nation)return (FAC[t.nation]?FAC[t.nation].n:t.nation)+'で'+(t.plays||1)+'回プレイ'+(t.streak?('・連勝'+t.streak+'回'):'');var _sn={recruits:'累計徴兵',surrenders:'累計降伏(勝利)',puppets:'累計傀儡化',factories:'累計工場建設',nameChanges:'累計国名変更',ideoChanges:'累計思想変更',kills:'累計撃破'}[t.session]||t.session;if(t.session)return _sn+(t.count||1)+'達成';if(t.check==='conqueror')return '小国で全領土の95%を支配して勝利';if(t.check==='oceania')return 'オセアニア・アジアを完全支配';if(t.check==='eurasia')return 'ユーラシア大陸を完全支配';return'';}function _showTitleInfo(nm){
   var t=null;
   for(var i=0;i<TITLES.length;i++){if(TITLES[i].name===nm){t=TITLES[i];break;}}
   var un=_titleUnlocked(t);
@@ -3585,6 +3870,99 @@ function _achGrid(title,list){
 function _achStat(label,val,col){
   return '<div style="border:1px solid var(--b1);background:rgba(255,255,255,.02);padding:7px 8px;border-radius:4px"><div style="font-size:6.5px;color:var(--dm);letter-spacing:1px">'+label+'</div><div style="font-family:var(--hd);font-size:13px;color:'+(col||'var(--tx)')+';margin-top:2px">'+val+'</div></div>';
 }
+
+// ════════════════════════════════════════════════════════════════
+//  追加実績の判定
+// ════════════════════════════════════════════════════════════════
+function _achNation(){return _origNation||player;}
+function _achOwn(re){
+  for(var id in S){
+    var o=S[id].own;
+    if(!o||o==='unc')continue;
+    if(o!==player&&getOverlord(o)!==player)continue;
+    if(re.test(id)||re.test(S[id].name||''))return true;
+  }
+  return false;
+}
+function _achAllOwn(rs){
+  for(var i=0;i<rs.length;i++){if(!_achOwn(rs[i]))return false;}
+  return true;
+}
+function _achRegionAll(reg){
+  var any=false;
+  for(var id in S){
+    var o=S[id].own;
+    if(!o||o==='unc'||o.indexOf('nt_')===0)continue;
+    if((FAC[o]||{}).r!==reg)continue;
+    any=true;
+    if(o!==player&&getOverlord(o)!==player)return false;
+  }
+  return any;
+}
+function _achWorld(p){
+  var tot=0,mine=0;
+  for(var id in S){
+    var o=S[id].own;
+    if(!o||o==='unc')continue;
+    tot++;
+    if(o===player||getOverlord(o)===player)mine++;
+  }
+  return tot>0&&mine>=Math.floor(tot*p);
+}
+function _achWon(){return ((_ach.wins||{})[_achNation()]||0)>0;}
+function _achBy(y,m){if(yr<y)return true;if(yr>y)return false;return mo<=(m||12);}
+function _achGone(f){for(var id in S){if(S[id].own===f)return false;}return true;}
+
+var _ACH_F={
+  reich:function(){return _achAllOwn([/brandenburg|berlin/,/ostmark|wien|vienna|niederdonau/,/greater_london|london/,/ile_de_france|paris/,/moscow|moskau/,/kyiv|kiev/,/minsk/,/leningrad/,/stalingrad/,/riga|latvia/]);},
+  crown:function(){return _achWon()&&!_achOwn(/india/)&&!_achOwn(/canada/)&&!_achOwn(/australia/)&&!_achOwn(/zealand/)&&!_achOwn(/malaya/)&&!_achOwn(/south_africa/)&&!_achOwn(/egypt/);},
+  elderDaughter:function(){return _achOwn(/greater_london|london/);},
+  catholic:function(){return _achOwn(/lazio/)&&_achBy(1939,12);},
+  medEmpire:function(){return _achAllOwn([/lazio|toscana|campania/,/provence|cote_d_azur|ile_de_france/,/catalonia|valencia|aragon|andalusia/,/attica|peloponnese|macedonia/,/istanbul|thrace|izmir|anatolia/,/cairo|alexandria|egypt/,/tripolitania|cyrenaica/,/tunis/,/algiers|algeria/,/morocco/,/syria/,/palestine/,/cyprus/,/malta/]);},
+  conqueror100:function(){return ['de','jp','it','su','uk','us','fr'].indexOf(_achNation())<0&&_achWorld(0.995);},
+  africa:function(){return _achRegionAll('AFRICA');},
+  eurasia:function(){return _achRegionAll('EUROPE')&&_achRegionAll('ASIA');},
+  southAmerica:function(){return _achAllOwn([/argentina/,/brazil/,/chile/,/peru/,/bolivia/,/colombia/,/venezuela/,/ecuador/,/paraguay/,/uruguay/,/guyana/,/suriname/]);},
+  latinAmerica:function(){return _ACH_F.southAmerica()&&_achAllOwn([/mexico/,/guatemala/,/honduras/,/nicaragua/,/costa_rica/,/panama/,/cuba/,/haiti/,/dominican|santo_domingo/,/jamaica/]);},
+  balkans:function(){return _achAllOwn([/hungary|budapest/,/yugoslav|serbia|bosnia|croatia|slovenia|montenegro/,/romania|wallachia|moldavia|transylvania/,/albania/,/attica|peloponnese|macedonia|greece/,/turkey|anatolia|istanbul|thrace/])&&_achBy(1939,12);},
+  poland:function(){return _achOwn(/brandenburg|berlin/)&&_achOwn(/moscow|moskau/)&&_achAllOwn([/leningrad/,/kyiv|kiev/]);},
+  hre:function(){return _achOwn(/brandenburg|berlin/)&&_achOwn(/lazio|roma|toscana/);},
+  islam:function(){return _achAllOwn([/istanbul|anatolia|thrace/,/syria/,/baghdad|iraq/,/saudi|arabia|hejaz|nejd/,/cairo|egypt/,/persia|iran|tehran/])&&_achBy(1940,12);},
+  world1945:function(){return _achWorld(0.995)&&yr<=1945;},
+  tannu:function(){return _achAllOwn([/beijing|peking/,/shanghai/,/nanjing/,/sichuan/,/yunnan/,/guangdong|guangzhou/,/hunan|hubei/,/shandong|shanxi|hebei/]);},
+  portugal:function(){return _achBy(1937,12)&&_achOwn(/greater_london|london/)&&_achOwn(/ile_de_france|paris/)&&_achAllOwn([/beijing|peking/,/shanghai/,/nanjing/]);},
+  fiume:function(){var n=0;for(var id in S){if(S[id].own===player)n++;}return n<=1&&_achOwn(/ljubljana|fiume|istria/)&&_achAllOwn([/lazio|toscana|veneto|lombardia|piemonte|campania|sicilia|sardegna|puglia|calabria|emilia/])&&_achBy(1937,12);},
+  afghan:function(){return isWar('af','su')&&_achGone('su')&&_achBy(1936,9);},
+  desperate:function(){var w=0;for(var pr in rel){if(rel[pr]!=='war')continue;var pp=pr.split('-');if(pp[0]==='de'||pp[1]==='de')w++;}return w>=15&&yr>=1945;},
+  eu:function(){return _achRegionAll('EUROPE');},
+  chile:function(){var reg={};for(var id in S){var o=S[id].own;if(o!==player&&getOverlord(o)!==player)continue;var r=(FAC[o]||{}).r;if(r)reg[r]=1;}var c=0;for(var k in reg)c++;return c>=4;},
+  habsburg:function(){return _achAllOwn([/ostmark|wien|vienna|niederdonau/,/hungary|budapest/,/bohemia|prague|czech/,/slovak/,/tyrol|vorarlberg/]);},
+  bhutan:function(){return _achWorld(0.995);},
+  mexico:function(){return ideology==='communism'&&_achWorld(0.995);},
+  world:function(){return _achWorld(0.995);},
+  cuba:function(){return ideology==='communism'&&yr>=1945&&isWar('cu','us');}
+};
+
+function _achScan(){
+  try{
+    if(!player||typeof TITLES==='undefined')return;
+    var nat=_achNation();
+    for(var i=0;i<TITLES.length;i++){
+      var t=TITLES[i];
+      if(!t)continue;
+      if(_ach.titles.indexOf(t.name)>=0)continue;
+      if(t.nation&&t.nation!==nat)continue;
+      if(t.custom){
+        var f=_ACH_F[t.custom];
+        if(f&&f())_grantTitle(t);
+      }else if(t.check==='eurasia'){
+        if(_achRegionAll('EUROPE')&&_achRegionAll('ASIA'))_grantTitle(t);
+      }
+    }
+  }catch(e){}
+}
+setInterval(_achScan,3000);
+
 function showAchievements(){
   var un=0,_vis=[];
   for(var i=0;i<TITLES.length;i++){var _t=TITLES[i];if(_t.hidden&&!_titleUnlocked(_t))continue;_vis.push(_t);if(_titleUnlocked(_t))un++;}
@@ -3608,9 +3986,9 @@ function showAchievements(){
   h+='</div>';
   var nat=[],ses=[],chk=[];
   for(var j=0;j<_vis.length;j++){var t=_vis[j];if(t.session)ses.push(t);else if(t.nation)nat.push(t);else chk.push(t);}
-  h+=_achGrid('\u2694\uFE0F \u56fd\u5bb6\u79f0\u53f7 / NATIONS',nat);
-  h+=_achGrid('\uD83C\uDF96\uFE0F \u884c\u52d5\u79f0\u53f7 / ACTIONS',ses);
-  h+=_achGrid('\uD83C\uDF0D \u5f81\u670d\u79f0\u53f7 / CONQUEST',chk);
+  h+=_achGrid('\u56fd\u5bb6\u79f0\u53f7 / NATIONS',nat);
+  h+=_achGrid('\u884c\u52d5\u79f0\u53f7 / ACTIONS',ses);
+  h+=_achGrid('\u5f81\u670d\u79f0\u53f7 / CONQUEST',chk);
   var pk=Object.keys(_ach.plays);
   if(pk.length){h+='<div style="margin-top:18px;font-size:7px;color:var(--dm);line-height:1.9">\u30d7\u30ec\u30a4\u56de\u6570: '+pk.map(function(k){return (FAC[k]?FAC[k].sn||FAC[k].n:k)+' '+(_ach.plays[k]||0);}).join(' / ')+'</div>';}
   document.getElementById('m-t').textContent='\u5b9f\u7e3e\u3068\u79f0\u53f7 / ACHIEVEMENTS';
@@ -4858,7 +5236,7 @@ return{showRank:showRank,setU:setU,recruit:recruit,
   togglePanel:togglePanel,
   showWorldStatus:showWorldStatus,showAllyWarRequest:showAllyWarRequest,execAllyWar:execAllyWar,
   showDiplomStatus:showDiplomScreen,
-  showMenu:showMenu,showScenSel:showScenSel,showHowTo:showHowTo,
+  showMenu:showMenu,showScenSel:showScenSel,showHowTo:showHowTo,startTutorial:startTutorial,opDeclareWar:opDeclareWar,
   selectScen:selectScen,closeEvModal:closeEvModal,
   buildFactory:buildFactory,buildFactoryAll:buildFactoryAll,
   buildShip:buildShip,recruitAll:recruitAll,colonize:colonize,
